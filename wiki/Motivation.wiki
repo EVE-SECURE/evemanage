@@ -1,0 +1,5 @@
+#summary Reasons behind developing EveManage
+
+= Motivation =
+
+TBD.
