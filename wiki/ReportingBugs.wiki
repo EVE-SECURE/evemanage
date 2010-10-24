@@ -1,4 +1,4 @@
-#summary How to report bug
+#summary How to report bugs
 
 = Reporting bugs =
 TBD
