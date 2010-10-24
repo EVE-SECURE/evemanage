@@ -1,0 +1,4 @@
+#summary How to report bug
+
+= Reporting bugs =
+TBD
