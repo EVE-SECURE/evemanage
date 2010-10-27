@@ -1,4 +1,4 @@
 #summary List on known issues
 
-= KnownIssues =
+= Known issues =
 TBD
