@@ -2,4 +2,13 @@
 #labels Featured
 
 = Screenshots =
-TBD
+
+== Application screens ==
+
+[http://img149.imageshack.us/img149/9052/evem5.png QuickCalculator tab],
+[http://img183.imageshack.us/img183/709/evem4.png Preferences tab],
+[http://img190.imageshack.us/img190/8584/evem3.png Price set tab],
+[http://img808.imageshack.us/img808/1536/evem2.png Blueprints tab],
+[http://img829.imageshack.us/img829/5778/evem1.png Dashbaord tab]
+
+== IGB integration ==
