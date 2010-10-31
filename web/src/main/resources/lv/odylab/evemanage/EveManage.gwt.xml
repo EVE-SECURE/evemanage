@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to="evemanage">
+    <inherits name='com.google.gwt.user.User'/>
+    <inherits name='com.google.gwt.user.theme.standard.Standard'/>
+    <inherits name="com.google.gwt.inject.Inject"/>
+    <inherits name="com.google.gwt.resources.Resources"/>
+    <inherits name="com.google.gwt.i18n.I18N"/>
+
+    <inherits name="lv.odylab.evemanage.server.EveManage"/>
+
+    <script src="../ga.js"/>
+
+    <extend-property name="locale" values="en"/>
+    <extend-property name="locale" values="ru"/>
+    <set-property-fallback name="locale" value="en"/>
+
+    <entry-point class='lv.odylab.evemanage.client.EveManageEntryPoint'/>
+</module>
