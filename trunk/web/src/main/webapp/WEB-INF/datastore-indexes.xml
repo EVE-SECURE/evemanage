@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<datastore-indexes autoGenerate="true">
+
+    <datastore-index kind="Blueprint" ancestor="false" source="manual">
+        <property name="user" direction="asc"/>
+        <property name="itemTypeID" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Blueprint" ancestor="false" source="manual">
+        <property name="attachedCharacterInfo.corporationID" direction="asc"/>
+        <property name="sharingLevel" direction="asc"/>
+        <property name="attachedCharacterInfo.name" direction="asc"/>
+        <property name="itemTypeID" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Blueprint" ancestor="false" source="manual">
+        <property name="attachedCharacterInfo.allianceID" direction="asc"/>
+        <property name="sharingLevel" direction="asc"/>
+        <property name="attachedCharacterInfo.corporationName" direction="asc"/>
+        <property name="attachedCharacterInfo.name" direction="asc"/>
+        <property name="itemTypeID" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="PriceSet" ancestor="false" source="manual">
+        <property name="user" direction="asc"/>
+        <property name="name" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="PriceSet" ancestor="false" source="manual">
+        <property name="attachedCharacterInfo.corporationID" direction="asc"/>
+        <property name="sharingLevel" direction="asc"/>
+        <property name="attachedCharacterInfo.name" direction="asc"/>
+        <property name="name" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="PriceSet" ancestor="false" source="manual">
+        <property name="attachedCharacterInfo.allianceID" direction="asc"/>
+        <property name="sharingLevel" direction="asc"/>
+        <property name="attachedCharacterInfo.corporationName" direction="asc"/>
+        <property name="attachedCharacterInfo.name" direction="asc"/>
+        <property name="name" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Character" ancestor="false" source="manual">
+        <property name="user" direction="asc"/>
+        <property name="name" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="Character" ancestor="false" source="manual">
+        <property name="apiKey" direction="asc"/>
+        <property name="user" direction="asc"/>
+        <property name="name" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="ApiKey" ancestor="false" source="manual">
+        <property name="user" direction="asc"/>
+        <property name="apiKeyUserID" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="ApiKey" ancestor="false" source="manual">
+        <property name="user" direction="asc"/>
+        <property name="apiKey" direction="asc"/>
+    </datastore-index>
+
+</datastore-indexes>

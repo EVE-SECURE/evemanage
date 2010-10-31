@@ -1,0 +1,9 @@
+application: odylab-evemanage
+version: dev
+runtime: python
+api_version: 1
+
+handlers:
+- url: /remote_api
+  script: $PYTHONPATH/google/appengine/ext/remote_api/handler.py
+  login: admin

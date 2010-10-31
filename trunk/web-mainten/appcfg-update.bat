@@ -1,0 +1,1 @@
+appcfg update target/evemanage-web-mainten-1.0-SNAPSHOT

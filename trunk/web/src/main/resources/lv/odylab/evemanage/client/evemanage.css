@@ -1,0 +1,182 @@
+#login .loginPanel {
+}
+
+#login .userLoginLabel {
+    font-weight: bold;
+}
+
+#login .separatorLabel {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#login .bannerLabel {
+    font-weight: bold;
+    margin-left: 10px;
+    margin-bottom: 5px;
+    color: orangered;
+}
+
+#content .contentPanel {
+    width: 700px;
+    margin-left: 10px;
+    margin-bottom: 5px;
+}
+
+#footer .footerPanel {
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+#footer .footerText {
+    color: gray;
+    font-size: x-small;
+}
+
+#footer .footerAnchor {
+    color: gray;
+    font-weight: bold;
+}
+
+img {
+    vertical-align: middle;
+}
+
+.image16 {
+    width: 16px;
+    height: 16px;
+}
+
+.image32 {
+    width: 32px;
+    height: 32px;
+}
+
+.image64 {
+    width: 64px;
+    height: 64px;
+}
+
+.image50 {
+    width: 50px;
+    height: 50px;
+}
+
+.imageOpacity05 {
+    filter: alpha(opacity = 50);
+    -moz-opacity: 0.5;
+    -khtml-opacity: 0.5;
+    opacity: 0.5;
+}
+
+.cursorHand {
+    cursor: pointer;
+}
+
+.errorLabel {
+    color: red;
+    font-weight: bold;
+}
+
+.noteLabel {
+    color: gray;
+    font-style: italic;
+}
+
+.hintLabel {
+    color: green;
+    font-style: italic;
+}
+
+.inGameLinkLabel {
+    color: #ff3300;
+}
+
+.totalPriceLabel {
+    font-weight: bold;
+}
+
+.tabHeaderPanel {
+}
+
+.tabHeaderText {
+    font-size: large;
+    font-weight: bold;
+}
+
+.tabHeaderSpinner {
+    margin-left: 5px;
+}
+
+.blueprintSpinnerImage {
+    margin-left: 5px;
+}
+
+.tabHeadingText {
+    font-size: larger;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.sharingListBox {
+    width: 100px;
+}
+
+.blueprintNameInput {
+    width: 350px;
+}
+
+.mePeInput {
+    width: 35px;
+}
+
+.itemIdInput {
+    width: 85px;
+}
+
+.importTextArea {
+    font-family: monospace;
+    width: 500px;
+    height: 100px;
+}
+
+.priceSetNameList {
+    min-width: 175px;
+}
+
+.priceSetNameInput {
+    width: 175px;
+}
+
+.priceSetItemNameInput {
+    width: 150px;
+}
+
+.priceInput {
+    width: 125px;
+}
+
+.quantityInput {
+    width: 50px;
+}
+
+.inGameLinkLabel {
+    color: #ff3300;
+}
+
+.apiKeyUserIdInput, .apiKeyStringInput {
+    font-family: monospace;
+}
+
+.apiKeyUserIdInput {
+    width: 100px;
+}
+
+.apiKeyStringInput {
+    width: 300px;
+}
+
+.corpTitle {
+    font-weight: bold;
+    margin-right: 10px;
+}

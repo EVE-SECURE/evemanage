@@ -1,0 +1,1 @@
+mvn -Ddependency.locations.enabled=false clean site
