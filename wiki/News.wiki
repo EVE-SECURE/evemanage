@@ -3,7 +3,7 @@
 = News =
 
 == 2010.10.31 ==
-  * *EveManage code moved to code.google.con*
+  * *EveManage code moved to code.google.co,*
   * Added Russian translation
 
 == 2010.10.28 ==
