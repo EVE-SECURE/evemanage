@@ -2,8 +2,5 @@
   * [News News]
   * [GettingStarted Getting started]
   * [Screenshots Screenshots]
-  * [UsingCode Using code]
-  * [RequestingFeatures Report bug]
-  * [RequestingFeatures Request feature]
   * [ReleaseNotes Release notes]
   * [Help Help]
