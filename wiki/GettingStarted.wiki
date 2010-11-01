@@ -1,3 +1,4 @@
 #summary Getting started with EveManage
+#labels Featured
 
 = Getting started =
