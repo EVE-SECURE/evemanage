@@ -1,4 +1,11 @@
 #summary EveManage news
 
 = News =
-TBD
+
+== 2010.10.31 ==
+  * *EveManage code moved to code.google.con*
+  * Added Russian translation
+
+== 2010.10.28 ==
+  * *EveManage development version made public*
+  * Threads on [http://www.eveonline.com/ingameboard.asp?a=topic&threadID=1406328 EVE Forum] and [http://forum.eve-ru.com/index.php?showtopic=57609 EVE-RU Forum]
