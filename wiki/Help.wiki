@@ -6,4 +6,7 @@
 TBD.
 
 == Why some tabs are not public? ==
-TBD
+TBD.
+
+== How secure is EveManage? ==
+TBD.
