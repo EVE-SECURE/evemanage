@@ -1,4 +1,9 @@
 #summary EveManage help
 
 = Help =
+
+== Why EveManage is using OpenID? ==
 TBD.
+
+== Why some tabs are not public? ==
+TBD
