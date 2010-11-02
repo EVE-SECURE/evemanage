@@ -1,4 +1,23 @@
 #summary How to use EveManage code
 
 = Using code =
-TBD.
+
+You will need [http://subversion.apache.org Subversion]. Go to [http://code.google.com/p/evemanage/source/checkout source] and checkout copy of trunk (or release). That's it, you now have the code on your machine.
+
+== Building EveManage ==
+
+To build EveManage from sources you will need [http://maven.apache.org/ Maven]. Download and install it, make sure that `mvn` is in classpath. Launch `mvn-clean-install.bat` or just type `mvn clean install` in command line. It can take some time and traffic since Maven will download all needed dependencies.
+
+== Deploying own instance ==
+
+|| I discourage you from doing this -- you will need to maintain own instance by yourself and can get in trouble when upgrading ||
+
+Although, it is totally possible and it will work. Compile project, edit `appengine-web.xml` and change `odylab-evemanage` to `myApp` or something like that and launch `appcfg-update.bat`. This will do. There are some more aspects (changing Google Analytics token, using different EveDb instance, using own images, etc), but I'm not sure that it is really needed now. If interested, contact me and I will write it.
+
+== Creating project ==
+
+You can use Maven to create project for [http://www.eclipse.org/ Eclipse] and [http://www.jetbrains.com/idea/ IntelliJ IDEA] (community edition) by typing `mvn eclipse:eclipse` or `mvn idea:idea`. I recommend using IDEA and to do it in following way: `File > New Project > Import project from external model > Maven >` (see pic below)
+
+http://evemanage.googlecode.com/svn/wiki/UsingCodeIDEA.png
+
+This will give you fully-fledged project with all dependencies and code.
