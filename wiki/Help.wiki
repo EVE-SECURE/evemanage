@@ -9,7 +9,7 @@ First release of EveManage is set for the _end of November 2010_. See [Roadmap r
 
 It works as if you log into Google or LiveJournal and get redirected back to site you came from -- only your email or account name will be shared, not any other private details like password or address. Application can use your email or account name to personalize your experience.
 
-*Currently, EveManage supports only Google accounts*. But as technology advances, apparently it possible to log in with Yahoo!, Yandex, Google apps and some others.
+*Currently, EveManage supports only Google accounts*. But as technology advances, apparently it possible to log in with Yahoo!, Yandex, Google apps and some other OpenID providers.
 
 == How secure is EveManage? ==
 Thanks to OpenID, EveManage does not store your account password, only email, which is quite secure _per se_ since there is not much to lose.
