@@ -6,7 +6,7 @@ You will need [http://subversion.apache.org Subversion]. Go to [http://code.goog
 
 == Building EveManage ==
 
-To build EveManage from sources you will need [http://maven.apache.org/ Maven]. Download and install it, make sure that `mvn` is in classpath. Launch `mvn-clean-install.bat` or just type `mvn clean install` in command line. It can take some time and traffic since Maven will download all needed dependencies.
+To build EveManage from sources you will need [http://maven.apache.org/ Maven] and [http://www.oracle.com/technetwork/java/javase/downloads/index.html JDK 6]. Download and install it, make sure that `mvn` is in classpath. Launch `mvn-clean-install.bat` or just type `mvn clean install` in command line. It can take some time and traffic since Maven will download all needed dependencies.
 
 == Deploying own instance ==
 
