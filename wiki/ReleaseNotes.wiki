@@ -5,4 +5,4 @@
 == 2010.11.??, version 1.0 ==
  
  * *Initial release on [http://code.google.com/p/evemanage/ code.google.com]*
- * Tabs: *Blueprints*, *Price sets*, *Calculator*, *Quick calculator*, *Preferences*, *Dashboard*, *About*
+ * Tabs: *Blueprints*, *Price sets*, *Calculator*, *Quick Calculator*, *Preferences*, *Dashboard*, *About*
