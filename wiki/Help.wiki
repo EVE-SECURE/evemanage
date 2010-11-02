@@ -16,4 +16,4 @@ Thanks to OpenID, EveManage does not store your account _password_, _only email_
 
 Api-keys are _encrypted_ and decrypted with RSA key pair, so only application and owner of key pair can decode it. There is default key in code repository but actual production instance is using its own which is placed just before deployment. System does not historize or backup api-keys, so if it is deleted, then it completely gone.
 
-Although not really needed, _all traffic_ is going through HTTPS (Google has valid `*.appspot.com` certificate), extra security never hurts. If you are paranoid -- _all code is available_ and you can decide for yourself.
+Although not really needed, _all traffic_ is going through HTTPS (Google has valid `*.appspot.com` certificate), extra security never hurts. If you are paranoid -- _all code is available_ and you can decide for yourself. See [UsingCode using code].
