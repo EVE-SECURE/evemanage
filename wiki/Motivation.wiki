@@ -18,4 +18,4 @@ So, I decided to create yet-another-tool-for-EVE, that will suit all my needs an
 
 == ... and AppEngine ==
 
-Choosing AppEngine is gamble and hard pick. EveManage uses very unusual technology stack for EVE universe. Most of the apps out there are either .NET or LAMP (Linux, Apache, MySQL, PHP), yet EveManage features Java, GWT, non-relational database and is hosted in Google cloud.
+Choosing AppEngine is gamble and hard pick. EveManage uses very unusual technology stack for EVE universe. Most of the apps out there are either .NET or LAMP (Linux, Apache, MySQL, PHP), yet EveManage features Java, GWT, non-relational database, OpenID and is hosted in Google cloud.
