@@ -2,4 +2,20 @@
 
 = Motivation =
 
-TBD.
+== Installing third-party applications sucks ==
+
+I do not like installing application on my machine, especially if they use InstallShield. I keep this number at minimal. Each time I download and launch `*.exe` I do not feel comfortable. Painful update process. Most of the tools I saw were these small windows applications.
+
+== Lack of usability ==
+
+Many tools I used lacked basic usability, where bloated with ads and not intuitive for me. I must mention [http://www.eveonline.com/ingameboard.asp?a=topic&threadid=398536 MLCalc] which I liked and admired very much, it was one of that simple tools I enjoyed. But when you get to T2, MLCalc was not good enough.
+
+There are some web-sites, they provide useful information but again, not so usable and convenient as I need.
+
+== Here comes the web ==
+
+So, I decided to create yet-another-tool-for-EVE, that will suit all my needs and as well implement some crazy ideas that I have. New in-game browser is awesome and not using is a waste.
+
+== ... and AppEngine ==
+
+Choosing AppEngine is gamble and hard pick. EveManage uses very unusual technology stack for EVE universe. Most of the apps out there are either .NET or LAMP (Linux, Apache, MySQL, PHP), yet EveManage features Java, GWT, non-relational database and is hosted in Google cloud.
