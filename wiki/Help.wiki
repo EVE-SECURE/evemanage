@@ -5,15 +5,15 @@
 First release of EveManage is set for the _end of November 2010_. See [Roadmap roadmap] for upcoming features and dates. Stay tuned!
 
 == Why EveManage is using OpenID? ==
-[http://openid.net/ OpenID] relieves developers from creating own authentication system, storing and hashing passwords, implementing "Forgot password?", CAPTHCA, email notifications and etc by delegating all this to OpenID [http://en.wikipedia.org/wiki/List_of_OpenID_providers providers]. If you have account on Google, LiveJournal, Yahoo!, Yandex and many others you can reuse it in other places where OpenID is used.
+[http://openid.net/ OpenID] relieves developers from creating own authentication system, storing and hashing passwords, implementing "Forgot password?", CAPTHCA, email notifications and etc by delegating all this to OpenID [http://en.wikipedia.org/wiki/List_of_OpenID_providers providers]. If you have account on Google, [http://www.livejournal.com/identity/login.bml?type=openid LiveJournal], [http://openid.yahoo.com/ Yahoo!], [http://openid.yandex.ru/ Yandex] and many others you can reuse it in other places where OpenID is used.
 
 It works as if you log into Google or LiveJournal and get redirected back to site you came from -- only your email or account name will be shared, not any other private details like password or address. Application can use your email or account name to personalize your experience.
 
 *Currently, EveManage supports only Google accounts*. But as technology advances, apparently it possible to log in with Yahoo!, Yandex, Google apps and some other accounts.
 
 == How secure is EveManage? ==
-Thanks to OpenID, EveManage does not store your account password, only email, which is quite secure _per se_ since there is not much to lose.
+Thanks to OpenID, EveManage does not store your account _password_, _only email_, which is quite secure _per se_ since there is not much to lose.
 
-Api-keys are encrypted/decrypted with RSA key pair, so only application and owner of key pair can decode it. There is default key in code repository but actual production instance is using its own which is placed just before deployment.
+Api-keys are _encrypted_ and decrypted with RSA key pair, so only application and owner of key pair can decode it. There is default key in code repository but actual production instance is using its own which is placed just before deployment.
 
-Although not really needed, all traffic is going through HTTPS (Google has valid `*.appspot.com` certificate), extra security never hurts. If you are extra paranoid -- all code is available and you can decide for yourself.
+Although not really needed, _all traffic_ is going through HTTPS (Google has valid `*.appspot.com` certificate), extra security never hurts. If you are extra paranoid -- _all code is available_ and you can decide for yourself.
