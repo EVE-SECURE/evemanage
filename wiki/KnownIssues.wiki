@@ -1,4 +1,0 @@
-#summary List on known issues
-
-= Known issues =
-TBD
