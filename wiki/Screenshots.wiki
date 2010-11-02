@@ -10,7 +10,7 @@ Tabs:
 [http://img808.imageshack.us/img808/1536/evem2.png Blueprints tab],
 [http://img829.imageshack.us/img829/5778/evem1.png Dashbaord tab]
 
-In-game browser integration:
+Other:
 [http://img16.imageshack.us/img16/9894/screenshot6kx.png IGB integration1], 
 [http://img220.imageshack.us/img220/9235/screenshot7h.png IGB integration2],
 [http://img28.imageshack.us/img28/4364/screenshot8e.png IGB integration3]
