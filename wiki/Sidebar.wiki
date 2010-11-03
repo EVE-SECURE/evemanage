@@ -1,7 +1,7 @@
   * [Motivation Motivation]
   * [News News]
   * [GettingStarted Getting started]
-  * [Development Development]
+  * Development
     ** [Roadmap Roadmap]
     ** [ReportingBugs Reporting bugs]
     ** [RequestingFeatures Requesting features]
