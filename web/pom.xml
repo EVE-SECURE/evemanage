@@ -34,7 +34,7 @@
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
             <version>${gwt.version}</version>
-            <scope>runtime</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
@@ -94,8 +94,9 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>1.2</version>
+                <version>${gwt.version}</version>
                 <configuration>
+                    <soyc>true</soyc>
                     <runTarget>evemanage.html</runTarget>
                     <hostedWebapp>${project.build.directory}/gwt-webapp/evemanage</hostedWebapp>
                     <webappDirectory>${project.build.directory}/gwt-webapp/evemanage</webappDirectory>

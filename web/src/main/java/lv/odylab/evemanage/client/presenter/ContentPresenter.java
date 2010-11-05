@@ -5,19 +5,19 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import lv.odylab.evemanage.client.EveManageConstants;
-import lv.odylab.evemanage.client.event.EventBus;
 import lv.odylab.evemanage.client.event.login.LoginEvent;
 import lv.odylab.evemanage.client.event.login.LoginEventHandler;
 import lv.odylab.evemanage.client.presenter.tab.AboutTabPresenter;
-import lv.odylab.evemanage.client.presenter.tab.BlueprintsTabPresenter;
+import lv.odylab.evemanage.client.presenter.tab.BlueprintsTabPresenterAsync;
 import lv.odylab.evemanage.client.presenter.tab.DashboardTabPresenter;
-import lv.odylab.evemanage.client.presenter.tab.PreferencesTabPresenter;
-import lv.odylab.evemanage.client.presenter.tab.PriceSetTabPresenter;
-import lv.odylab.evemanage.client.presenter.tab.QuickCalculatorTabPresenter;
+import lv.odylab.evemanage.client.presenter.tab.PreferencesTabPresenterAsync;
+import lv.odylab.evemanage.client.presenter.tab.PriceSetTabPresenterAsync;
+import lv.odylab.evemanage.client.presenter.tab.QuickCalculatorTabPresenterAsync;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
 
@@ -42,8 +42,6 @@ public class ContentPresenter implements Presenter, ValueChangeHandler<String>, 
 
         HasWidgets getQuickCalculatorTabContainer();
 
-        HasWidgets getUsersTabContainer();
-
         HasWidgets getPreferencesTabContainer();
 
         HasWidgets getAboutTabContainer();
@@ -55,10 +53,10 @@ public class ContentPresenter implements Presenter, ValueChangeHandler<String>, 
     private Display display;
 
     private DashboardTabPresenter dashboardTabPresenter;
-    private BlueprintsTabPresenter blueprintsTabPresenter;
-    private PriceSetTabPresenter priceSetTabPresenter;
-    private QuickCalculatorTabPresenter quickCalculatorTabPresenter;
-    private PreferencesTabPresenter preferencesTabPresenter;
+    private BlueprintsTabPresenterAsync blueprintsTabPresenter;
+    private PriceSetTabPresenterAsync priceSetTabPresenter;
+    private QuickCalculatorTabPresenterAsync quickCalculatorTabPresenter;
+    private PreferencesTabPresenterAsync preferencesTabPresenter;
     private AboutTabPresenter aboutTabPresenter;
 
     private List<String> currentTabNames;
@@ -70,10 +68,10 @@ public class ContentPresenter implements Presenter, ValueChangeHandler<String>, 
                             EveManageConstants constants,
                             Display display,
                             DashboardTabPresenter dashboardTabPresenter,
-                            BlueprintsTabPresenter blueprintsTabPresenter,
-                            PriceSetTabPresenter priceSetTabPresenter,
-                            QuickCalculatorTabPresenter quickCalculatorTabPresenter,
-                            PreferencesTabPresenter preferencesTabPresenter,
+                            BlueprintsTabPresenterAsync blueprintsTabPresenter,
+                            PriceSetTabPresenterAsync priceSetTabPresenter,
+                            QuickCalculatorTabPresenterAsync quickCalculatorTabPresenter,
+                            PreferencesTabPresenterAsync preferencesTabPresenter,
                             AboutTabPresenter aboutTabPresenter) {
         this.trackingManager = trackingManager;
         this.constants = constants;
@@ -149,7 +147,7 @@ public class ContentPresenter implements Presenter, ValueChangeHandler<String>, 
             tabNames.add(constants.blueprintsToken());
             tabNames.add(constants.priceSetToken());
             if (loginDto.isAdmin()) {
-                // nothing
+                // nothing for now
             }
             tabNames.add(constants.preferencesToken());
         }

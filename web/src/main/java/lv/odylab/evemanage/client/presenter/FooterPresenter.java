@@ -1,10 +1,10 @@
 package lv.odylab.evemanage.client.presenter;
 
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import lv.odylab.evemanage.client.EveManageConstants;
 import lv.odylab.evemanage.client.EveManageMessages;
-import lv.odylab.evemanage.client.event.EventBus;
 import lv.odylab.evemanage.client.event.FooterActionCallback;
 import lv.odylab.evemanage.client.event.footer.GotVersionsEvent;
 import lv.odylab.evemanage.client.event.footer.GotVersionsEventHandler;
