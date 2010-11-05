@@ -1,6 +1,7 @@
 package lv.odylab.evemanage.client.presenter;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HasText;
@@ -8,9 +9,13 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import lv.odylab.evemanage.client.EveManageConstants;
+import lv.odylab.evemanage.client.EveManageErrorConstants;
 import lv.odylab.evemanage.client.EveManageMessages;
-import lv.odylab.evemanage.client.event.EventBus;
 import lv.odylab.evemanage.client.event.LoginActionCallback;
+import lv.odylab.evemanage.client.event.error.AsyncLoadingErrorEvent;
+import lv.odylab.evemanage.client.event.error.AsyncLoadingErrorEventHandler;
+import lv.odylab.evemanage.client.event.error.LoginErrorEvent;
+import lv.odylab.evemanage.client.event.error.LoginErrorEventHandler;
 import lv.odylab.evemanage.client.event.login.LoginEvent;
 import lv.odylab.evemanage.client.event.login.LoginEventHandler;
 import lv.odylab.evemanage.client.rpc.EveManageRemoteServiceAsync;
@@ -19,7 +24,7 @@ import lv.odylab.evemanage.client.rpc.action.login.LoginActionResponse;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
 
-public class LoginPresenter implements Presenter, LoginEventHandler {
+public class LoginPresenter implements Presenter, LoginErrorEventHandler, AsyncLoadingErrorEventHandler, LoginEventHandler {
 
     public interface Display extends AttachableDisplay {
 
@@ -46,18 +51,36 @@ public class LoginPresenter implements Presenter, LoginEventHandler {
     private EveManageRemoteServiceAsync rpcService;
     private EveManageConstants constants;
     private EveManageMessages messages;
+    private EveManageErrorConstants errorConstants;
     private Display display;
 
     @Inject
-    public LoginPresenter(EventBus eventBus, TrackingManager trackingManager, EveManageRemoteServiceAsync rpcService, EveManageConstants constants, EveManageMessages messages, Display display) {
+    public LoginPresenter(EventBus eventBus, TrackingManager trackingManager, EveManageRemoteServiceAsync rpcService, EveManageConstants constants, EveManageMessages messages, EveManageErrorConstants errorConstants, Display display) {
         this.eventBus = eventBus;
         this.trackingManager = trackingManager;
         this.rpcService = rpcService;
         this.constants = constants;
+        this.errorConstants = errorConstants;
         this.messages = messages;
         this.display = display;
 
         eventBus.addHandler(LoginEvent.TYPE, this);
+        eventBus.addHandler(LoginErrorEvent.TYPE, this);
+        eventBus.addHandler(AsyncLoadingErrorEvent.TYPE, this);
+    }
+
+    @Override
+    public void onLoginError(LoginErrorEvent event) {
+        display.getBannerLabel().setText(errorConstants.loginFailed());
+        display.displayBanner();
+        display.getSpinnerImage().setVisible(false);
+    }
+
+    @Override
+    public void onAsyncLoadingError(AsyncLoadingErrorEvent event) {
+        display.getBannerLabel().setText(errorConstants.failedLoading());
+        display.displayBanner();
+        display.getSpinnerImage().setVisible(false);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package lv.odylab.evemanage.client.event;
 
+import com.google.gwt.event.shared.EventBus;
 import lv.odylab.evemanage.client.EveManageConstants;
 import lv.odylab.evemanage.client.event.error.QuickCalculatorTabErrorEvent;
 import lv.odylab.evemanage.client.tracking.TrackingManager;

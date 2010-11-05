@@ -23,7 +23,6 @@ public class ContentView implements ContentPresenter.Display {
     private Panel blueprintsTab;
     private Panel priceSetTab;
     private Panel quickCalculatorTab;
-    private Panel usersTab;
     private Panel preferencesTab;
     private Panel aboutTab;
     private Map<String, Panel> tabMap;
@@ -38,7 +37,6 @@ public class ContentView implements ContentPresenter.Display {
         blueprintsTab = new VerticalPanel();
         priceSetTab = new VerticalPanel();
         quickCalculatorTab = new VerticalPanel();
-        usersTab = new VerticalPanel();
         preferencesTab = new VerticalPanel();
         aboutTab = new VerticalPanel();
 
@@ -112,11 +110,6 @@ public class ContentView implements ContentPresenter.Display {
     @Override
     public HasWidgets getQuickCalculatorTabContainer() {
         return quickCalculatorTab;
-    }
-
-    @Override
-    public HasWidgets getUsersTabContainer() {
-        return usersTab;
     }
 
     @Override

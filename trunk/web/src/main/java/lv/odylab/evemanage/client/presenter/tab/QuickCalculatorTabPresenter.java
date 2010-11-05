@@ -2,6 +2,7 @@ package lv.odylab.evemanage.client.presenter.tab;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasText;
@@ -12,7 +13,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import lv.odylab.evemanage.client.EveManageConstants;
 import lv.odylab.evemanage.client.EveManageErrorConstants;
-import lv.odylab.evemanage.client.event.EventBus;
 import lv.odylab.evemanage.client.event.QuickCalculatorTabActionCallback;
 import lv.odylab.evemanage.client.event.error.QuickCalculatorTabErrorEvent;
 import lv.odylab.evemanage.client.event.error.QuickCalculatorTabErrorEventHandler;

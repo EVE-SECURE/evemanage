@@ -2,6 +2,7 @@ package lv.odylab.evemanage.client.presenter.tab;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
@@ -16,7 +17,6 @@ import com.google.inject.Inject;
 import lv.odylab.evemanage.client.EveManageConstants;
 import lv.odylab.evemanage.client.EveManageErrorConstants;
 import lv.odylab.evemanage.client.event.BlueprintsTabActionCallback;
-import lv.odylab.evemanage.client.event.EventBus;
 import lv.odylab.evemanage.client.event.blueprints.BlueprintAddedEvent;
 import lv.odylab.evemanage.client.event.blueprints.BlueprintAddedEventHandler;
 import lv.odylab.evemanage.client.event.blueprints.BlueprintDeletedEvent;

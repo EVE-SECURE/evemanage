@@ -1,5 +1,7 @@
 package lv.odylab.evemanage.client.gin;
 
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import lv.odylab.evemanage.client.CcpJsMessages;
@@ -8,8 +10,6 @@ import lv.odylab.evemanage.client.EveManageErrorConstants;
 import lv.odylab.evemanage.client.EveManageMessages;
 import lv.odylab.evemanage.client.EveManageResources;
 import lv.odylab.evemanage.client.EveManageUrlMessages;
-import lv.odylab.evemanage.client.event.EventBus;
-import lv.odylab.evemanage.client.event.EventBusImpl;
 import lv.odylab.evemanage.client.oracle.BlueprintTypeSuggestOracle;
 import lv.odylab.evemanage.client.oracle.TypeSuggestOracle;
 import lv.odylab.evemanage.client.presenter.ContentPresenter;
@@ -43,7 +43,7 @@ public class EveManageModule extends AbstractGinModule {
 
     @Override
     protected void configure() {
-        bind(EventBus.class).to(EventBusImpl.class).in(Singleton.class);
+        bind(EventBus.class).to(SimpleEventBus.class).in(Singleton.class);
         bind(TrackingManager.class).to(GoogleAnalyticsTrackingManagerImpl.class).in(Singleton.class);
         bind(EveManageRemoteServiceAsync.class).in(Singleton.class);
         bind(EveManageConstants.class).in(Singleton.class);

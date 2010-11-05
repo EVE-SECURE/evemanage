@@ -7,6 +7,12 @@ public interface EveManageErrorConstants extends ConstantsWithLookup {
     @DefaultStringValue("Error on server")
     String errorOnServer();
 
+    @DefaultStringValue("Something wrong with server or your connection, please reload")
+    String loginFailed();
+
+    @DefaultStringValue("Failed to load tab, something wrong with server or your connection, please reload")
+    String failedLoading();
+
     @DefaultStringValue("Name cannot be empty")
     String nameCannotBeEmpty();
 

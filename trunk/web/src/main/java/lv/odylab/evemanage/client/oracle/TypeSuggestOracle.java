@@ -1,5 +1,6 @@
 package lv.odylab.evemanage.client.oracle;
 
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.SuggestOracle;
@@ -7,7 +8,6 @@ import com.google.inject.Inject;
 import lv.odylab.evemanage.client.EveManageConstants;
 import lv.odylab.evemanage.client.EveManageMessages;
 import lv.odylab.evemanage.client.EveManageResources;
-import lv.odylab.evemanage.client.event.EventBus;
 import lv.odylab.evemanage.client.event.PriceSetTabActionCallback;
 import lv.odylab.evemanage.client.rpc.EveManageRemoteServiceAsync;
 import lv.odylab.evemanage.client.rpc.action.suggest.SuggestTypeAction;

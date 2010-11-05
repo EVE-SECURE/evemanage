@@ -24,7 +24,7 @@
         <jetty.servlet.tester.version>6.1.9</jetty.servlet.tester.version>
         <slf4j.version>1.5.8</slf4j.version>
         <gin.version>1.0</gin.version>
-        <gwt.version>2.0.4</gwt.version>
+        <gwt.version>2.1.0</gwt.version>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
