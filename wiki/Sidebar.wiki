@@ -1,3 +1,4 @@
+  * [Help Help]
   * [Motivation Motivation]
   * [News News]
   * [GettingStarted Getting started]
@@ -6,5 +7,4 @@
     ** [ReportingBugs Reporting bugs]
     ** [RequestingFeatures Requesting features]
     ** [ReleaseNotes Release notes]
-  * [Help Help]
   * [Screenshots Screenshots]
