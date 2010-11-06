@@ -1,4 +1,14 @@
 #summary How to report bugs
 
 = Reporting bugs =
-TBD
+
+== Using forums ==
+You can post your finding on forums: [http://www.eveonline.com/ingameboard.asp?a=topic&threadID=1406328 EVE Forum Thread] or [http://forum.eve-ru.com/index.php?showtopic=57609 EVE-RU Forum Thread]. But this is _not recommended way_, but totally acceptable.
+
+== Using issue tracker ==
+
+This is the _recommended way_. I will basically do the same when you report something on forums.
+
+Go to `Issues` tab and click on `New issue`
+
+http://evemanage.googlecode.com/svn/wiki/ReportingBugs.png
