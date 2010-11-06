@@ -3,7 +3,7 @@
 = Reporting bugs =
 
 == Using forums ==
-You can post your finding on forums: [http://www.eveonline.com/ingameboard.asp?a=topic&threadID=1406328 EVE Forum Thread] or [http://forum.eve-ru.com/index.php?showtopic=57609 EVE-RU Forum Thread]. But this is _not recommended way_, but totally acceptable.
+You can post your finding on forums: [http://www.eveonline.com/ingameboard.asp?a=topic&threadID=1406328 EVE forum thread] or [http://forum.eve-ru.com/index.php?showtopic=57609 EVE-RU forum thread]. But this is _not recommended way_, but totally acceptable.
 
 == Using issue tracker ==
 
