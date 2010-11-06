@@ -1,8 +1,40 @@
 #summary EveManage help
 
+<wiki:toc max_depth="2" />
+
 = Help =
 
 First release of EveManage is set for the _end of November 2010_. See [Roadmap roadmap] for upcoming features and dates. Stay tuned!
+
+== Importing blueprints ==
+I've seen a lot of people getting various errors and entering strange things in API import window on Blueprints tab.  Basically, you have to use [http://api.eveonline.com/char/IndustryJobs.xml.aspx?userID=USERID&characterID=CHARID&apiKey=FULLAPIKEY link], your full API key, userID and characterID to get something like this:
+{{{
+<?xml version='1.0' encoding='UTF-8'?>
+<eveapi version="2">
+  <currentTime>2010-10-05 20:58:32</currentTime>
+  <result>
+    <rowset name="jobs" key="jobID" columns="...">
+      ...
+      <row jobID="81836321" assemblyLineID="95011" containerID="60012268"
+      installedItemID="1461877558" installedItemLocationID="60012268"
+      installedItemQuantity="1" installedItemProductivityLevel="50"
+      installedItemMaterialLevel="50" installedItemLicensedProductionRunsRemaining="-1"
+      outputLocationID="60012268" installerID="499939401" runs="10" 
+      licensedProductionRuns="0" installedInSolarSystemID="30005200"
+      containerLocationID="30005200" materialMultiplier="1" charMaterialMultiplier="1"
+      timeMultiplier="1" charTimeMultiplier="0.8" installedItemTypeID="1072"
+      outputTypeID="439" containerTypeID="1529" installedItemCopy="0" completed="1"
+      completedSuccessfully="0" installedItemFlag="4" outputFlag="4" activityID="1"
+      completedStatus="1" installTime="2010-07-30 16:02:00" 
+      beginProductionTime="2010-07-30 16:02:00" endProductionTime="2010-07-30 17:06:00" 
+      pauseProductionTime="0001-01-01 00:00:00" />
+      ...
+    </rowset>
+  </result>
+  <cachedUntil>2010-10-05 21:13:32</cachedUntil>
+</eveapi>
+}}}
+and putting this large text into the text window. Application will filter `installedItemLicensedProductionRunsRemaining="-1"` (BPO), `completed="1"`, activityID="1" (manufacturing) and make sure there is no duplicates on `installedItemID="1461877558"`.
 
 == Why EveManage is using OpenID? ==
 [http://openid.net/ OpenID] relieves developers from creating own authentication system, storing and hashing passwords, implementing "Forgot password?", CAPTHCA, email notifications and etc _by delegating_ all this to OpenID [http://en.wikipedia.org/wiki/List_of_OpenID_providers providers]. If you have account on Google, [http://www.livejournal.com/identity/login.bml?type=openid LiveJournal], [http://openid.yahoo.com/ Yahoo!], [http://openid.yandex.ru/ Yandex] and many others you can _reuse it in other places_ where OpenID is used.
