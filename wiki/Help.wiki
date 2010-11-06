@@ -36,7 +36,7 @@ I've seen a lot of people getting various errors and entering strange things in 
 }}}
 and putting this large text into the text window. Application will filter `installedItemLicensedProductionRunsRemaining="-1"` (BPO), `completed="1"`, `activityID="1"` (manufacturing) and make sure there is no duplicates on `installedItemID="1461877558"`. See [http://img821.imageshack.us/img821/6457/helpimportblueprint.png screenshot].
 
-== Why EveManage is using OpenID? ==
+== Why OpenID? ==
 [http://openid.net/ OpenID] relieves developers from creating own authentication system, storing and hashing passwords, implementing "Forgot password?", CAPTHCA, email notifications and etc _by delegating_ all this to OpenID [http://en.wikipedia.org/wiki/List_of_OpenID_providers providers]. If you have account on Google, [http://www.livejournal.com/identity/login.bml?type=openid LiveJournal], [http://openid.yahoo.com/ Yahoo!], [http://openid.yandex.ru/ Yandex] and many others you can _reuse it in other places_ where OpenID is used.
 
 It works as if you log into Google or LiveJournal and get redirected back to site you came from -- *only your email or account name will be shared*, not any other private details like password or address. Application can use your email or account name to _personalize your experience_.
