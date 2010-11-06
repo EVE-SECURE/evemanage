@@ -6,7 +6,14 @@
 
 First release of EveManage is set for the _end of November 2010_. See [Roadmap roadmap] for upcoming features and dates. Stay tuned!
 
+== Why some requests take longer that others? ==
+
+Server request time can vary from 0.1-10 seconds. Usually it is relatively quick (0.1-0.3 seconds), but is takes longer in following cases:
+  * there was a period of inactivity  for about 3-5 minutes and application instance was stopped. This means, that application was used only by you and you paused for some time(did actions that do not interact with server, or just minimized page and returned later) and during this time no other user interacted with server.
+  * same as above but only for EveDb. If you are requesting suggestions and EveDb application instance is down and no match is is cache, it will take some time (like 3-5 seconds) for it to start and return information. Caching is heavily used so most of matches usually comes from cache.
+
 == Importing blueprints ==
+
 I've seen a lot of people getting various errors and entering strange things in API import window on Blueprints tab.  Basically, you have to use [http://api.eveonline.com/char/IndustryJobs.xml.aspx?userID=USERID&characterID=CHARID&apiKey=FULLAPIKEY link], your full API key, userID and characterID to get something like this:
 {{{
 <?xml version='1.0' encoding='UTF-8'?>
@@ -37,13 +44,15 @@ I've seen a lot of people getting various errors and entering strange things in 
 and putting this large text into the text window. Application will filter `installedItemLicensedProductionRunsRemaining="-1"` (BPO), `completed="1"`, `activityID="1"` (manufacturing) and make sure there is no duplicates on `installedItemID="1461877558"`. See [http://img821.imageshack.us/img821/6457/helpimportblueprint.png screenshot].
 
 == Why OpenID? ==
+
 [http://openid.net/ OpenID] relieves developers from creating own authentication system, storing and hashing passwords, implementing "Forgot password?", CAPTHCA, email notifications and etc _by delegating_ all this to OpenID [http://en.wikipedia.org/wiki/List_of_OpenID_providers providers]. If you have account on Google, [http://www.livejournal.com/identity/login.bml?type=openid LiveJournal], [http://openid.yahoo.com/ Yahoo!], [http://openid.yandex.ru/ Yandex] and many others you can _reuse it in other places_ where OpenID is used.
 
 It works as if you log into Google or LiveJournal and get redirected back to site you came from -- *only your email or account name will be shared*, not any other private details like password or address. Application can use your email or account name to _personalize your experience_.
 
 *Currently, EveManage supports only Google accounts*. But as technology advances, apparently it possible to log in with Yahoo!, Yandex, Google apps and some other accounts.
 
-== How secure is EveManage? ==
+== What about security ==
+
 Thanks to OpenID, EveManage does not store your account _password_, _only email_, which is quite secure _per se_ since there is not much to lose.
 
 Api-keys are _encrypted_ and decrypted with RSA key pair, so only application and owner of key pair can decode it. There is default key in code repository but actual production instance is using its own which is placed just before deployment. System does not historize or backup api-keys, so if it is deleted, then it completely gone.
