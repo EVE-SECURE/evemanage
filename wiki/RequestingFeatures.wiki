@@ -1,4 +1,14 @@
 #summary How to request features
 
 = Requesting features =
-TBD
+
+== Using forums ==
+You can post request features on forums: [http://www.eveonline.com/ingameboard.asp?a=topic&threadID=1406328 EVE forum thread] or [http://forum.eve-ru.com/index.php?showtopic=57609 EVE-RU forum thread]. This is _not recommended way_, but totally acceptable.
+
+== Using issue tracker ==
+
+This is the _recommended way_. I will basically do the same when you request something on forums.
+
+Go to `Issues` tab and click on `New issue`
+
+http://evemanage.googlecode.com/svn/wiki/RequestingFeatures.png
