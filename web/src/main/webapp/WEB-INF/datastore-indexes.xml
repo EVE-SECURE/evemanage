@@ -21,6 +21,12 @@
         <property name="itemTypeID" direction="asc"/>
     </datastore-index>
 
+    <datastore-index kind="Blueprint" ancestor="false" source="manual">
+        <property name="attachedCharacterInfo.characterID" direction="asc"/>
+        <property name="user" direction="asc"/>
+        <property name="itemTypeID" direction="asc"/>
+    </datastore-index>
+
     <datastore-index kind="PriceSet" ancestor="false" source="manual">
         <property name="user" direction="asc"/>
         <property name="name" direction="asc"/>
@@ -38,6 +44,12 @@
         <property name="sharingLevel" direction="asc"/>
         <property name="attachedCharacterInfo.corporationName" direction="asc"/>
         <property name="attachedCharacterInfo.name" direction="asc"/>
+        <property name="name" direction="asc"/>
+    </datastore-index>
+
+    <datastore-index kind="PriceSet" ancestor="false" source="manual">
+        <property name="attachedCharacterInfo.characterID" direction="asc"/>
+        <property name="user" direction="asc"/>
         <property name="name" direction="asc"/>
     </datastore-index>
 

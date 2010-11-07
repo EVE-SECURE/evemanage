@@ -707,7 +707,7 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
         for (HandlerRegistration handlerRegistration : dynamicHandlerRegistrationsForAlliance) {
             handlerRegistration.removeHandler();
         }
-        dynamicHandlerRegistrations.clear();
+        dynamicHandlerRegistrationsForAlliance.clear();
 
         List<HandlerRegistration> displayHandlerRegistrations = display.getHandlerRegistrationsForAlliance();
         for (HandlerRegistration handlerRegistration : displayHandlerRegistrations) {
