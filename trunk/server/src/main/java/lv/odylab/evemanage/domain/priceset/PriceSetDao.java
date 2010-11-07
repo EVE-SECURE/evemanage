@@ -22,6 +22,10 @@ public class PriceSetDao {
         this.objectifyFactory = objectifyFactory;
     }
 
+    public PriceSet get(Key<PriceSet> priceSetKey) {
+        return objectifyFactory.begin().get(priceSetKey);
+    }
+
     public PriceSet get(Long priceSetID, Key<User> userKey) {
         return objectifyFactory.begin().query(PriceSet.class)
                 .filter("user", userKey)
@@ -39,6 +43,10 @@ public class PriceSetDao {
                 .filter("user", userKey)
                 .filter("attachedCharacterInfo.characterID", attachedCharacterID)
                 .order("name").list();
+    }
+
+    public Iterable<Key<PriceSet>> getAllKeys() {
+        return objectifyFactory.begin().query(PriceSet.class).fetchKeys();
     }
 
     public List<PriceSet> getAllForCorporationID(Long corporationID) {

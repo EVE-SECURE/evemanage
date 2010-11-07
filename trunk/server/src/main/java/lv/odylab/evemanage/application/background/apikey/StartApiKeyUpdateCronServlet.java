@@ -23,7 +23,7 @@ public class StartApiKeyUpdateCronServlet extends HttpServlet implements EveMana
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        logger.info("Received request to start upi key update (from cron or administrator)");
-        updateApiKeyTaskLauncher.launchForAllUsers();
+        logger.info("Received request to start api key update (from cron or administrator)");
+        updateApiKeyTaskLauncher.launchForAll();
     }
 }

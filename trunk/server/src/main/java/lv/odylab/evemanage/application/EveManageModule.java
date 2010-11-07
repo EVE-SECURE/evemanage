@@ -21,6 +21,11 @@ import lv.odylab.evemanage.application.background.blueprint.AddBlueprintTaskLaun
 import lv.odylab.evemanage.application.background.blueprint.AddBlueprintTaskServlet;
 import lv.odylab.evemanage.application.background.blueprint.UpdateBlueprintTaskLauncher;
 import lv.odylab.evemanage.application.background.blueprint.UpdateBlueprintTaskServlet;
+import lv.odylab.evemanage.application.background.consistency.CheckBlueprintTaskLauncher;
+import lv.odylab.evemanage.application.background.consistency.CheckBlueprintTaskServlet;
+import lv.odylab.evemanage.application.background.consistency.CheckPriceSetTaskLauncher;
+import lv.odylab.evemanage.application.background.consistency.CheckPriceSetTaskServlet;
+import lv.odylab.evemanage.application.background.consistency.StartConsistencyCheckServlet;
 import lv.odylab.evemanage.application.background.priceset.UpdatePriceSetTaskLauncher;
 import lv.odylab.evemanage.application.background.priceset.UpdatePriceSetTaskServlet;
 import lv.odylab.evemanage.client.rpc.EveManageRemoteServiceImpl;
@@ -175,6 +180,11 @@ public class EveManageModule extends AbstractModule {
         bind(UpdateBlueprintTaskServlet.class).in(Singleton.class);
         bind(UpdatePriceSetTaskLauncher.class).in(Singleton.class);
         bind(UpdatePriceSetTaskServlet.class).in(Singleton.class);
+        bind(StartConsistencyCheckServlet.class).in(Singleton.class);
+        bind(CheckBlueprintTaskLauncher.class).in(Singleton.class);
+        bind(CheckBlueprintTaskServlet.class).in(Singleton.class);
+        bind(CheckPriceSetTaskLauncher.class).in(Singleton.class);
+        bind(CheckPriceSetTaskServlet.class).in(Singleton.class);
         bind(ClearCacheServlet.class).in(Singleton.class);
 
         bind(UserManagementService.class).to(UserManagementServiceImpl.class).in(Singleton.class);

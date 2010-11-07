@@ -1,4 +1,4 @@
-package lv.odylab.evemanage.application.background.apikey;
+package lv.odylab.evemanage.application.background.consistency;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,23 +14,26 @@ import java.io.IOException;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StartApiKeyUpdateCronServletTest {
+public class StartConsistencyCheckServletTest {
     @Mock
-    private UpdateApiKeyTaskLauncher updateApiKeyTaskLauncher;
+    private CheckBlueprintTaskLauncher checkBlueprintTaskLauncher;
+    @Mock
+    private CheckPriceSetTaskLauncher checkPriceSetTaskLauncher;
     @Mock
     private HttpServletRequest httpServletRequest;
     @Mock
     private HttpServletResponse httpServletResponse;
-    private StartApiKeyUpdateCronServlet startApiKeyUpdateCronServlet;
+    private StartConsistencyCheckServlet startConsistencyCheckServlet;
 
     @Before
     public void setUp() {
-        startApiKeyUpdateCronServlet = new StartApiKeyUpdateCronServlet(updateApiKeyTaskLauncher);
+        startConsistencyCheckServlet = new StartConsistencyCheckServlet(checkBlueprintTaskLauncher, checkPriceSetTaskLauncher);
     }
 
     @Test
     public void testDoGet() throws IOException, ServletException {
-        startApiKeyUpdateCronServlet.doGet(httpServletRequest, httpServletResponse);
-        verify(updateApiKeyTaskLauncher).launchForAll();
+        startConsistencyCheckServlet.doGet(httpServletRequest, httpServletResponse);
+        verify(checkBlueprintTaskLauncher).launchForAll();
+        verify(checkPriceSetTaskLauncher).launchForAll();
     }
 }

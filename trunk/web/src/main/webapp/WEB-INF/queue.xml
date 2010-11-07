@@ -20,4 +20,8 @@
         <name>priceset-updating</name>
         <rate>5/s</rate>
     </queue>
+    <queue>
+        <name>consistency-checking</name>
+        <rate>5/s</rate>
+    </queue>
 </queue-entries>
