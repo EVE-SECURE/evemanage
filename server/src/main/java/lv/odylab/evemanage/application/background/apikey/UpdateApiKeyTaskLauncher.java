@@ -28,7 +28,7 @@ public class UpdateApiKeyTaskLauncher implements EveManageServletModuleMapping {
         this.queueName = queueName;
     }
 
-    public void launchForAllUsers() {
+    public void launchForAll() {
         logger.info("Scheduling api key update tasks");
         Queue queue = appEngineServices.getQueue(queueName);
         Iterable<Key<User>> userKeys = userDao.getAllKeys();

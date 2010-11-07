@@ -21,6 +21,10 @@ public class BlueprintDao {
         this.objectifyFactory = objectifyFactory;
     }
 
+    public Blueprint get(Key<Blueprint> blueprintKey) {
+        return objectifyFactory.begin().get(blueprintKey);
+    }
+
     public Blueprint get(Long blueprintID, Key<User> userKey) {
         return objectifyFactory.begin().query(Blueprint.class)
                 .filter("id", blueprintID)
@@ -38,6 +42,10 @@ public class BlueprintDao {
                 .filter("user", userKey)
                 .filter("attachedCharacterInfo.characterID", attachedCharacterID)
                 .order("itemTypeID").list();
+    }
+
+    public Iterable<Key<Blueprint>> getAllKeys() {
+        return objectifyFactory.begin().query(Blueprint.class).fetchKeys();
     }
 
     public List<Blueprint> getAllForCorporationID(Long corporationID) {
