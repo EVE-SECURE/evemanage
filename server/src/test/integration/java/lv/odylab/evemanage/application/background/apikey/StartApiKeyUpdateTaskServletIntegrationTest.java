@@ -25,7 +25,7 @@ public class StartApiKeyUpdateTaskServletIntegrationTest {
     private final EveManageObjectifyFactory objectifyFactory = new EveManageObjectifyFactory();
     private final ApiKeyDao apiKeyDao = new ApiKeyDao(objectifyFactory);
     private final UserDao userDao = new UserDao(objectifyFactory);
-    private final StartApiKeyUpdateTaskServlet startApiKeyUpdateTaskServlet = new StartApiKeyUpdateTaskServlet(googleAppEngineServices, userDao, "default");
+    private final StartApiKeyUpdateCronServlet startApiKeyUpdateCronServlet = new StartApiKeyUpdateCronServlet(googleAppEngineServices, userDao, "default");
 
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig());
 
@@ -52,7 +52,7 @@ public class StartApiKeyUpdateTaskServletIntegrationTest {
             }
         }
 
-        startApiKeyUpdateTaskServlet.doGet(null, null);
+        startApiKeyUpdateCronServlet.doGet(null, null);
         LocalTaskQueue taskQueue = LocalTaskQueueTestConfig.getLocalTaskQueue();
         assertEquals(500, taskQueue.getQueueStateInfo().get("default").getCountTasks());
     }

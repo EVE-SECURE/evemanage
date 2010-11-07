@@ -176,6 +176,7 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
     private Display display;
     private BlueprintDetailsPresenter blueprintDetailsPresenter;
 
+    private HasWidgets displayContainer;
     private List<HandlerRegistration> staticHandlerRegistrations;
     private List<HandlerRegistration> dynamicHandlerRegistrations;
     private List<HandlerRegistration> dynamicHandlerRegistrationsForCorporation;
@@ -219,8 +220,10 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
 
     @Override
     public void go(HasWidgets container) {
-        if (!container.iterator().hasNext()) {
-            display.attach(container);
+        if (displayContainer == null) {
+            displayContainer = container;
+            displayContainer.clear();
+            display.attach(displayContainer);
             bindStatic();
             doBlueprintsTabFirstLoad();
         }

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ApiKeyUpdateTaskServletTest {
+public class UpdateApiKeyTaskServletTest {
     @Mock
     private EveUpdateService eveUpdateService;
     @Mock
@@ -43,7 +43,7 @@ public class ApiKeyUpdateTaskServletTest {
     @Test
     public void testDoPost() throws Exception {
         when(httpServletRequest.getParameter("userID")).thenReturn("1");
-        updateApiKeyTaskServlet.doGet(httpServletRequest, httpServletResponse);
+        updateApiKeyTaskServlet.doPost(httpServletRequest, httpServletResponse);
         verify(eveUpdateService, times(1)).updateApiKeysForUser(new Key<User>(User.class, 1));
     }
 
@@ -51,6 +51,11 @@ public class ApiKeyUpdateTaskServletTest {
     public void testDoPost_Exception() throws Exception {
         when(httpServletRequest.getParameter("userID")).thenReturn("1");
         doThrow(new EveApiException("Api error message")).when(eveUpdateService).updateApiKeysForUser(new Key<User>(User.class, 1));
-        updateApiKeyTaskServlet.doGet(httpServletRequest, httpServletResponse);
+        updateApiKeyTaskServlet.doPost(httpServletRequest, httpServletResponse);
+    }
+
+    @Test
+    public void testDoPost_Throwable() throws Exception {
+        updateApiKeyTaskServlet.doPost(httpServletRequest, httpServletResponse);
     }
 }

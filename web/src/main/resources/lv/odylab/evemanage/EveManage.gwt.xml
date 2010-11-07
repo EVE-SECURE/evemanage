@@ -10,9 +10,7 @@
 
     <script src="../ga.js"/>
 
-    <extend-property name="locale" values="en"/>
     <extend-property name="locale" values="ru"/>
-    <!--<set-property-fallback name="locale" value="en"/>-->
 
     <entry-point class='lv.odylab.evemanage.client.EveManageEntryPoint'/>
 </module>

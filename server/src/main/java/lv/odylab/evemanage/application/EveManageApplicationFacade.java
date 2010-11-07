@@ -1,6 +1,6 @@
 package lv.odylab.evemanage.application;
 
-import lv.odylab.evemanage.application.exception.ApiKeyNotValidException;
+import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
 import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.application.exception.EveCentralApiException;
 import lv.odylab.evemanage.application.exception.EveDbException;
@@ -89,7 +89,7 @@ public interface EveManageApplicationFacade {
 
     List<ApiKey> getApiKeys();
 
-    void createApiKey(String apiKeyString, Long apiKeyUserID) throws EveApiException, ApiKeyNotValidException;
+    void createApiKey(String apiKeyString, Long apiKeyUserID) throws EveApiException, ApiKeyShouldBeRemovedException;
 
     void deleteApiKey(Long apiKeyID);
 

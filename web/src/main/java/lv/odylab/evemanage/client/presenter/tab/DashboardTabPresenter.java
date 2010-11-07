@@ -12,6 +12,7 @@ public class DashboardTabPresenter implements Presenter {
     }
 
     private Display display;
+    private HasWidgets displayContainer;
 
     @Inject
     public DashboardTabPresenter(Display display) {
@@ -20,8 +21,10 @@ public class DashboardTabPresenter implements Presenter {
 
     @Override
     public void go(HasWidgets container) {
-        if (!container.iterator().hasNext()) {
-            display.attach(container);
+        if (displayContainer == null) {
+            displayContainer = container;
+            displayContainer.clear();
+            display.attach(displayContainer);
         }
     }
 }

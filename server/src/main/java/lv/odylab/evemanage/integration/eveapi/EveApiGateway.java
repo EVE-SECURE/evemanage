@@ -1,6 +1,6 @@
 package lv.odylab.evemanage.integration.eveapi;
 
-import lv.odylab.evemanage.application.exception.ApiKeyNotValidException;
+import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
 import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.application.exception.UnableToImportJobsFromXmlException;
 import lv.odylab.evemanage.integration.eveapi.dto.AccountBalanceDto;
@@ -15,7 +15,7 @@ public interface EveApiGateway {
 
     List<IndustryJobDto> importFromIndustryJobXml(String importXml) throws UnableToImportJobsFromXmlException;
 
-    List<AccountCharacterDto> getApiKeyCharacters(String apiKeyString, Long apiKeyUserID) throws EveApiException, ApiKeyNotValidException;
+    List<AccountCharacterDto> getApiKeyCharacters(String apiKeyString, Long apiKeyUserID) throws EveApiException, ApiKeyShouldBeRemovedException;
 
     List<AccountBalanceDto> getAccountBalances(String apiKeyString, Long apiKeyUserID, Long characterID) throws EveApiException;
 

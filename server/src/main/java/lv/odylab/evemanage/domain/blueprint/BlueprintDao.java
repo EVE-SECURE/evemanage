@@ -33,6 +33,13 @@ public class BlueprintDao {
                 .order("itemTypeID").list();
     }
 
+    public List<Blueprint> getAll(Key<User> userKey, Long attachedCharacterID) {
+        return objectifyFactory.begin().query(Blueprint.class)
+                .filter("user", userKey)
+                .filter("attachedCharacterInfo.characterID", attachedCharacterID)
+                .order("itemTypeID").list();
+    }
+
     public List<Blueprint> getAllForCorporationID(Long corporationID) {
         return objectifyFactory.begin().query(Blueprint.class)
                 .filter("attachedCharacterInfo.corporationID", corporationID)
@@ -52,6 +59,10 @@ public class BlueprintDao {
 
     public void put(Blueprint blueprint, Key<User> userKey) {
         sameUser(blueprint, userKey);
+        objectifyFactory.begin().put(blueprint);
+    }
+
+    public void putWithoutChecks(Blueprint blueprint) {
         objectifyFactory.begin().put(blueprint);
     }
 

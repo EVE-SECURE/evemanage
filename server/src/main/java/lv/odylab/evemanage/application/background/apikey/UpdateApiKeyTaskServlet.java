@@ -37,6 +37,8 @@ public class UpdateApiKeyTaskServlet extends HttpServlet {
         } catch (EveApiException e) {
             logger.error("Api key update failed for userID: {}", req.getParameterMap());
             logger.error("Caught EveApiException", e);
+        } catch (Throwable t) {
+            logger.error("Caught Throwable", t);
         }
     }
 }

@@ -18,7 +18,7 @@ import lv.odylab.eveapi.sender.ApiErrorException;
 import lv.odylab.eveapi.sender.ApiIoException;
 import lv.odylab.eveapi.sender.ApiParserException;
 import lv.odylab.evemanage.application.EveManageDtoMapper;
-import lv.odylab.evemanage.application.exception.ApiKeyNotValidException;
+import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
 import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.application.exception.UnableToImportJobsFromXmlException;
 import lv.odylab.evemanage.integration.eveapi.dto.AccountBalanceDto;
@@ -72,7 +72,7 @@ public class EveApiGatewayImpl implements EveApiGateway {
     @Override
     @Logging(logArguments = false)
     @Caching(expiration = Caching.TEN_MINUTES, logArguments = false)
-    public List<AccountCharacterDto> getApiKeyCharacters(String apiKeyString, Long apiKeyUserID) throws EveApiException, ApiKeyNotValidException {
+    public List<AccountCharacterDto> getApiKeyCharacters(String apiKeyString, Long apiKeyUserID) throws EveApiException, ApiKeyShouldBeRemovedException {
         try {
             ApiAccountCharacterResponse apiResponse = facade.getAccountCharacters(apiKeyString, apiKeyUserID);
             List<ApiAccountCharacterRow> apiAccountCharacterRows = apiResponse.getResult().getRowset().getRows();
@@ -83,8 +83,8 @@ public class EveApiGatewayImpl implements EveApiGateway {
             return accountCharacterDtos;
         } catch (ApiErrorException e) {
             logger.warn("Caught ApiErrorException", e.getMessage());
-            if (e.isApiKeyAuthenticationFailure() || e.isLoginDeniedByAccountStatus()) {
-                throw new ApiKeyNotValidException(e.getMessage());
+            if (e.shouldRemoveApiKey() || e.shouldPostponeApiKey()) {
+                throw new ApiKeyShouldBeRemovedException(e.getMessage());
             } else {
                 throw new EveApiException(e);
             }

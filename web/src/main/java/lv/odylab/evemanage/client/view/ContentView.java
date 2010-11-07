@@ -34,10 +34,27 @@ public class ContentView implements ContentPresenter.Display {
         tabPanel.addStyleName(resources.css().contentPanel());
 
         dashboardTab = new VerticalPanel();
+
+        Image blueprintsTabSpinnerImage = new Image(resources.spinnerIcon());
+        blueprintsTabSpinnerImage.setTitle(messages.loading());
         blueprintsTab = new VerticalPanel();
+        blueprintsTab.add(blueprintsTabSpinnerImage);
+
+        Image priceSetTabSpinnerImage = new Image(resources.spinnerIcon());
+        priceSetTabSpinnerImage.setTitle(messages.loading());
         priceSetTab = new VerticalPanel();
+        priceSetTab.add(priceSetTabSpinnerImage);
+
+        Image quickCalculatorTabSpinnerImage = new Image(resources.spinnerIcon());
+        quickCalculatorTabSpinnerImage.setTitle(messages.loading());
         quickCalculatorTab = new VerticalPanel();
+        quickCalculatorTab.add(quickCalculatorTabSpinnerImage);
+
+        Image preferencesTabSpinnerImage = new Image(resources.spinnerIcon());
+        preferencesTabSpinnerImage.setTitle(messages.loading());
         preferencesTab = new VerticalPanel();
+        preferencesTab.add(preferencesTabSpinnerImage);
+
         aboutTab = new VerticalPanel();
 
         tabMap = new HashMap<String, Panel>();

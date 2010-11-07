@@ -2,7 +2,7 @@ package lv.odylab.evemanage.application;
 
 import com.google.inject.Inject;
 import lv.odylab.appengine.aspect.Logging;
-import lv.odylab.evemanage.application.exception.ApiKeyNotValidException;
+import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
 import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.application.exception.EveCentralApiException;
 import lv.odylab.evemanage.application.exception.EveDbException;
@@ -295,7 +295,7 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
 
     @Override
     @Logging(logArguments = false)
-    public void createApiKey(Long apiKeyUserID, String apiKeyString) throws EveApiException, ApiKeyNotValidException {
+    public void createApiKey(Long apiKeyUserID, String apiKeyString) throws EveApiException, ApiKeyShouldBeRemovedException {
         applicationFacade.createApiKey(apiKeyString, apiKeyUserID);
     }
 

@@ -18,6 +18,6 @@ public interface EveSynchronizationService {
 
     void synchronizeDeleteApiKey(Key<ApiKey> apiKeyKey, Key<User> userKey);
 
-    void synchronizeUpdateCharacters(List<Character> charactersToUpdate, Key<User> userKey);
+    void synchronizeUpdateApiKeys(List<ApiKey> apiKeys, Key<User> userKey) throws EveApiException;
 
 }

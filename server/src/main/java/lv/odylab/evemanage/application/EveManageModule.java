@@ -14,10 +14,15 @@ import lv.odylab.eveapi.EveApiFacadeImpl;
 import lv.odylab.evecentralapi.EveCentralApiFacade;
 import lv.odylab.evecentralapi.EveCentralApiFacadeImpl;
 import lv.odylab.evemanage.application.admin.ClearCacheServlet;
-import lv.odylab.evemanage.application.background.apikey.StartApiKeyUpdateTaskServlet;
+import lv.odylab.evemanage.application.background.apikey.StartApiKeyUpdateCronServlet;
+import lv.odylab.evemanage.application.background.apikey.UpdateApiKeyTaskLauncher;
 import lv.odylab.evemanage.application.background.apikey.UpdateApiKeyTaskServlet;
 import lv.odylab.evemanage.application.background.blueprint.AddBlueprintTaskLauncher;
 import lv.odylab.evemanage.application.background.blueprint.AddBlueprintTaskServlet;
+import lv.odylab.evemanage.application.background.blueprint.UpdateBlueprintTaskLauncher;
+import lv.odylab.evemanage.application.background.blueprint.UpdateBlueprintTaskServlet;
+import lv.odylab.evemanage.application.background.priceset.UpdatePriceSetTaskLauncher;
+import lv.odylab.evemanage.application.background.priceset.UpdatePriceSetTaskServlet;
 import lv.odylab.evemanage.client.rpc.EveManageRemoteServiceImpl;
 import lv.odylab.evemanage.client.rpc.action.blueprints.BlueprintAddActionRunner;
 import lv.odylab.evemanage.client.rpc.action.blueprints.BlueprintAddActionRunnerImpl;
@@ -118,6 +123,8 @@ import lv.odylab.evemanage.service.blueprint.BlueprintManagementService;
 import lv.odylab.evemanage.service.blueprint.BlueprintManagementServiceImpl;
 import lv.odylab.evemanage.service.calculation.CalculationService;
 import lv.odylab.evemanage.service.calculation.CalculationServiceImpl;
+import lv.odylab.evemanage.service.eve.CharacterSynchronizationService;
+import lv.odylab.evemanage.service.eve.CharacterSynchronizationServiceImpl;
 import lv.odylab.evemanage.service.eve.EveApiDataService;
 import lv.odylab.evemanage.service.eve.EveApiDataServiceImpl;
 import lv.odylab.evemanage.service.eve.EveManagementService;
@@ -159,10 +166,15 @@ public class EveManageModule extends AbstractModule {
         bind(EveManageDtoMapper.class).to(EveManageDtoMapperImpl.class).in(Singleton.class);
         bind(EveManageRemoteServiceImpl.class).in(Singleton.class);
 
-        bind(StartApiKeyUpdateTaskServlet.class).in(Singleton.class);
+        bind(StartApiKeyUpdateCronServlet.class).in(Singleton.class);
+        bind(UpdateApiKeyTaskLauncher.class).in(Singleton.class);
         bind(UpdateApiKeyTaskServlet.class).in(Singleton.class);
         bind(AddBlueprintTaskServlet.class).in(Singleton.class);
         bind(AddBlueprintTaskLauncher.class).in(Singleton.class);
+        bind(UpdateBlueprintTaskLauncher.class).in(Singleton.class);
+        bind(UpdateBlueprintTaskServlet.class).in(Singleton.class);
+        bind(UpdatePriceSetTaskLauncher.class).in(Singleton.class);
+        bind(UpdatePriceSetTaskServlet.class).in(Singleton.class);
         bind(ClearCacheServlet.class).in(Singleton.class);
 
         bind(UserManagementService.class).to(UserManagementServiceImpl.class).in(Singleton.class);
@@ -174,6 +186,7 @@ public class EveManageModule extends AbstractModule {
         bind(EveManagementService.class).to(EveManagementServiceImpl.class).in(Singleton.class);
         bind(EveApiDataService.class).to(EveApiDataServiceImpl.class).in(Singleton.class);
         bind(EveSynchronizationService.class).to(EveSynchronizationServiceImpl.class).in(Singleton.class);
+        bind(CharacterSynchronizationService.class).to(CharacterSynchronizationServiceImpl.class).in(Singleton.class);
         bind(EveUpdateService.class).to(EveUpdateServiceImpl.class).in(Singleton.class);
 
         bind(CalculationService.class).to(CalculationServiceImpl.class).in(Singleton.class);

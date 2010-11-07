@@ -2,7 +2,7 @@ package lv.odylab.evemanage.service.eve;
 
 import com.googlecode.objectify.Key;
 import lv.odylab.appengine.repackaged.Base64;
-import lv.odylab.evemanage.application.exception.ApiKeyNotValidException;
+import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
 import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.eve.ApiKeyCharacterInfo;
@@ -102,7 +102,7 @@ public class EveApiDataServiceImplTest {
     }
 
     @Test
-    public void testPopulateApiKeyData_ValidFull() throws EveApiException, ApiKeyNotValidException {
+    public void testPopulateApiKeyData_ValidFull() throws EveApiException, ApiKeyShouldBeRemovedException {
         ApiKey apiKey = new ApiKey();
         apiKey.setApiKeyUserID(1L);
         List<AccountCharacterDto> accountCharacterDtos = new ArrayList<AccountCharacterDto>();
@@ -147,7 +147,7 @@ public class EveApiDataServiceImplTest {
     }
 
     @Test
-    public void testPopulateApiKeyData_ValidLimitedWithCharacter() throws EveApiException, ApiKeyNotValidException {
+    public void testPopulateApiKeyData_ValidLimitedWithCharacter() throws EveApiException, ApiKeyShouldBeRemovedException {
         ApiKey apiKey = new ApiKey();
         apiKey.setApiKeyUserID(1L);
         List<AccountCharacterDto> accountCharacterDtos = new ArrayList<AccountCharacterDto>();
@@ -167,7 +167,7 @@ public class EveApiDataServiceImplTest {
     }
 
     @Test
-    public void testPopulateApiKeyData_ValidLimitedWithoutCharacters() throws EveApiException, ApiKeyNotValidException {
+    public void testPopulateApiKeyData_ValidLimitedWithoutCharacters() throws EveApiException, ApiKeyShouldBeRemovedException {
         ApiKey apiKey = new ApiKey();
         apiKey.setApiKeyUserID(1L);
 
@@ -179,7 +179,7 @@ public class EveApiDataServiceImplTest {
     }
 
     @Test
-    public void testPopulateApiKeyData_ExistingKey() throws EveApiException, ApiKeyNotValidException {
+    public void testPopulateApiKeyData_ExistingKey() throws EveApiException, ApiKeyShouldBeRemovedException {
         ApiKey apiKey = new ApiKey();
         apiKey.setApiKeyUserID(1L);
         String encodedApiKeyString = Base64.encodeBytes("encryptedApiKey".getBytes());
