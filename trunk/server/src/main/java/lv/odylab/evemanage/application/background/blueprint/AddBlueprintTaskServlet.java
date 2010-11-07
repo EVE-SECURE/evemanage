@@ -43,6 +43,8 @@ public class AddBlueprintTaskServlet extends HttpServlet {
         } catch (InvalidNameException e) {
             logger.error("Blueprint add failed for userID: {}", req.getParameterMap());
             logger.error("Caught InvalidNameException", e);
+        } catch (Throwable t) {
+            logger.error("Caught Throwable", t);
         }
     }
 }

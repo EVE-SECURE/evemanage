@@ -86,7 +86,7 @@ public class PriceSetManagementServiceImpl implements PriceSetManagementService 
 
     @Override
     public PriceSet getPriceSet(Long priceSetID, Key<User> userKey) {
-        return priceSetDao.getByPriceSetID(priceSetID, userKey);
+        return priceSetDao.get(priceSetID, userKey);
     }
 
     @Override
@@ -126,7 +126,7 @@ public class PriceSetManagementServiceImpl implements PriceSetManagementService 
         if (priceSetNameAlreadyExists(priceSetName, userKey)) {
             throw new InvalidNameException(priceSetName, ErrorCode.NAME_MUST_BE_UNIQUE);
         }
-        PriceSet priceSet = priceSetDao.getByPriceSetID(priceSetID, userKey);
+        PriceSet priceSet = priceSetDao.get(priceSetID, userKey);
         priceSet.setName(priceSetName);
         priceSet.setUpdatedDate(new Date());
         priceSetDao.put(priceSet, userKey);
@@ -134,7 +134,7 @@ public class PriceSetManagementServiceImpl implements PriceSetManagementService 
 
     @Override
     public void savePriceSet(Long priceSetID, Set<PriceSetItem> priceSetItems, String sharingLevel, Long attachedCharacterID, Key<User> userKey) {
-        PriceSet priceSet = priceSetDao.getByPriceSetID(priceSetID, userKey);
+        PriceSet priceSet = priceSetDao.get(priceSetID, userKey);
         priceSet.setItems(priceSetItems);
         priceSet.setSharingLevel(sharingLevel);
         if (attachedCharacterID != null) {
@@ -153,6 +153,11 @@ public class PriceSetManagementServiceImpl implements PriceSetManagementService 
             priceSet.setAttachedCharacterInfo(null);
         }
         priceSet.setUpdatedDate(new Date());
+        priceSetDao.put(priceSet, userKey);
+    }
+
+    @Override
+    public void savePriceSet(PriceSet priceSet, Key<User> userKey) {
         priceSetDao.put(priceSet, userKey);
     }
 
@@ -214,7 +219,7 @@ public class PriceSetManagementServiceImpl implements PriceSetManagementService 
 
     @Override
     public void deletePriceSet(Long priceSetID, Key<User> userKey) {
-        PriceSet priceSet = priceSetDao.getByPriceSetID(priceSetID, userKey);
+        PriceSet priceSet = priceSetDao.get(priceSetID, userKey);
         priceSetDao.delete(priceSet);
     }
 

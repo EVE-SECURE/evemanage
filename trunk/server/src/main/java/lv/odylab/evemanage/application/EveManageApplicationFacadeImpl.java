@@ -3,7 +3,7 @@ package lv.odylab.evemanage.application;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.googlecode.objectify.Key;
-import lv.odylab.evemanage.application.exception.ApiKeyNotValidException;
+import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
 import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.application.exception.EveCentralApiException;
 import lv.odylab.evemanage.application.exception.EveDbException;
@@ -228,7 +228,7 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public void createApiKey(String apiKeyString, Long apiKeyUserID) throws EveApiException, ApiKeyNotValidException {
+    public void createApiKey(String apiKeyString, Long apiKeyUserID) throws EveApiException, ApiKeyShouldBeRemovedException {
         eveManagementService.createApiKey(apiKeyString, apiKeyUserID, getCurrentUserKey());
     }
 

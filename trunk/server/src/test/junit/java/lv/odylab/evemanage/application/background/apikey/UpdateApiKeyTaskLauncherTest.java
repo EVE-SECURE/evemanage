@@ -13,8 +13,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,22 +23,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StartApiKeyUpdateTaskServletTest {
+public class UpdateApiKeyTaskLauncherTest {
     @Mock
     private GoogleAppEngineServices googleAppEngineServices;
     @Mock
     private UserDao userDao;
     @Mock
-    private HttpServletRequest httpServletRequest;
-    @Mock
-    private HttpServletResponse httpServletResponse;
-    @Mock
     private Queue queue;
-    private StartApiKeyUpdateTaskServlet startApiKeyUpdateTaskServlet;
+    private UpdateApiKeyTaskLauncher updateApiKeyTaskLauncher;
 
     @Before
     public void setUp() {
-        startApiKeyUpdateTaskServlet = new StartApiKeyUpdateTaskServlet(googleAppEngineServices, userDao, "default");
+        updateApiKeyTaskLauncher = new UpdateApiKeyTaskLauncher(googleAppEngineServices, userDao, "default");
     }
 
     @Test
@@ -51,7 +45,7 @@ public class StartApiKeyUpdateTaskServletTest {
         }
         when(googleAppEngineServices.getQueue("default")).thenReturn(queue);
         when(userDao.getAllKeys()).thenReturn(userKeys);
-        startApiKeyUpdateTaskServlet.doGet(httpServletRequest, httpServletResponse);
+        updateApiKeyTaskLauncher.launchForAllUsers();
         verify(queue, times(10)).add(any(TaskOptions.class));
     }
 }

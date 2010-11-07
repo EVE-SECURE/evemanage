@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 import lv.odylab.appengine.repackaged.Base64;
-import lv.odylab.evemanage.application.exception.ApiKeyNotValidException;
+import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
 import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.application.exception.EveManageSecurityException;
 import lv.odylab.evemanage.domain.ApiKeyType;
@@ -72,13 +72,14 @@ public class EveApiDataServiceImpl implements EveApiDataService {
     }
 
     @Override
-    public void populateApiKeyData(ApiKey apiKey) throws EveApiException, ApiKeyNotValidException {
+    public void populateApiKeyData(ApiKey apiKey) throws EveApiException, ApiKeyShouldBeRemovedException {
         populateApiKeyData(apiKey, decodeApiKeyString(apiKey.getEncodedApiKeyString()));
     }
 
     @Override
-    public void populateApiKeyData(ApiKey apiKey, String apiKeyString) throws EveApiException, ApiKeyNotValidException {
+    public void populateApiKeyData(ApiKey apiKey, String apiKeyString) throws EveApiException, ApiKeyShouldBeRemovedException {
         logger.debug("Populating information from EVE api to api key");
+
         Long apiKeyUserID = apiKey.getApiKeyUserID();
         if (apiKey.getEncodedApiKeyString() == null) {
             logger.debug("Encoded api key string is not set, going to encode and set it");

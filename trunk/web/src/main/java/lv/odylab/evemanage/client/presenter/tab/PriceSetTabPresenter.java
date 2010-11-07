@@ -188,6 +188,8 @@ public class PriceSetTabPresenter implements Presenter, PriceSetTabErrorEventHan
     private EveManageConstants constants;
     private EveManageErrorConstants errorConstants;
     private Display display;
+
+    private HasWidgets displayContainer;
     private List<HandlerRegistration> staticHandlerRegistrations;
     private List<HandlerRegistration> dynamicHandlerRegistrations;
 
@@ -227,8 +229,10 @@ public class PriceSetTabPresenter implements Presenter, PriceSetTabErrorEventHan
 
     @Override
     public void go(HasWidgets container) {
-        if (!container.iterator().hasNext()) {
-            display.attach(container);
+        if (displayContainer == null) {
+            displayContainer = container;
+            displayContainer.clear();
+            display.attach(displayContainer);
             bindStatic();
             doPriceSetTabFirstLoad();
         }

@@ -22,9 +22,22 @@ public class PriceSetDao {
         this.objectifyFactory = objectifyFactory;
     }
 
+    public PriceSet get(Long priceSetID, Key<User> userKey) {
+        return objectifyFactory.begin().query(PriceSet.class)
+                .filter("user", userKey)
+                .filter("id", priceSetID).get();
+    }
+
     public List<PriceSet> getAll(Key<User> userKey) {
         return objectifyFactory.begin().query(PriceSet.class)
                 .filter("user", userKey)
+                .order("name").list();
+    }
+
+    public List<PriceSet> getAll(Key<User> userKey, Long attachedCharacterID) {
+        return objectifyFactory.begin().query(PriceSet.class)
+                .filter("user", userKey)
+                .filter("attachedCharacterInfo.characterID", attachedCharacterID)
                 .order("name").list();
     }
 
@@ -43,12 +56,6 @@ public class PriceSetDao {
                 .order("attachedCharacterInfo.corporationName")
                 .order("attachedCharacterInfo.name")
                 .order("name").list();
-    }
-
-    public PriceSet getByPriceSetID(Long priceSetID, Key<User> userKey) {
-        return objectifyFactory.begin().query(PriceSet.class)
-                .filter("user", userKey)
-                .filter("id", priceSetID).get();
     }
 
     public PriceSet getForCorporationByPriceSetID(Long priceSetID, Key<User> userKey) {
@@ -75,6 +82,10 @@ public class PriceSetDao {
 
     public void put(PriceSet priceSet, Key<User> userKey) {
         sameUser(priceSet, userKey);
+        objectifyFactory.begin().put(priceSet);
+    }
+
+    public void putWithoutChecks(PriceSet priceSet) {
         objectifyFactory.begin().put(priceSet);
     }
 

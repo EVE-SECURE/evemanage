@@ -33,6 +33,8 @@ public interface PriceSetManagementService {
 
     void savePriceSet(Long priceSetID, Set<PriceSetItem> priceSetItems, String sharingLevel, Long attachedCharacterID, Key<User> userKey);
 
+    void savePriceSet(PriceSet priceSet, Key<User> userKey);
+
     List<PriceSetItem> fetchPricesFromEveCentral(List<PriceSetItem> priceSetItems) throws EveCentralApiException;
 
     Map<Long, String> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs) throws EveCentralApiException;

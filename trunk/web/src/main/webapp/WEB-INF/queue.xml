@@ -5,11 +5,19 @@
         <rate>1/s</rate>
     </queue>
     <queue>
-        <name>blueprint-indexing</name>
+        <name>apikey-updating</name>
         <rate>5/s</rate>
     </queue>
     <queue>
-        <name>apikey-update</name>
+        <name>blueprint-adding</name>
+        <rate>5/s</rate>
+    </queue>
+    <queue>
+        <name>blueprint-updating</name>
+        <rate>5/s</rate>
+    </queue>
+    <queue>
+        <name>priceset-updating</name>
         <rate>5/s</rate>
     </queue>
 </queue-entries>

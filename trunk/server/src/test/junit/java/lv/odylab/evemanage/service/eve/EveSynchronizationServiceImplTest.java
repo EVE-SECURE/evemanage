@@ -8,7 +8,6 @@ import lv.odylab.evemanage.domain.eve.ApiKeyDao;
 import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.eve.CharacterDao;
 import lv.odylab.evemanage.domain.user.User;
-import lv.odylab.evemanage.service.user.UserSynchronizationService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +33,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class EveSynchronizationServiceImplTest {
     @Mock
-    private UserSynchronizationService userSynchronizationService;
+    private CharacterSynchronizationService characterSynchronizationService;
     @Mock
     private EveApiDataService eveApiDataService;
     @Mock
@@ -45,24 +44,27 @@ public class EveSynchronizationServiceImplTest {
 
     @Captor
     private ArgumentCaptor<Character> characterCaptor;
+    @Captor
+    private ArgumentCaptor<List<Character>> characterListCaptor;
 
     @Before
     public void setUp() {
-        eveSynchronizationService = new EveSynchronizationServiceImpl(userSynchronizationService, eveApiDataService, apiKeyDao, characterDao);
+        eveSynchronizationService = new EveSynchronizationServiceImpl(characterSynchronizationService, eveApiDataService, apiKeyDao, characterDao);
     }
 
     @Test
     public void testSynchronizeCreateCharacter() {
         Key<User> userKey = new Key<User>(User.class, 1);
-        eveSynchronizationService.synchronizeCreateCharacter(new Character(), userKey);
-        verify(userSynchronizationService, times(1)).synchronizeMainCharacter(userKey);
+        Character character = new Character();
+        eveSynchronizationService.synchronizeCreateCharacter(character, userKey);
+        verify(characterSynchronizationService).synchronizeCreateCharacter(character, userKey);
     }
 
     @Test
     public void testSynchronizeDeleteCharacter() {
         Key<User> userKey = new Key<User>(User.class, 1);
-        eveSynchronizationService.synchronizeDeleteCharacter(1L, userKey);
-        verify(userSynchronizationService, times(1)).synchronizeMainCharacter(userKey);
+        eveSynchronizationService.synchronizeDeleteCharacter(2L, userKey);
+        verify(characterSynchronizationService).synchronizeDeleteCharacter(2L, userKey);
     }
 
     @Test
@@ -71,7 +73,8 @@ public class EveSynchronizationServiceImplTest {
         ApiKey apiKey = new ApiKey();
         when(characterDao.getAllWithoutApiKey(userKey)).thenReturn(new ArrayList<Character>());
         eveSynchronizationService.synchronizeCreateApiKey(apiKey, userKey);
-        verify(userSynchronizationService, times(1)).synchronizeMainCharacter(userKey);
+        verify(characterSynchronizationService).synchronizeUpdateCharacters(characterListCaptor.capture(), eq(userKey));
+        assertEquals(0, characterListCaptor.getValue().size());
     }
 
     @Test
@@ -90,7 +93,8 @@ public class EveSynchronizationServiceImplTest {
         eveSynchronizationService.synchronizeCreateApiKey(apiKey, userKey);
 
         verify(characterDao, never()).put(any(Character.class), eq(userKey));
-        verify(userSynchronizationService, times(1)).synchronizeMainCharacter(userKey);
+        verify(characterSynchronizationService).synchronizeUpdateCharacters(characterListCaptor.capture(), eq(userKey));
+        assertEquals(0, characterListCaptor.getValue().size());
     }
 
     @Test
@@ -107,7 +111,8 @@ public class EveSynchronizationServiceImplTest {
         eveSynchronizationService.synchronizeCreateApiKey(apiKey, userKey);
 
         verify(characterDao, never()).put(any(Character.class), eq(userKey));
-        verify(userSynchronizationService, times(1)).synchronizeMainCharacter(userKey);
+        verify(characterSynchronizationService).synchronizeUpdateCharacters(characterListCaptor.capture(), eq(userKey));
+        assertEquals(0, characterListCaptor.getValue().size());
     }
 
     @Test
@@ -130,7 +135,10 @@ public class EveSynchronizationServiceImplTest {
 
         verify(characterDao, times(1)).put(any(Character.class), eq(userKey));
         verify(eveApiDataService, times(1)).populateCharacterData(character);
-        verify(userSynchronizationService, times(1)).synchronizeMainCharacter(userKey);
+        verify(characterSynchronizationService).synchronizeUpdateCharacters(characterListCaptor.capture(), eq(userKey));
+        List<Character> capturedCharacterList = characterListCaptor.getValue();
+        assertEquals(1, capturedCharacterList.size());
+        assertEquals(character, capturedCharacterList.get(0));
     }
 
     @Test
@@ -151,7 +159,8 @@ public class EveSynchronizationServiceImplTest {
         eveSynchronizationService.synchronizeCreateApiKey(apiKey, userKey);
 
         verify(characterDao, never()).put(any(Character.class), eq(userKey));
-        verify(userSynchronizationService, times(1)).synchronizeMainCharacter(userKey);
+        verify(characterSynchronizationService).synchronizeUpdateCharacters(characterListCaptor.capture(), eq(userKey));
+        assertEquals(0, characterListCaptor.getValue().size());
     }
 
     @Test
@@ -163,7 +172,8 @@ public class EveSynchronizationServiceImplTest {
         eveSynchronizationService.synchronizeDeleteApiKey(apiKeyKey, userKey);
 
         verify(characterDao, never()).put(any(Character.class), eq(userKey));
-        verify(userSynchronizationService, times(1)).synchronizeMainCharacter(userKey);
+        verify(characterSynchronizationService).synchronizeDetachCharacters(characterListCaptor.capture(), eq(userKey));
+        assertEquals(0, characterListCaptor.getValue().size());
     }
 
     @Test
@@ -199,7 +209,10 @@ public class EveSynchronizationServiceImplTest {
         assertNull(capturedCharacter.getAllianceName());
         assertNotNull(capturedCharacter.getCreatedDate());
         assertNotNull(capturedCharacter.getUpdatedDate());
-        verify(userSynchronizationService, times(1)).synchronizeMainCharacter(userKey);
+        verify(characterSynchronizationService).synchronizeDetachCharacters(characterListCaptor.capture(), eq(userKey));
+        List<Character> capturedCharacterList = characterListCaptor.getValue();
+        assertEquals(1, capturedCharacterList.size());
+        assertEquals(character, capturedCharacterList.get(0));
     }
 
     @Test
@@ -228,19 +241,7 @@ public class EveSynchronizationServiceImplTest {
 
         verify(characterDao, times(1)).putWithoutChecks(characterCaptor.capture());
         assertEquals(2, characterCaptor.getValue().getApiKey().getId());
-        verify(userSynchronizationService, times(1)).synchronizeMainCharacter(userKey);
-    }
-
-    @Test
-    public void testSynchronizeUpdateCharacters() {
-        Key<User> userKey = new Key<User>(User.class, 1);
-        List<Character> characters = new ArrayList<Character>();
-        characters.add(new Character());
-        characters.add(new Character());
-
-        eveSynchronizationService.synchronizeUpdateCharacters(characters, userKey);
-
-        verify(characterDao, never()).put(any(Character.class), eq(userKey));
-        verify(userSynchronizationService, times(1)).synchronizeMainCharacter(userKey);
+        verify(characterSynchronizationService).synchronizeDetachCharacters(characterListCaptor.capture(), eq(userKey));
+        assertEquals(0, characterListCaptor.getValue().size());
     }
 }

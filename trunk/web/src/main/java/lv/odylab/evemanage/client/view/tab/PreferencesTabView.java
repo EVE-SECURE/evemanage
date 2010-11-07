@@ -317,8 +317,8 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
         }
 
         charactersFlexTable.setWidget(index, 0, characterImage);
-        charactersFlexTable.setWidget(index, 1, corporationImage);
-        charactersFlexTable.setWidget(index, 2, allianceImage);
+        charactersFlexTable.setWidget(index, 1, new EveCorporationInfoLink(constants, urlMessages, ccpJsMessages, corporationImage, character.getCorporationID()));
+        charactersFlexTable.setWidget(index, 2, new EveAllianceInfoLink(constants, urlMessages, ccpJsMessages, allianceImage, character.getAllianceID()));
         HTMLTable.CellFormatter characterFlexTableFormatter = charactersFlexTable.getCellFormatter();
         characterFlexTableFormatter.setHorizontalAlignment(index, 1, HasHorizontalAlignment.ALIGN_CENTER);
         characterFlexTableFormatter.setHorizontalAlignment(index, 2, HasHorizontalAlignment.ALIGN_CENTER);
@@ -377,7 +377,7 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
             Image characterImage = new Image(urlMessages.imgEveCharacter50Url(constants.eveGateImagesUrl(), apiKeyCharacterInfo.getCharacterID()));
             characterImage.setTitle(apiKeyCharacterInfo.getName());
             characterImage.addStyleName(resources.css().image50());
-            apiKeysFlexTable.setWidget(index, column++, characterImage);
+            apiKeysFlexTable.setWidget(index, column++, new EveCharacterInfoLink(ccpJsMessages, characterImage, apiKeyCharacterInfo.getCharacterID()));
         }
         Button deleteButton = new Button(messages.delete());
         apiKeyDeleteButtonMap.put(apiKeyDto, deleteButton);

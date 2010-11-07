@@ -1,0 +1,1 @@
+appcfg request_logs target/gwt-webapp/evemanage evemanage-logs.txt

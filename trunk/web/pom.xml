@@ -96,7 +96,7 @@
                 <artifactId>gwt-maven-plugin</artifactId>
                 <version>${gwt.version}</version>
                 <configuration>
-                    <soyc>true</soyc>
+                    <soyc>false</soyc>
                     <runTarget>evemanage.html</runTarget>
                     <hostedWebapp>${project.build.directory}/gwt-webapp/evemanage</hostedWebapp>
                     <webappDirectory>${project.build.directory}/gwt-webapp/evemanage</webappDirectory>

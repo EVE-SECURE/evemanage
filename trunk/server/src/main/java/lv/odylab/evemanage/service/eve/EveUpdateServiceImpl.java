@@ -2,17 +2,15 @@ package lv.odylab.evemanage.service.eve;
 
 import com.google.inject.Inject;
 import com.googlecode.objectify.Key;
-import lv.odylab.evemanage.application.exception.ApiKeyNotValidException;
+import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
 import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.eve.ApiKeyDao;
-import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.eve.CharacterDao;
 import lv.odylab.evemanage.domain.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.List;
 
 public class EveUpdateServiceImpl implements EveUpdateService {
@@ -39,43 +37,17 @@ public class EveUpdateServiceImpl implements EveUpdateService {
             updateApiKey(apiKey);
         }
 
-        List<Character> characters = characterDao.getAll(userKey);
-        for (Character character : characters) {
-            updateCharacter(character);
-        }
-
-        eveSynchronizationService.synchronizeUpdateCharacters(characters, userKey);
+        eveSynchronizationService.synchronizeUpdateApiKeys(apiKeys, userKey);
     }
 
     private void updateApiKey(ApiKey apiKey) throws EveApiException {
         logger.info("Updating api key with id: {}", apiKey.getId());
         try {
             eveApiDataService.populateApiKeyData(apiKey);
-        } catch (ApiKeyNotValidException e) {
+            apiKeyDao.putWithoutChecks(apiKey);
+        } catch (ApiKeyShouldBeRemovedException e) {
             logger.info("Api key is not valid anymore, going to detach characters from it and set as invalid. Api returned error: {}", e.getMessage());
-            apiKey.setCharacterInfos(null);
-            apiKey.setUpdatedDate(new Date());
-            apiKey.setLastCheckDate(new Date());
-            apiKey.setValid(Boolean.FALSE);
+            apiKeyDao.deleteWithoutChecks(apiKey);
         }
-        apiKeyDao.putWithoutChecks(apiKey);
-    }
-
-    private void updateCharacter(Character character) {
-        logger.info("Updating character: {} ({})", character.getName(), character.getCharacterID());
-        try {
-            eveApiDataService.populateCharacterData(character);
-        } catch (EveApiException e) {
-            logger.info("Caugh EveApiException during update, going to detach character", e);
-            character.setApiKey(null);
-            character.setCorporationID(null);
-            character.setCorporationName(null);
-            character.setCorporationTicker(null);
-            character.setCorporationTitles(null);
-            character.setAllianceID(null);
-            character.setAllianceName(null);
-            character.setUpdatedDate(new Date());
-        }
-        characterDao.putWithoutChecks(character);
     }
 }

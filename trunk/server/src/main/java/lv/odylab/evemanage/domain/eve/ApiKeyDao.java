@@ -52,6 +52,10 @@ public class ApiKeyDao {
         objectifyFactory.begin().delete(apiKeyKey);
     }
 
+    public void deleteWithoutChecks(ApiKey apiKey) {
+        objectifyFactory.begin().delete(apiKey);
+    }
+
     private void sameUser(ApiKey apiKey, Key<User> userKey) {
         if (!apiKey.getUser().equals(userKey)) {
             logger.error("User in apiKey and user invoking change are different, probably someone is hackng, apiKey user: {}, invoking user: {}", apiKey.getUser().getId(), userKey.getId());

@@ -120,7 +120,7 @@ public class BlueprintManagementServiceImpl implements BlueprintManagementServic
     public List<Blueprint> getCorporationBlueprints(Key<User> userKey) {
         User user = userDao.get(userKey);
         CharacterInfo mainCharacterInfo = user.getMainCharacterInfo();
-        if (mainCharacterInfo == null) {
+        if (mainCharacterInfo == null || mainCharacterInfo.getCorporationID() == null) {
             return Collections.emptyList();
         }
         return blueprintDao.getAllForCorporationID(mainCharacterInfo.getCorporationID());
@@ -130,7 +130,7 @@ public class BlueprintManagementServiceImpl implements BlueprintManagementServic
     public List<Blueprint> getAllianceBlueprints(Key<User> userKey) {
         User user = userDao.get(userKey);
         CharacterInfo mainCharacterInfo = user.getMainCharacterInfo();
-        if (mainCharacterInfo == null) {
+        if (mainCharacterInfo == null || mainCharacterInfo.getAllianceID() == null) {
             return Collections.emptyList();
         }
         return blueprintDao.getAllForAllianceID(mainCharacterInfo.getAllianceID());

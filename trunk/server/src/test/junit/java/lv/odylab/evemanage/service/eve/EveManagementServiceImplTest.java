@@ -1,7 +1,7 @@
 package lv.odylab.evemanage.service.eve;
 
 import com.googlecode.objectify.Key;
-import lv.odylab.evemanage.application.exception.ApiKeyNotValidException;
+import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
 import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.domain.eve.ApiKey;
@@ -147,7 +147,7 @@ public class EveManagementServiceImplTest {
     }
 
     @Test
-    public void testCreateApiKey() throws EveApiException, ApiKeyNotValidException {
+    public void testCreateApiKey() throws EveApiException, ApiKeyShouldBeRemovedException {
         Key<User> userKey = new Key<User>(User.class, 1);
         eveManagementService.createApiKey("apiKeyString", 1L, userKey);
         verify(eveApiDataService, times(1)).populateApiKeyData(apiKeyCaptor.capture(), eq("apiKeyString"));
