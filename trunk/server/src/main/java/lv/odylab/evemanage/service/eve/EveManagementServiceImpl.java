@@ -89,9 +89,10 @@ public class EveManagementServiceImpl implements EveManagementService {
     @Override
     public void deleteCharacter(Long characterID, Key<User> userKey) {
         Key<Character> characterKey = new Key<Character>(Character.class, characterID);
+        Character character = characterDao.get(characterKey);
         characterDao.delete(characterKey, userKey);
 
-        eveSynchronizationService.synchronizeDeleteCharacter(characterID, userKey);
+        eveSynchronizationService.synchronizeDeleteCharacter(character.getCharacterID(), userKey);
     }
 
     @Override

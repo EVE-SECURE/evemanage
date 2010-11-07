@@ -132,10 +132,13 @@ public class EveManagementServiceImplTest {
     @Test
     public void testDeleteCharacter() {
         Key<User> userKey = new Key<User>(User.class, 1);
+        Character character = new Character();
+        character.setCharacterID(2L);
+        when(characterDao.get(new Key<Character>(Character.class, 1))).thenReturn(character);
         eveManagementService.deleteCharacter(1L, userKey);
         verify(characterDao, times(1)).delete(characterKeyCaptor.capture(), eq(userKey));
         assertEquals(1, characterKeyCaptor.getValue().getId());
-        verify(synchronizationService).synchronizeDeleteCharacter(1L, userKey);
+        verify(synchronizationService).synchronizeDeleteCharacter(2L, userKey);
     }
 
     @Test

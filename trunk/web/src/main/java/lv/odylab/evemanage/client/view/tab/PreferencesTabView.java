@@ -254,6 +254,9 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
         for (CharacterNameDto characterName : characterNames) {
             newCharacterListBox.addItem(characterName.getName(), String.valueOf(characterName.getId()));
         }
+        if (newCharacterListBox.getItemCount() > 0) {
+            newCharacterListBox.setSelectedIndex(0);
+        }
     }
 
     @Override
