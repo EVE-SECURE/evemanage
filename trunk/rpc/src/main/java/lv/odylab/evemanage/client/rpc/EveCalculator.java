@@ -54,4 +54,12 @@ public class EveCalculator {
         }
         return String.valueOf(Math.round(sum * 100.0) / 100.0);
     }
+
+    public Long sum(List<Long> quantities) {
+        Long sum = 0L;
+        for (Long quantity : quantities) {
+            sum += quantity;
+        }
+        return sum;
+    }
 }

@@ -103,6 +103,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     private Map<String, CalculationDto> pathNodesStringToUsedCalculationMap;
     private Map<Long, EditableCalculationPriceSetItem> typeIdToEditableCalculationPriceSetItemMap;
     private Map<Long, ComputableCalculationPriceSetItem> typeIdToComputableCalculationPriceSetItemMap;
+    private Map<Long, CalculationPriceSetItemDto> existingTypeIdToCalculationPriceSetItemMap;
 
     private List<HandlerRegistration> handlerRegistrations;
 
@@ -168,6 +169,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         pathNodesStringToUsedCalculationMap = new HashMap<String, CalculationDto>();
         typeIdToEditableCalculationPriceSetItemMap = new HashMap<Long, EditableCalculationPriceSetItem>();
         typeIdToComputableCalculationPriceSetItemMap = new HashMap<Long, ComputableCalculationPriceSetItem>();
+        existingTypeIdToCalculationPriceSetItemMap = new TreeMap<Long, CalculationPriceSetItemDto>();
 
         handlerRegistrations = new ArrayList<HandlerRegistration>();
     }
@@ -327,17 +329,21 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
 
     @Override
     public void setNewCalculation(CalculationDto calculation) {
+        Map<Long, CalculationPriceSetItemDto> existingCalculationPriceSetItemDtoMap = createExistingTypeIdToCalculationPriceSetItemMap();
         blueprintInfoTable.removeAllRows();
         rootCalculationItemTable.removeAllRows();
         priceSetItemTable.removeAllRows();
         pathNodesStringToEditableCalculationItemMap.clear();
         pathNodesStringToComputableCalculationItemMap.clear();
         pathNodesStringToUsedCalculationMap.clear();
+        typeIdToEditableCalculationPriceSetItemMap.clear();
+        typeIdToComputableCalculationPriceSetItemMap.clear();
         calculationTree.removeAllNodes();
         calculationTree.build(calculation);
 
         computableCalculation.setCalculation(calculation);
-        PricingProcessorResult pricingProcessorResult = pricingProcessor.process(1L, calculationTree, createExistingTypeIdToCalculationPriceSetItemMap());
+
+        PricingProcessorResult pricingProcessorResult = pricingProcessor.process(1L, calculationTree, existingCalculationPriceSetItemDtoMap);
         Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap = pricingProcessorResult.getTypeIdToCalculationPriceSetItemMap();
         drawCalculationTree();
         drawCalculationPriceSetItems(new ArrayList<CalculationPriceSetItemDto>(typeIdToCalculationPriceSetItemMap.values()));
@@ -482,7 +488,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         PricingProcessorResult pricingProcessorResult = pricingProcessor.process(quantity, calculationTree, existingTypeIdToCalculationPriceSetItemMap);
         for (Map.Entry<String, ComputableCalculationItem> mapEntry : pathNodesStringToComputableCalculationItemMap.entrySet()) {
             ComputableCalculationItem computableCalculationItem = mapEntry.getValue();
-            computableCalculationItem.recalculate();
+            computableCalculationItem.recalculate(calculator);
         }
         for (Map.Entry<Long, CalculationPriceSetItemDto> mapEntry : pricingProcessorResult.getTypeIdToCalculationPriceSetItemMap().entrySet()) {
             CalculationPriceSetItemDto calculationPriceSetItemDto = mapEntry.getValue();
@@ -617,12 +623,13 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     }
 
     private void drawRootCalculationItem(CalculationTreeNode calculationTreeNode) {
-        CalculationItemDto calculationItem = calculationTreeNode.getCalculationItem();
+        CalculationItemDto calculationItem = calculationTreeNode.getMergedCalculationItem(calculator);
         String pathNodesString = calculationItem.getPathExpression().getPathNodesString();
         EditableCalculationItem editableCalculationItem = new EditableCalculationItem();
         pathNodesStringToEditableCalculationItemMap.put(pathNodesString, editableCalculationItem);
         ComputableCalculationItem computableCalculationItem = new ComputableCalculationItem();
-        computableCalculationItem.setCalculationItem(calculationItem);
+        computableCalculationItem.setCalculationItems(calculationTreeNode.getCalculationItems());
+        computableCalculationItem.setMergedCalculationItem(calculationItem);
         pathNodesStringToComputableCalculationItemMap.put(pathNodesString, computableCalculationItem);
 
         final int index = rootCalculationItemTable.getRowCount();
@@ -733,12 +740,13 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     }
 
     private void drawCalculationItem(FlexTable calculationItemTable, CalculationTreeNode calculationTreeNode) {
-        CalculationItemDto calculationItem = calculationTreeNode.getCalculationItem();
+        CalculationItemDto calculationItem = calculationTreeNode.getMergedCalculationItem(calculator);
         String pathNodesString = calculationItem.getPathExpression().getPathNodesString();
         EditableCalculationItem editableCalculationItem = new EditableCalculationItem();
         pathNodesStringToEditableCalculationItemMap.put(pathNodesString, editableCalculationItem);
         ComputableCalculationItem computableCalculationItem = new ComputableCalculationItem();
-        computableCalculationItem.setCalculationItem(calculationItem);
+        computableCalculationItem.setCalculationItems(calculationTreeNode.getCalculationItems());
+        computableCalculationItem.setMergedCalculationItem(calculationItem);
         pathNodesStringToComputableCalculationItemMap.put(pathNodesString, computableCalculationItem);
 
         final int index = calculationItemTable.getRowCount();
@@ -899,7 +907,6 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     }
 
     private Map<Long, CalculationPriceSetItemDto> createExistingTypeIdToCalculationPriceSetItemMap() {
-        Map<Long, CalculationPriceSetItemDto> existingTypeIdToCalculationPriceSetItemMap = new TreeMap<Long, CalculationPriceSetItemDto>();
         for (Map.Entry<Long, EditableCalculationPriceSetItem> mapEntry : typeIdToEditableCalculationPriceSetItemMap.entrySet()) {
             ComputableCalculationPriceSetItem computableCalculationPriceSetItem = typeIdToComputableCalculationPriceSetItemMap.get(mapEntry.getKey());
             computableCalculationPriceSetItem.getCalculationPriceSetItem();

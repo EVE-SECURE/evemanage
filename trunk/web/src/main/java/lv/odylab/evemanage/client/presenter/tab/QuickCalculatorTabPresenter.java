@@ -213,7 +213,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
         for (String pathNodesString : pathNodeStringsWithBlueprint) {
             EditableCalculationItem editableCalculationItem = display.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
             ComputableCalculationItem computableCalculationItem = display.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-            bindUseBlueprintImage(computableCalculationItem.getCalculationItem(), editableCalculationItem.getBlueprintImage());
+            bindUseBlueprintImage(computableCalculationItem.getMergedCalculationItem(), editableCalculationItem.getBlueprintImage());
             bindApplyButton(editableCalculationItem, computableCalculationItem);
         }
     }
@@ -247,7 +247,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
         for (String pathNodesString : pathNodeStringsWithBlueprint) {
             EditableCalculationItem editableCalculationItem = display.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
             ComputableCalculationItem computableCalculationItem = display.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-            bindUseBlueprintImage(computableCalculationItem.getCalculationItem(), editableCalculationItem.getBlueprintImage());
+            bindUseBlueprintImage(computableCalculationItem.getMergedCalculationItem(), editableCalculationItem.getBlueprintImage());
             bindApplyButton(editableCalculationItem, computableCalculationItem);
         }
     }
@@ -263,7 +263,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
                 blueprintImage.setOpacity();
                 display.hideBlueprintDetails(editableCalculationItem);
                 display.hideDetailsTable(editableCalculationItem);
-                pathNodesList.add(computableCalculationItem.getCalculationItem().getPathExpression().getPathNodes());
+                pathNodesList.add(computableCalculationItem.getMergedCalculationItem().getPathExpression().getPathNodes());
             }
         }
         display.excludeCalculationTreeNodesFromCalculation(pathNodesList);
@@ -279,7 +279,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
             if (blueprintImage != null && blueprintImage.hasOpacity()) {
                 blueprintImage.removeOpacity();
                 display.showBlueprintDetails(editableCalculationItem);
-                pathNodesList.add(computableCalculationItem.getCalculationItem().getPathExpression().getPathNodes());
+                pathNodesList.add(computableCalculationItem.getMergedCalculationItem().getPathExpression().getPathNodes());
             }
         }
         display.includeCalculationTreeNodesInCalculation(pathNodesList);
@@ -393,7 +393,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
             EditableCalculationItem editableCalculationItem = mapEntry.getValue();
             if (editableCalculationItem.getBlueprintImage() != null) {
                 ComputableCalculationItem computableCalculationItem = display.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-                bindUseBlueprintImage(computableCalculationItem.getCalculationItem(), editableCalculationItem.getBlueprintImage());
+                bindUseBlueprintImage(computableCalculationItem.getMergedCalculationItem(), editableCalculationItem.getBlueprintImage());
                 bindApplyButton(editableCalculationItem, computableCalculationItem);
             }
         }
@@ -431,7 +431,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
             public void onClick(ClickEvent event) {
                 editableCalculationItem.getMeLabel().setText(meTextBox.getText());
                 editableCalculationItem.getPeLabel().setText(peTextBox.getText());
-                PathExpression pathExpression = computableCalculationItem.getCalculationItem().getPathExpression();
+                PathExpression pathExpression = computableCalculationItem.getMergedCalculationItem().getPathExpression();
                 display.changeMePe(pathExpression.getPathNodes(), Integer.valueOf(meTextBox.getText()), Integer.valueOf(peTextBox.getText()));
             }
         }));
@@ -452,7 +452,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
                         EditableCalculationItem editableCalculationItem = display.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
                         OpaqueLoadableBlueprintImage blueprintImage = editableCalculationItem.getBlueprintImage();
                         if (blueprintImage != null && !display.getPathNodesStringToUsedCalculationMap().containsKey(pathNodesString)) {
-                            CalculationItemDto calculationItem = mapEntry.getValue().getCalculationItem();
+                            CalculationItemDto calculationItem = mapEntry.getValue().getMergedCalculationItem();
                             pathNodesToBlueprintNameMap.put(calculationItem.getPathExpression().getPathNodes(), calculationItem.getItemTypeName() + " Blueprint");
                             blueprintImage.removeOpacity();
                             blueprintImage.startLoading();
