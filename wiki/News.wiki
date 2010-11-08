@@ -2,8 +2,8 @@
 
 = News =
 
-== 2010.11.07 ==
-  * Fixed Issue 15 Wrong Rocket Fuel amount for Scourge Fury Heavy Missile Blueprint
+== 2010.11.08 ==
+  * Fixed Issue 15. Wrong Rocket Fuel amount for Scourge Fury Heavy Missile Blueprint
 
 == 2010.11.07 ==
   * *Improved client performance by using [http://code.google.com/webtoolkit/doc/latest/DevGuideCodeSplitting.html code splitting]* -- now each tab except Dashboard and About has it's own JS file, meaning that initial load is small (200KB, was 450KB) and tabs are loaded on demand when used. This will ensure that in future with new tabs performance will not degrade
