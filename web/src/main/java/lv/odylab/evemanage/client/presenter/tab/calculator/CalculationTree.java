@@ -4,6 +4,7 @@ import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -34,9 +35,12 @@ public class CalculationTree {
             currentNodes = node.getNodeMap();
         }
         Long lastPathNode = pathNodes[pathNodes.length - 1];
-        CalculationTreeNode calculationTreeNode = new CalculationTreeNode();
-        calculationTreeNode.setCalculationItem(calculationItem);
-        currentNodes.put(lastPathNode, calculationTreeNode);
+        CalculationTreeNode calculationTreeNode = currentNodes.get(lastPathNode);
+        if (calculationTreeNode == null) {
+            calculationTreeNode = new CalculationTreeNode();
+            currentNodes.put(lastPathNode, calculationTreeNode);
+        }
+        calculationTreeNode.addCalculationItem(calculationItem);
     }
 
     public CalculationTreeNode getNodeByPathNodes(Long[] pathNodes) {
@@ -52,10 +56,15 @@ public class CalculationTree {
     public void changeRootNodesMePeQuantity(Integer meLevel, Integer peLevel, Long quantity) {
         for (Map.Entry<Long, CalculationTreeNode> mapEntry : nodeMap.entrySet()) {
             CalculationTreeNode node = mapEntry.getValue();
-            CalculationItemDto calculationItem = node.getCalculationItem();
-            calculationItem.getPathExpression().setMeLevel(meLevel);
-            calculationItem.getPathExpression().setPeLevel(peLevel);
-            calculationItem.setParentQuantity(quantity);
+            List<CalculationItemDto> calculationItems = node.getCalculationItems();
+            for (CalculationItemDto calculationItem : calculationItems) {
+                PathExpression pathExpression = calculationItem.getPathExpression();
+                if (pathExpression.isMaterial()) {
+                    pathExpression.setMeLevel(meLevel);
+                    pathExpression.setPeLevel(peLevel);
+                }
+                calculationItem.setParentQuantity(quantity);
+            }
         }
     }
 
@@ -66,12 +75,14 @@ public class CalculationTree {
     }
 
     private void recursivelySetPrices(Map<Long, String> typeIdToPriceMap, CalculationTreeNode calculationTreeNode) {
-        CalculationItemDto calculationItem = calculationTreeNode.getCalculationItem();
-        if (typeIdToPriceMap.containsKey(calculationItem.getItemTypeID())) {
-            calculationItem.setPrice(typeIdToPriceMap.get(calculationItem.getItemTypeID()));
-        }
-        for (CalculationTreeNode node : calculationTreeNode.getNodeMap().values()) {
-            recursivelySetPrices(typeIdToPriceMap, node);
+        List<CalculationItemDto> calculationItems = calculationTreeNode.getCalculationItems();
+        for (CalculationItemDto calculationItem : calculationItems) {
+            if (typeIdToPriceMap.containsKey(calculationItem.getItemTypeID())) {
+                calculationItem.setPrice(typeIdToPriceMap.get(calculationItem.getItemTypeID()));
+            }
+            for (CalculationTreeNode node : calculationTreeNode.getNodeMap().values()) {
+                recursivelySetPrices(typeIdToPriceMap, node);
+            }
         }
     }
 

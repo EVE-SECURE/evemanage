@@ -29,6 +29,6 @@ public class QuickCalculatorSetEvent extends QuickCalculatorTabEvent<QuickCalcul
     protected void dispatch(QuickCalculatorSetEventHandler handler) {
         handler.onQuickCalculatorSet(this);
 
-        trackEvent();
+        trackEvent(calculation.getBlueprintTypeName());
     }
 }
