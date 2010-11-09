@@ -96,6 +96,7 @@ import lv.odylab.evemanage.client.widget.AttachedCharacterListBox;
 import lv.odylab.evemanage.client.widget.PriceSetListBox;
 import lv.odylab.evemanage.client.widget.PriceTextBox;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -689,14 +690,14 @@ public class PriceSetTabPresenter implements Presenter, PriceSetTabErrorEventHan
             @Override
             public void onClick(ClickEvent clickEvent) {
                 List<PriceSetItemDto> priceSetItems = new ArrayList<PriceSetItemDto>();
-                priceSetItems.add(createPriceSetItem(34L, 4L, "06_14", "Tritanium", "0.00"));
-                priceSetItems.add(createPriceSetItem(35L, 4L, "06_15", "Pyerite", "0.00"));
-                priceSetItems.add(createPriceSetItem(36L, 4L, "06_12", "Mexallon", "0.00"));
-                priceSetItems.add(createPriceSetItem(37L, 4L, "06_16", "Isogen", "0.00"));
-                priceSetItems.add(createPriceSetItem(38L, 4L, "11_09", "Nocxium", "0.00"));
-                priceSetItems.add(createPriceSetItem(39L, 4L, "11_11", "Zydrine", "0.00"));
-                priceSetItems.add(createPriceSetItem(40L, 4L, "11_10", "Megacyte", "0.00"));
-                priceSetItems.add(createPriceSetItem(11399L, 4L, "35_02", "Morphite", "0.00"));
+                priceSetItems.add(createPriceSetItem(34L, 4L, "06_14", "Tritanium", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(35L, 4L, "06_15", "Pyerite", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(36L, 4L, "06_12", "Mexallon", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(37L, 4L, "06_16", "Isogen", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(38L, 4L, "11_09", "Nocxium", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(39L, 4L, "11_11", "Zydrine", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(40L, 4L, "11_10", "Megacyte", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(11399L, 4L, "35_02", "Morphite", BigDecimal.ZERO));
                 eventBus.fireEvent(new PriceSetManyItemsAddedEvent(trackingManager, constants, priceSetItems, 0L));
             }
         }));
@@ -704,17 +705,17 @@ public class PriceSetTabPresenter implements Presenter, PriceSetTabErrorEventHan
             @Override
             public void onClick(ClickEvent clickEvent) {
                 List<PriceSetItemDto> priceSetItems = new ArrayList<PriceSetItemDto>();
-                priceSetItems.add(createPriceSetItem(16670L, 4L, "49_09", "Crystalline Carbonide", "0.00"));
-                priceSetItems.add(createPriceSetItem(16671L, 4L, "49_11", "Titanium Carbide", "0.00"));
-                priceSetItems.add(createPriceSetItem(16672L, 4L, "49_12", "Tungsten Carbide", "0.00"));
-                priceSetItems.add(createPriceSetItem(16673L, 4L, "49_10", "Fernite Carbide", "0.00"));
-                priceSetItems.add(createPriceSetItem(16678L, 4L, "50_02", "Sylramic Fibers", "0.00"));
-                priceSetItems.add(createPriceSetItem(16679L, 4L, "49_14", "Fullerides", "0.00"));
-                priceSetItems.add(createPriceSetItem(16680L, 4L, "50_01", "Phenolic Composites", "0.00"));
-                priceSetItems.add(createPriceSetItem(16681L, 4L, "49_16", "Nanotransistors", "0.00"));
-                priceSetItems.add(createPriceSetItem(16682L, 4L, "49_15", "Hypersynaptic Fibers", "0.00"));
-                priceSetItems.add(createPriceSetItem(16683L, 4L, "49_08", "Ferrogel", "0.00"));
-                priceSetItems.add(createPriceSetItem(17317L, 4L, "49_13", "Fermionic Condensates", "0.00"));
+                priceSetItems.add(createPriceSetItem(16670L, 4L, "49_09", "Crystalline Carbonide", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(16671L, 4L, "49_11", "Titanium Carbide", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(16672L, 4L, "49_12", "Tungsten Carbide", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(16673L, 4L, "49_10", "Fernite Carbide", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(16678L, 4L, "50_02", "Sylramic Fibers", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(16679L, 4L, "49_14", "Fullerides", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(16680L, 4L, "50_01", "Phenolic Composites", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(16681L, 4L, "49_16", "Nanotransistors", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(16682L, 4L, "49_15", "Hypersynaptic Fibers", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(16683L, 4L, "49_08", "Ferrogel", BigDecimal.ZERO));
+                priceSetItems.add(createPriceSetItem(17317L, 4L, "49_13", "Fermionic Condensates", BigDecimal.ZERO));
                 eventBus.fireEvent(new PriceSetManyItemsAddedEvent(trackingManager, constants, priceSetItems, 0L));
             }
         }));
@@ -876,7 +877,7 @@ public class PriceSetTabPresenter implements Presenter, PriceSetTabErrorEventHan
         bindDynamic();
     }
 
-    private PriceSetItemDto createPriceSetItem(Long itemTypeID, Long itemCategoryID, String itemTypeIcon, String itemTypeName, String price) {
+    private PriceSetItemDto createPriceSetItem(Long itemTypeID, Long itemCategoryID, String itemTypeIcon, String itemTypeName, BigDecimal price) {
         PriceSetItemDto priceSetItem = new PriceSetItemDto();
         priceSetItem.setItemTypeID(itemTypeID);
         priceSetItem.setItemCategoryID(itemCategoryID);

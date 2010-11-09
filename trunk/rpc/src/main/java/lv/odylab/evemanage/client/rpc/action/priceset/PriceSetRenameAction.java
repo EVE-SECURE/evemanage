@@ -5,8 +5,6 @@ import lv.odylab.evemanage.client.rpc.action.RunnedBy;
 
 @RunnedBy(PriceSetRenameActionRunner.class)
 public class PriceSetRenameAction implements Action<PriceSetRenameActionResponse> {
-    private static final long serialVersionUID = 3024550389116638766L;
-
     private Long priceSetID;
     private String priceSetName;
 

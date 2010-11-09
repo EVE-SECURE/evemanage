@@ -6,8 +6,6 @@ import java.io.Serializable;
 
 @Unindexed
 public class PriceSetItem implements Serializable {
-    private static final long serialVersionUID = -8657555959599110299L;
-
     private Long itemTypeID;
     private Long itemCategoryID;
     private String itemTypeName;

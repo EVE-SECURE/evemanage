@@ -1,15 +1,16 @@
 package lv.odylab.evemanage.client.rpc.dto.calculation;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class CalculationPriceSetItemDto implements Serializable {
     private Long itemTypeID;
     private Long itemCategoryID;
     private String itemTypeName;
     private String itemTypeIcon;
-    private String price;
+    private BigDecimal price;
     private Long quantity;
-    private String totalPrice;
+    private BigDecimal totalPrice;
 
     public Long getItemTypeID() {
         return itemTypeID;
@@ -43,11 +44,11 @@ public class CalculationPriceSetItemDto implements Serializable {
         this.itemTypeIcon = itemTypeIcon;
     }
 
-    public String getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -59,11 +60,11 @@ public class CalculationPriceSetItemDto implements Serializable {
         this.quantity = quantity;
     }
 
-    public String getTotalPrice() {
+    public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(String totalPrice) {
+    public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
 }

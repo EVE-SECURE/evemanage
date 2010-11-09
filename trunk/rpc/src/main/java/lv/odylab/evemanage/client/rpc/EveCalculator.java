@@ -1,7 +1,5 @@
 package lv.odylab.evemanage.client.rpc;
 
-import java.util.List;
-
 public class EveCalculator {
     public Double calculateWaste(Integer meLevel, Integer wasteFactor) {
         if (meLevel < 0) {
@@ -41,25 +39,5 @@ public class EveCalculator {
 
     public Integer calculateInventionTime(Integer researchTechTime, double inventionSlotMultiplier) {
         return (int) Math.round(researchTechTime * inventionSlotMultiplier);
-    }
-
-    public String multiply(Long quantity, String price) {
-        return String.valueOf((Math.round(Double.valueOf(price) * quantity * 100.0) / 100.0));
-    }
-
-    public String sum(List<String> prices) {
-        Double sum = 0.00;
-        for (String price : prices) {
-            sum += Double.valueOf(price);
-        }
-        return String.valueOf(Math.round(sum * 100.0) / 100.0);
-    }
-
-    public Long sum(List<Long> quantities) {
-        Long sum = 0L;
-        for (Long quantity : quantities) {
-            sum += quantity;
-        }
-        return sum;
     }
 }

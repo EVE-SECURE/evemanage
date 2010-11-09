@@ -6,8 +6,6 @@ import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import java.util.List;
 
 public class PriceFetchFromEveCentralActionResponse implements Response {
-    private static final long serialVersionUID = 2207120645840855446L;
-
     private List<PriceSetItemDto> priceSetItems;
 
     public List<PriceSetItemDto> getPriceSetItems() {

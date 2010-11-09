@@ -3,8 +3,6 @@ package lv.odylab.evemanage.client.rpc.dto.priceset;
 import java.io.Serializable;
 
 public class PriceSetNameDto implements Serializable {
-    private static final long serialVersionUID = -8349363842336894482L;
-
     private Long priceSetID;
     private String priceSetName;
 

@@ -7,8 +7,6 @@ import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
 import java.util.List;
 
 public class PriceSetRenameActionResponse implements Response {
-    private static final long serialVersionUID = -925716952530507186L;
-
     private List<PriceSetNameDto> priceSetNames;
     private PriceSetDto priceSet;
     private Integer currentPriceSetNameIndex;

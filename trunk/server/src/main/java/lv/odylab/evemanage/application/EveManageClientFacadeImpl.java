@@ -31,6 +31,7 @@ import lv.odylab.evemanage.domain.user.CharacterInfo;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -219,7 +220,7 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public Map<Long, String> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs) throws EveCentralApiException {
+    public Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs) throws EveCentralApiException {
         return applicationFacade.fetchPricesFromEveCentralForTypeIDs(typeIDs);
     }
 
@@ -239,7 +240,7 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public Map<Long, String> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs) throws EveMetricsApiException {
+    public Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs) throws EveMetricsApiException {
         return applicationFacade.fetchPricesFromEveMetricsForTypeIDs(typeIDs);
     }
 

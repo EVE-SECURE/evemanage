@@ -8,8 +8,6 @@ import java.util.List;
 
 @RunnedBy(PriceFetchFromEveCentralActionRunner.class)
 public class PriceFetchFromEveCentralAction implements Action<PriceFetchFromEveCentralActionResponse> {
-    private static final long serialVersionUID = -6158234375749054832L;
-
     private List<PriceSetItemDto> priceSetItems;
 
     public void setPriceSetItems(List<PriceSetItemDto> priceSetItems) {

@@ -2,17 +2,18 @@ package lv.odylab.evemanage.client.presenter.tab.calculator;
 
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceSetItemDto;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 public class PricingProcessorResult {
-    private String totalPrice;
+    private BigDecimal totalPrice;
     private Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap;
 
-    public String getTotalPrice() {
+    public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(String totalPrice) {
+    public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
 

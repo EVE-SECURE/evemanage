@@ -1,9 +1,9 @@
 package lv.odylab.evemanage.client.presenter.tab.calculator;
 
-import lv.odylab.evemanage.client.rpc.EveCalculator;
 import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,35 +25,36 @@ public class CalculationTreeNode {
         calculationItems.add(calculationItem);
     }
 
-    public CalculationItemDto getMergedCalculationItem(EveCalculator calculator) {
+    public CalculationTreeNodeSummary getSummary() {
+        CalculationTreeNodeSummary summary = new CalculationTreeNodeSummary();
+        CalculationItemDto firstCalculationItemDto = calculationItems.get(0);
+        PathExpression pathExpression = firstCalculationItemDto.getPathExpression();
+        summary.setPathNodesString(pathExpression.getPathNodesString());
+        summary.setPathNodes(pathExpression.getPathNodes());
+        summary.setItemTypeID(firstCalculationItemDto.getItemTypeID());
+        summary.setItemCategoryID(firstCalculationItemDto.getItemCategoryID());
+        summary.setItemTypeName(firstCalculationItemDto.getItemTypeName());
+        summary.setItemTypeIcon(firstCalculationItemDto.getItemTypeIcon());
+        summary.setParentQuantity(firstCalculationItemDto.getParentQuantity());
+        summary.setPrice(firstCalculationItemDto.getPrice());
         if (calculationItems.size() > 1) {
-            CalculationItemDto calculationItem = new CalculationItemDto();
-            CalculationItemDto firstCalculationItemDto = calculationItems.get(0);
-            calculationItem.setPathExpression(firstCalculationItemDto.getPathExpression());
-            calculationItem.setItemTypeID(firstCalculationItemDto.getItemTypeID());
-            calculationItem.setItemCategoryID(firstCalculationItemDto.getItemCategoryID());
-            calculationItem.setItemTypeName(firstCalculationItemDto.getItemTypeName());
-            calculationItem.setItemTypeIcon(firstCalculationItemDto.getItemTypeIcon());
-            calculationItem.setParentQuantity(firstCalculationItemDto.getParentQuantity());
-            calculationItem.setPrice(firstCalculationItemDto.getPrice());
-            List<Long> sumQuantity = new ArrayList<Long>();
-            List<Long> sumPerfectQuantity = new ArrayList<Long>();
-            List<String> sumTotalPrice = new ArrayList<String>();
-            List<String> sumTotalPriceForParent = new ArrayList<String>();
+            Long quantity = 0L;
+            BigDecimal totalPrice = BigDecimal.ZERO;
+            BigDecimal totalPriceForParent = BigDecimal.ZERO;
             for (CalculationItemDto nodeCalculationItem : calculationItems) {
-                sumQuantity.add(nodeCalculationItem.getQuantity());
-                sumPerfectQuantity.add(nodeCalculationItem.getPerfectQuantity());
-                sumTotalPrice.add(nodeCalculationItem.getTotalPrice());
-                sumTotalPriceForParent.add(nodeCalculationItem.getTotalPriceForParent());
+                quantity += nodeCalculationItem.getQuantity();
+                totalPrice = totalPrice.add(nodeCalculationItem.getTotalPrice());
+                totalPriceForParent = totalPriceForParent.add(nodeCalculationItem.getTotalPriceForParent());
             }
-            calculationItem.setQuantity(calculator.sum(sumQuantity));
-            calculationItem.setPerfectQuantity(calculator.sum(sumPerfectQuantity));
-            calculationItem.setTotalPrice(calculator.sum(sumTotalPrice));
-            calculationItem.setTotalPriceForParent(calculator.sum(sumTotalPriceForParent));
-            return calculationItem;
+            summary.setQuantity(quantity);
+            summary.setTotalPrice(totalPrice);
+            summary.setTotalPriceForParent(totalPriceForParent);
         } else {
-            return calculationItems.get(0);
+            summary.setQuantity(firstCalculationItemDto.getQuantity());
+            summary.setTotalPrice(firstCalculationItemDto.getTotalPrice());
+            summary.setTotalPriceForParent(firstCalculationItemDto.getTotalPriceForParent());
         }
+        return summary;
     }
 
     public Map<Long, CalculationTreeNode> getNodeMap() {

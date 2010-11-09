@@ -304,7 +304,7 @@ public interface EveManageMessages extends Messages {
     @DefaultMessage("No corp titles")
     String noCorpTitles();
 
-    @DefaultMessage("Last API check date:")
+    @DefaultMessage("Last API check date")
     String lastApiCheckDate();
 
     @DefaultMessage("Limited API key")

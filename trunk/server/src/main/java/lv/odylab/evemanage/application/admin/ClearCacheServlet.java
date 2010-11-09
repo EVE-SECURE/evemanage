@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ClearCacheServlet extends HttpServlet {
-    private static final long serialVersionUID = -5572467638030093137L;
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override

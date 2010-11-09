@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.TextBox;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,13 +42,18 @@ public class PriceTextBox extends TextBox {
         }));
     }
 
+    public void setPrice(BigDecimal price) {
+        this.price = EveNumberFormat.DECIMAL_FORMAT.parse(price.toPlainString());
+        setText(EveNumberFormat.PRICE_FORMAT.format(this.price));
+    }
+
     public void setPrice(String price) {
         this.price = EveNumberFormat.DECIMAL_FORMAT.parse(price);
         setText(EveNumberFormat.PRICE_FORMAT.format(this.price));
     }
 
-    public String getPrice() {
-        return EveNumberFormat.DECIMAL_FORMAT.format(price);
+    public BigDecimal getPrice() {
+        return new BigDecimal(EveNumberFormat.DECIMAL_FORMAT.format(price)).setScale(2);
     }
 
     public List<HandlerRegistration> getHandlerRegistrations() {

@@ -38,12 +38,12 @@ import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorUsedBluep
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorUsedBlueprintEventHandler;
 import lv.odylab.evemanage.client.presenter.AttachableDisplay;
 import lv.odylab.evemanage.client.presenter.Presenter;
+import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationTreeNodeSummary;
 import lv.odylab.evemanage.client.presenter.tab.calculator.ComputableCalculationItem;
 import lv.odylab.evemanage.client.presenter.tab.calculator.EditableCalculation;
 import lv.odylab.evemanage.client.presenter.tab.calculator.EditableCalculationItem;
 import lv.odylab.evemanage.client.presenter.tab.calculator.EditableCalculationPriceSetItem;
 import lv.odylab.evemanage.client.rpc.EveManageRemoteServiceAsync;
-import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorFetchPricesFromEveCentralAction;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorFetchPricesFromEveCentralActionResponse;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorFetchPricesFromEveMetricsAction;
@@ -57,13 +57,13 @@ import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseA
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseBlueprintAction;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseBlueprintActionResponse;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
 import lv.odylab.evemanage.client.widget.DefaultNumberChangeHandler;
 import lv.odylab.evemanage.client.widget.OnlyDigitsAndMinusKeyPressHandler;
 import lv.odylab.evemanage.client.widget.OnlyDigitsKeyPressHandler;
 import lv.odylab.evemanage.client.widget.OpaqueLoadableBlueprintImage;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -125,7 +125,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
 
         void updatePrices();
 
-        void updatePrices(Map<Long, String> typeIdToPriceMap);
+        void updatePrices(Map<Long, BigDecimal> typeIdToPriceMap);
 
         List<HandlerRegistration> getHandlerRegistrations();
     }
@@ -213,7 +213,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
         for (String pathNodesString : pathNodeStringsWithBlueprint) {
             EditableCalculationItem editableCalculationItem = display.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
             ComputableCalculationItem computableCalculationItem = display.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-            bindUseBlueprintImage(computableCalculationItem.getMergedCalculationItem(), editableCalculationItem.getBlueprintImage());
+            bindUseBlueprintImage(computableCalculationItem.getCalculationTreeNodeSummary(), editableCalculationItem.getBlueprintImage());
             bindApplyButton(editableCalculationItem, computableCalculationItem);
         }
     }
@@ -247,7 +247,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
         for (String pathNodesString : pathNodeStringsWithBlueprint) {
             EditableCalculationItem editableCalculationItem = display.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
             ComputableCalculationItem computableCalculationItem = display.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-            bindUseBlueprintImage(computableCalculationItem.getMergedCalculationItem(), editableCalculationItem.getBlueprintImage());
+            bindUseBlueprintImage(computableCalculationItem.getCalculationTreeNodeSummary(), editableCalculationItem.getBlueprintImage());
             bindApplyButton(editableCalculationItem, computableCalculationItem);
         }
     }
@@ -263,7 +263,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
                 blueprintImage.setOpacity();
                 display.hideBlueprintDetails(editableCalculationItem);
                 display.hideDetailsTable(editableCalculationItem);
-                pathNodesList.add(computableCalculationItem.getMergedCalculationItem().getPathExpression().getPathNodes());
+                pathNodesList.add(computableCalculationItem.getCalculationTreeNodeSummary().getPathNodes());
             }
         }
         display.excludeCalculationTreeNodesFromCalculation(pathNodesList);
@@ -279,7 +279,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
             if (blueprintImage != null && blueprintImage.hasOpacity()) {
                 blueprintImage.removeOpacity();
                 display.showBlueprintDetails(editableCalculationItem);
-                pathNodesList.add(computableCalculationItem.getMergedCalculationItem().getPathExpression().getPathNodes());
+                pathNodesList.add(computableCalculationItem.getCalculationTreeNodeSummary().getPathNodes());
             }
         }
         display.includeCalculationTreeNodesInCalculation(pathNodesList);
@@ -393,7 +393,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
             EditableCalculationItem editableCalculationItem = mapEntry.getValue();
             if (editableCalculationItem.getBlueprintImage() != null) {
                 ComputableCalculationItem computableCalculationItem = display.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-                bindUseBlueprintImage(computableCalculationItem.getMergedCalculationItem(), editableCalculationItem.getBlueprintImage());
+                bindUseBlueprintImage(computableCalculationItem.getCalculationTreeNodeSummary(), editableCalculationItem.getBlueprintImage());
                 bindApplyButton(editableCalculationItem, computableCalculationItem);
             }
         }
@@ -431,8 +431,7 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
             public void onClick(ClickEvent event) {
                 editableCalculationItem.getMeLabel().setText(meTextBox.getText());
                 editableCalculationItem.getPeLabel().setText(peTextBox.getText());
-                PathExpression pathExpression = computableCalculationItem.getMergedCalculationItem().getPathExpression();
-                display.changeMePe(pathExpression.getPathNodes(), Integer.valueOf(meTextBox.getText()), Integer.valueOf(peTextBox.getText()));
+                display.changeMePe(computableCalculationItem.getCalculationTreeNodeSummary().getPathNodes(), Integer.valueOf(meTextBox.getText()), Integer.valueOf(peTextBox.getText()));
             }
         }));
         dynamicHandlerRegistrations.add(meTextBox.addKeyPressHandler(new OnlyDigitsAndMinusKeyPressHandler(meTextBox, 3)));
@@ -452,8 +451,8 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
                         EditableCalculationItem editableCalculationItem = display.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
                         OpaqueLoadableBlueprintImage blueprintImage = editableCalculationItem.getBlueprintImage();
                         if (blueprintImage != null && !display.getPathNodesStringToUsedCalculationMap().containsKey(pathNodesString)) {
-                            CalculationItemDto calculationItem = mapEntry.getValue().getMergedCalculationItem();
-                            pathNodesToBlueprintNameMap.put(calculationItem.getPathExpression().getPathNodes(), calculationItem.getItemTypeName() + " Blueprint");
+                            CalculationTreeNodeSummary calculationTreeNodeSummary = mapEntry.getValue().getCalculationTreeNodeSummary();
+                            pathNodesToBlueprintNameMap.put(calculationTreeNodeSummary.getPathNodes(), calculationTreeNodeSummary.getItemTypeName() + " Blueprint");
                             blueprintImage.removeOpacity();
                             blueprintImage.startLoading();
                         }
@@ -500,12 +499,12 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
         }));
     }
 
-    private void bindUseBlueprintImage(final CalculationItemDto calculationItem, final OpaqueLoadableBlueprintImage useBlueprintImage) {
+    private void bindUseBlueprintImage(final CalculationTreeNodeSummary calculationTreeNodeSummary, final OpaqueLoadableBlueprintImage useBlueprintImage) {
         dynamicHandlerRegistrations.add(useBlueprintImage.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 if (useBlueprintImage.hasOpacity()) {
-                    String pathNodesString = calculationItem.getPathExpression().getPathNodesString();
+                    String pathNodesString = calculationTreeNodeSummary.getPathNodesString();
                     if (display.getPathNodesStringToUsedCalculationMap().containsKey(pathNodesString)) {
                         reuseBlueprint();
                     } else {
@@ -518,9 +517,8 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
 
             private void useBlueprintFirstTime() {
                 QuickCalculatorUseBlueprintAction action = new QuickCalculatorUseBlueprintAction();
-                PathExpression pathExpression = calculationItem.getPathExpression();
-                action.setPathNodes(pathExpression.getPathNodes());
-                action.setBlueprintName(calculationItem.getItemTypeName() + " Blueprint");
+                action.setPathNodes(calculationTreeNodeSummary.getPathNodes());
+                action.setBlueprintName(calculationTreeNodeSummary.getItemTypeName() + " Blueprint");
                 useBlueprintImage.removeOpacity();
                 useBlueprintImage.startLoading();
                 rpcService.execute(action, new QuickCalculatorTabActionCallback<QuickCalculatorUseBlueprintActionResponse>(eventBus, trackingManager, constants) {
@@ -540,14 +538,12 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
 
             private void stopUsingBlueprint() {
                 useBlueprintImage.setOpacity();
-                PathExpression pathExpression = calculationItem.getPathExpression();
-                eventBus.fireEvent(new QuickCalculatorStoppedUsingBlueprintEvent(trackingManager, constants, pathExpression.getPathNodes(), pathExpression.getPathNodesString()));
+                eventBus.fireEvent(new QuickCalculatorStoppedUsingBlueprintEvent(trackingManager, constants, calculationTreeNodeSummary.getPathNodes(), calculationTreeNodeSummary.getPathNodesString()));
             }
 
             private void reuseBlueprint() {
                 useBlueprintImage.removeOpacity();
-                PathExpression pathExpression = calculationItem.getPathExpression();
-                eventBus.fireEvent(new QuickCalculatorReusedBlueprintEvent(trackingManager, constants, pathExpression.getPathNodes(), pathExpression.getPathNodesString()));
+                eventBus.fireEvent(new QuickCalculatorReusedBlueprintEvent(trackingManager, constants, calculationTreeNodeSummary.getPathNodes(), calculationTreeNodeSummary.getPathNodesString()));
             }
         }));
     }

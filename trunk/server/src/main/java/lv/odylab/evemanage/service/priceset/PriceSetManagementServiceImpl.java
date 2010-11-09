@@ -20,6 +20,7 @@ import lv.odylab.evemanage.integration.evecentralapi.dto.MarketStatDto;
 import lv.odylab.evemanage.integration.evemetricsapi.EveMetricsApiGateway;
 import lv.odylab.evemanage.integration.evemetricsapi.dto.ItemPriceDto;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -180,11 +181,11 @@ public class PriceSetManagementServiceImpl implements PriceSetManagementService 
     }
 
     @Override
-    public Map<Long, String> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs) throws EveCentralApiException {
+    public Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs) throws EveCentralApiException {
         List<MarketStatDto> marketStatDtos = eveCentralApiGateway.getMarketStatInRegion(10000002L, typeIDs.toArray(new Long[0]));
-        Map<Long, String> typeIdToPriceMap = new HashMap<Long, String>();
+        Map<Long, BigDecimal> typeIdToPriceMap = new HashMap<Long, BigDecimal>();
         for (MarketStatDto marketStatDto : marketStatDtos) {
-            typeIdToPriceMap.put(marketStatDto.getTypeID(), String.valueOf(marketStatDto.getMedian()));
+            typeIdToPriceMap.put(marketStatDto.getTypeID(), marketStatDto.getMedian());
         }
         return typeIdToPriceMap;
     }
@@ -208,11 +209,11 @@ public class PriceSetManagementServiceImpl implements PriceSetManagementService 
     }
 
     @Override
-    public Map<Long, String> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs) throws EveMetricsApiException {
+    public Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs) throws EveMetricsApiException {
         List<ItemPriceDto> itemPriceDtos = eveMetricsApiGateway.getSafeItemPrice(10000002L, typeIDs.toArray(new Long[0]));
-        Map<Long, String> typeIdToPriceMap = new HashMap<Long, String>();
+        Map<Long, BigDecimal> typeIdToPriceMap = new HashMap<Long, BigDecimal>();
         for (ItemPriceDto itemPriceDto : itemPriceDtos) {
-            typeIdToPriceMap.put(itemPriceDto.getTypeID(), String.valueOf(itemPriceDto.getMedian()));
+            typeIdToPriceMap.put(itemPriceDto.getTypeID(), itemPriceDto.getMedian());
         }
         return typeIdToPriceMap;
     }
