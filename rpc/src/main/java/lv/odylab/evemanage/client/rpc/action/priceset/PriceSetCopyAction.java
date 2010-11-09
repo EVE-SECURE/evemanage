@@ -5,8 +5,6 @@ import lv.odylab.evemanage.client.rpc.action.RunnedBy;
 
 @RunnedBy(PriceSetCopyActionRunner.class)
 public class PriceSetCopyAction implements Action<PriceSetCopyActionResponse> {
-    private static final long serialVersionUID = -1330755468070038009L;
-
     private Long priceSetID;
     private String priceSetName;
 

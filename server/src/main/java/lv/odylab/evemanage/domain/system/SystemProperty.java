@@ -8,8 +8,6 @@ import java.io.Serializable;
 
 @Unindexed
 public class SystemProperty implements Serializable {
-    private static final long serialVersionUID = 8546390252914293375L;
-
     public static final String SYSTEM_PUBLIC_KEY_BASE64 = "systemPublicKeyBase64";
     public static final String SYSTEM_BANNER_MESSAGE = "systemBannerMessage";
 

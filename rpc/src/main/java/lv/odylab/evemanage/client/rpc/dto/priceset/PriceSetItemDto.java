@@ -1,15 +1,14 @@
 package lv.odylab.evemanage.client.rpc.dto.priceset;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class PriceSetItemDto implements Serializable {
-    private static final long serialVersionUID = -4974813596634370006L;
-
     private Long itemTypeID;
     private Long itemCategoryID;
     private String itemTypeName;
     private String itemTypeIcon;
-    private String price;
+    private BigDecimal price;
 
     public Long getItemTypeID() {
         return itemTypeID;
@@ -43,11 +42,11 @@ public class PriceSetItemDto implements Serializable {
         this.itemTypeIcon = itemTypeIcon;
     }
 
-    public String getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 }

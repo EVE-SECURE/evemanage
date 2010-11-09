@@ -6,7 +6,7 @@ import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceSetItemDto;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -19,61 +19,45 @@ public class PricingProcessor {
         this.calculator = calculator;
     }
 
-    public PricingProcessorResult process(Long quantity, CalculationTree calculationTree) {
-        List<String> rootNodePrices = new ArrayList<String>();
-        Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap = new TreeMap<Long, CalculationPriceSetItemDto>();
-        for (CalculationTreeNode node : calculationTree.getNodeMap().values()) {
-            rootNodePrices.add(recursivelyApplyPrices(typeIdToCalculationPriceSetItemMap, null, quantity, node));
-        }
-        PricingProcessorResult pricingProcessorResult = new PricingProcessorResult();
-        pricingProcessorResult.setTotalPrice(calculator.multiply(quantity, calculator.sum(rootNodePrices)));
-        pricingProcessorResult.setTypeIdToCalculationPriceSetItemMap(typeIdToCalculationPriceSetItemMap);
-        return pricingProcessorResult;
-    }
-
-
     public PricingProcessorResult process(Long quantity, CalculationTree calculationTree, Map<Long, CalculationPriceSetItemDto> existingTypeIdToCalculationPriceSetItemMap) {
-        List<String> rootNodePrices = new ArrayList<String>();
+        BigDecimal rootNodePrice = BigDecimal.ZERO;
         Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap = new TreeMap<Long, CalculationPriceSetItemDto>();
         for (CalculationTreeNode node : calculationTree.getNodeMap().values()) {
-            rootNodePrices.add(recursivelyApplyPrices(typeIdToCalculationPriceSetItemMap, existingTypeIdToCalculationPriceSetItemMap, quantity, node));
+            rootNodePrice = rootNodePrice.add(recursivelyApplyPrices(typeIdToCalculationPriceSetItemMap, existingTypeIdToCalculationPriceSetItemMap, quantity, node));
         }
         PricingProcessorResult pricingProcessorResult = new PricingProcessorResult();
-        pricingProcessorResult.setTotalPrice(calculator.multiply(quantity, calculator.sum(rootNodePrices)));
+        pricingProcessorResult.setTotalPrice(rootNodePrice.multiply(BigDecimal.valueOf(quantity)));
         pricingProcessorResult.setTypeIdToCalculationPriceSetItemMap(typeIdToCalculationPriceSetItemMap);
         return pricingProcessorResult;
     }
 
-    private String recursivelyApplyPrices(Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap, Map<Long, CalculationPriceSetItemDto> existingTypeIdToCalculationPriceSetItemMap, Long parentQuantity, CalculationTreeNode calculationTreeNode) {
+    private BigDecimal recursivelyApplyPrices(Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap, Map<Long, CalculationPriceSetItemDto> existingTypeIdToCalculationPriceSetItemMap, Long parentQuantity, CalculationTreeNode calculationTreeNode) {
         if (calculationTreeNode.isExcludeChildNodesFromCalculation() || calculationTreeNode.getNodeMap().size() == 0) {
             return applyPricesForLastNode(typeIdToCalculationPriceSetItemMap, existingTypeIdToCalculationPriceSetItemMap, parentQuantity, calculationTreeNode);
         }
 
-        List<String> totalPrices = new ArrayList<String>();
+        BigDecimal totalPrice = BigDecimal.ZERO;
         List<CalculationItemDto> calculationItems = calculationTreeNode.getCalculationItems();
         for (CalculationItemDto calculationItem : calculationItems) {
             Long quantity = calculateQuantityForCalculationItem(calculationItem);
             calculationItem.setQuantity(quantity);
             calculationItem.setParentQuantity(parentQuantity);
-            List<String> nodePrices = new ArrayList<String>();
+            BigDecimal nodePrice = BigDecimal.ZERO;
             for (CalculationTreeNode node : calculationTreeNode.getNodeMap().values()) {
-                String nodePrice = recursivelyApplyPrices(typeIdToCalculationPriceSetItemMap, existingTypeIdToCalculationPriceSetItemMap, quantity * parentQuantity, node);
-                nodePrices.add(nodePrice);
+                nodePrice = nodePrice.add(recursivelyApplyPrices(typeIdToCalculationPriceSetItemMap, existingTypeIdToCalculationPriceSetItemMap, quantity * parentQuantity, node));
             }
-            String nodeSummedPrice = calculator.sum(nodePrices);
-            calculationItem.setPrice(nodeSummedPrice);
-            String totalPrice = calculator.multiply(calculationItem.getQuantity(), nodeSummedPrice);
+            calculationItem.setPrice(nodePrice);
+            totalPrice = totalPrice.add(nodePrice.multiply(BigDecimal.valueOf(calculationItem.getQuantity())));
             calculationItem.setTotalPrice(totalPrice);
-            String totalPriceForParent = calculator.multiply(parentQuantity * quantity, nodeSummedPrice);
+            BigDecimal totalPriceForParent = totalPrice.multiply(BigDecimal.valueOf(parentQuantity));
             calculationItem.setTotalPriceForParent(totalPriceForParent);
-            totalPrices.add(totalPrice);
         }
-        return calculator.sum(totalPrices);
+        return totalPrice;
     }
 
-    private String applyPricesForLastNode(Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap, Map<Long, CalculationPriceSetItemDto> existingTypeIdToCalculationPriceSetItemMap, Long parentQuantity, CalculationTreeNode calculationTreeNode) {
+    private BigDecimal applyPricesForLastNode(Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap, Map<Long, CalculationPriceSetItemDto> existingTypeIdToCalculationPriceSetItemMap, Long parentQuantity, CalculationTreeNode calculationTreeNode) {
         List<CalculationItemDto> calculationItems = calculationTreeNode.getCalculationItems();
-        List<String> totalPrices = new ArrayList<String>();
+        BigDecimal totalPrice = BigDecimal.ZERO;
         for (CalculationItemDto calculationItem : calculationItems) {
             CalculationPriceSetItemDto calculationPriceSetItem = getOrCreateCalculationPriceSetItem(typeIdToCalculationPriceSetItemMap, existingTypeIdToCalculationPriceSetItemMap, calculationItem);
             Long quantity = calculateQuantityForCalculationItem(calculationItem);
@@ -81,15 +65,14 @@ public class PricingProcessor {
             calculationItem.setParentQuantity(parentQuantity);
             Long priceSetItemQuantity = calculationPriceSetItem.getQuantity() + quantity * parentQuantity;
             calculationPriceSetItem.setQuantity(priceSetItemQuantity);
-            calculationPriceSetItem.setTotalPrice(calculator.multiply(priceSetItemQuantity, calculationPriceSetItem.getPrice()));
-            String totalPrice = calculator.multiply(quantity, calculationPriceSetItem.getPrice());
-            String totalPriceForParent = calculator.multiply(parentQuantity * quantity, calculationPriceSetItem.getPrice());
+            calculationPriceSetItem.setTotalPrice(calculationPriceSetItem.getPrice().multiply(BigDecimal.valueOf(priceSetItemQuantity)));
+            totalPrice = totalPrice.add(calculationPriceSetItem.getPrice().multiply(BigDecimal.valueOf(quantity)));
+            BigDecimal totalPriceForParent = calculationPriceSetItem.getPrice().multiply(BigDecimal.valueOf(quantity)).multiply(BigDecimal.valueOf(parentQuantity));
             calculationItem.setPrice(calculationPriceSetItem.getPrice());
             calculationItem.setTotalPrice(totalPrice);
             calculationItem.setTotalPriceForParent(totalPriceForParent);
-            totalPrices.add(totalPrice);
         }
-        return calculator.sum(totalPrices);
+        return totalPrice;
     }
 
     private CalculationPriceSetItemDto getOrCreateCalculationPriceSetItem(Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap, Map<Long, CalculationPriceSetItemDto> existingTypeIdToCalculationPriceSetItemMap, CalculationItemDto calculationItem) {
@@ -110,7 +93,7 @@ public class PricingProcessor {
                 calculationPriceSetItem.setPrice(calculationItem.getPrice());
             }
             calculationPriceSetItem.setQuantity(0L);
-            calculationPriceSetItem.setTotalPrice("0.0");
+            calculationPriceSetItem.setTotalPrice(BigDecimal.ZERO);
             typeIdToCalculationPriceSetItemMap.put(calculationItem.getItemTypeID(), calculationPriceSetItem);
         }
         return calculationPriceSetItem;

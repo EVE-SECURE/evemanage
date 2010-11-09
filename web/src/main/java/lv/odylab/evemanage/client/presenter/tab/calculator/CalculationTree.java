@@ -4,6 +4,7 @@ import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -68,13 +69,13 @@ public class CalculationTree {
         }
     }
 
-    public void setPrices(Map<Long, String> typeIdToPriceMap) {
+    public void setPrices(Map<Long, BigDecimal> typeIdToPriceMap) {
         for (CalculationTreeNode node : nodeMap.values()) {
             recursivelySetPrices(typeIdToPriceMap, node);
         }
     }
 
-    private void recursivelySetPrices(Map<Long, String> typeIdToPriceMap, CalculationTreeNode calculationTreeNode) {
+    private void recursivelySetPrices(Map<Long, BigDecimal> typeIdToPriceMap, CalculationTreeNode calculationTreeNode) {
         List<CalculationItemDto> calculationItems = calculationTreeNode.getCalculationItems();
         for (CalculationItemDto calculationItem : calculationItems) {
             if (typeIdToPriceMap.containsKey(calculationItem.getItemTypeID())) {

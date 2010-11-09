@@ -4,12 +4,13 @@ import lv.odylab.evemanage.client.EveManageConstants;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorFetchPricesFromEveMetricsActionResponse;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 public class QuickCalculatorFetchedPricesFromEveMetricsEvent extends QuickCalculatorTabEvent<QuickCalculatorFetchedPricesFromEveMetricsEventHandler> {
     public static final Type<QuickCalculatorFetchedPricesFromEveMetricsEventHandler> TYPE = new Type<QuickCalculatorFetchedPricesFromEveMetricsEventHandler>();
 
-    private Map<Long, String> typeIdToPriceMap;
+    private Map<Long, BigDecimal> typeIdToPriceMap;
 
     public QuickCalculatorFetchedPricesFromEveMetricsEvent(TrackingManager trackingManager, EveManageConstants constants, QuickCalculatorFetchPricesFromEveMetricsActionResponse response, Long msDuration) {
         super(trackingManager, constants, msDuration);
@@ -22,7 +23,7 @@ public class QuickCalculatorFetchedPricesFromEveMetricsEvent extends QuickCalcul
         return TYPE;
     }
 
-    public Map<Long, String> getTypeIdToPriceMap() {
+    public Map<Long, BigDecimal> getTypeIdToPriceMap() {
         return typeIdToPriceMap;
     }
 

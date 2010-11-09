@@ -3,9 +3,6 @@ package lv.odylab.evemanage.client.rpc;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static junit.framework.Assert.assertEquals;
 
 public class EveCalculatorTest {
@@ -43,21 +40,5 @@ public class EveCalculatorTest {
     public void testCalculateMeResearchTime() {
         assertEquals(Integer.valueOf(750), eveCalculator.calculateMeResearchTime(1000, 1.0));
         assertEquals(Integer.valueOf(563), eveCalculator.calculateMeResearchTime(1000, 0.75));
-    }
-
-    @Test
-    public void testMultiply() {
-        assertEquals("1230.0", eveCalculator.multiply(1000L, "1.23"));
-    }
-
-    @Test
-    public void testSum() {
-        List<String> priceList = new ArrayList<String>();
-        priceList.add("1.11");
-        priceList.add("2.22");
-        priceList.add("3.33");
-        priceList.add("4.44");
-        priceList.add("5.55");
-        assertEquals("16.65", eveCalculator.sum(priceList));
     }
 }

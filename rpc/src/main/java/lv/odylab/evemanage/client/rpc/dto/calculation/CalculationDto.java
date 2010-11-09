@@ -1,12 +1,13 @@
 package lv.odylab.evemanage.client.rpc.dto.calculation;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 public class CalculationDto implements Serializable {
     private Long id;
     private String name;
-    private String price;
+    private BigDecimal price;
     private Long blueprintTypeID;
     private String blueprintTypeName;
     private Long productTypeID;
@@ -34,11 +35,11 @@ public class CalculationDto implements Serializable {
         this.name = name;
     }
 
-    public String getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 

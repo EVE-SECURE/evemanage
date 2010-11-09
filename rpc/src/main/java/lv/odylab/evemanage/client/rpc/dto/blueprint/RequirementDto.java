@@ -1,6 +1,7 @@
 package lv.odylab.evemanage.client.rpc.dto.blueprint;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class RequirementDto implements Serializable {
     private Long activityID;
@@ -11,7 +12,7 @@ public class RequirementDto implements Serializable {
     private Long requiredTypeGroupID;
     private String requiredTypeGroupName;
     private Long quantity;
-    private String damagePerJob;
+    private BigDecimal damagePerJob;
     private String requiredTypeNameGraphicIcon;
 
     public Long getActivityID() {
@@ -78,11 +79,11 @@ public class RequirementDto implements Serializable {
         this.quantity = quantity;
     }
 
-    public String getDamagePerJob() {
+    public BigDecimal getDamagePerJob() {
         return damagePerJob;
     }
 
-    public void setDamagePerJob(String damagePerJob) {
+    public void setDamagePerJob(BigDecimal damagePerJob) {
         this.damagePerJob = damagePerJob;
     }
 

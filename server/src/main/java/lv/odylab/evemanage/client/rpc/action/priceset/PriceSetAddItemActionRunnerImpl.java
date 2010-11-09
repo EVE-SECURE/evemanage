@@ -7,6 +7,8 @@ import lv.odylab.evemanage.client.rpc.ErrorCode;
 import lv.odylab.evemanage.client.rpc.dto.ItemTypeDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 
+import java.math.BigDecimal;
+
 public class PriceSetAddItemActionRunnerImpl implements PriceSetAddItemActionRunner {
     private EveManageClientFacade clientFacade;
 
@@ -27,7 +29,7 @@ public class PriceSetAddItemActionRunnerImpl implements PriceSetAddItemActionRun
         priceSetItemDto.setItemTypeIcon(itemTypeDto.getGraphicIcon());
         priceSetItemDto.setItemTypeID(itemTypeDto.getItemTypeID());
         priceSetItemDto.setItemCategoryID(itemTypeDto.getItemCategoryID());
-        priceSetItemDto.setPrice("0.00");
+        priceSetItemDto.setPrice(BigDecimal.ZERO);
 
         PriceSetAddItemActionResponse response = new PriceSetAddItemActionResponse();
         response.setPriceSetItem(priceSetItemDto);

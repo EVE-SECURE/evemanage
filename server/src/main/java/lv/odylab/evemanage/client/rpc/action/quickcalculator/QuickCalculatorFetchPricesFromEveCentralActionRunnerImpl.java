@@ -5,6 +5,7 @@ import lv.odylab.evemanage.application.EveManageClientFacade;
 import lv.odylab.evemanage.application.exception.validation.NoItemsException;
 import lv.odylab.evemanage.client.rpc.ErrorCode;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public class QuickCalculatorFetchPricesFromEveCentralActionRunnerImpl implements
         if (typeIDs.size() == 0) {
             throw new NoItemsException(ErrorCode.NO_ITEMS);
         }
-        Map<Long, String> typeIdToPriceMap = clientFacade.fetchPricesFromEveCentralForTypeIDs(typeIDs);
+        Map<Long, BigDecimal> typeIdToPriceMap = clientFacade.fetchPricesFromEveCentralForTypeIDs(typeIDs);
 
         QuickCalculatorFetchPricesFromEveCentralActionResponse response = new QuickCalculatorFetchPricesFromEveCentralActionResponse();
         response.setTypeIdToPriceMap(typeIdToPriceMap);

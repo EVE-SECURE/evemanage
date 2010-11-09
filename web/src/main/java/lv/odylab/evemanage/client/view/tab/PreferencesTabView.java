@@ -1,5 +1,6 @@
 package lv.odylab.evemanage.client.view.tab;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -76,6 +77,7 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
     private Label enterApiKeyLabel;
     private Label noteKeysAreCheckedLabel;
     private Label hintUseThisLinkLabel;
+    private DateTimeFormat dateTimeFormat;
     private Map<ApiKeyDto, Button> apiKeyDeleteButtonMap;
 
     @Inject
@@ -144,6 +146,8 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
         anchor.setTarget("_blank");
         hintUseThisLinkLabel = new HTML(messages.hintUserThisLink(anchor.toString()) + ".");
         hintUseThisLinkLabel.addStyleName(resources.css().hintLabel());
+
+        dateTimeFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_FULL);
     }
 
     @Override
@@ -365,7 +369,7 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
         }
         apiKeysFlexTable.setWidget(index, 0, apiKeyImage);
         Image isValidIcon = new Image(getIsValidImageResources(apiKeyDto.isValid()));
-        isValidIcon.setTitle(messages.lastApiCheckDate() + apiKeyDto.getLastCheckDate());
+        isValidIcon.setTitle(messages.lastApiCheckDate() + ": " + dateTimeFormat.format(apiKeyDto.getLastCheckDate()));
         apiKeysFlexTable.setWidget(index, 1, isValidIcon);
         Panel characterPanel = new VerticalPanel();
         apiKeysFlexTable.setWidget(index, 2, characterPanel);

@@ -1,16 +1,16 @@
 package lv.odylab.evemanage.client.presenter.tab.calculator;
 
-import lv.odylab.evemanage.client.rpc.EveCalculator;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 import lv.odylab.evemanage.client.widget.PriceLabel;
 import lv.odylab.evemanage.client.widget.QuantityLabel;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ComputableCalculationItem {
     private List<CalculationItemDto> calculationItems = new ArrayList<CalculationItemDto>();
-    private CalculationItemDto mergedCalculationItem;
+    private CalculationTreeNodeSummary calculationTreeNodeSummary;
     private QuantityLabel quantityLabel;
     private QuantityLabel quantityForParentLabel;
     private PriceLabel priceLabel;
@@ -22,12 +22,12 @@ public class ComputableCalculationItem {
         this.calculationItems = calculationItems;
     }
 
-    public CalculationItemDto getMergedCalculationItem() {
-        return mergedCalculationItem;
+    public CalculationTreeNodeSummary getCalculationTreeNodeSummary() {
+        return calculationTreeNodeSummary;
     }
 
-    public void setMergedCalculationItem(CalculationItemDto mergedCalculationItem) {
-        this.mergedCalculationItem = mergedCalculationItem;
+    public void setCalculationTreeNodeSummary(CalculationTreeNodeSummary calculationTreeNodeSummary) {
+        this.calculationTreeNodeSummary = calculationTreeNodeSummary;
     }
 
     public void setQuantityLabel(QuantityLabel quantityLabel) {
@@ -54,18 +54,18 @@ public class ComputableCalculationItem {
         this.totalPriceForParentLabel = totalPriceForParentLabel;
     }
 
-    public void recalculate(EveCalculator calculator) {
-        List<Long> sumQuantity = new ArrayList<Long>();
-        List<String> sumTotalPrice = new ArrayList<String>();
-        List<String> sumTotalPriceForParent = new ArrayList<String>();
-        Long parentQuantity = calculationItems.get(0).getParentQuantity();
-        String price = calculationItems.get(0).getPrice();
+    public void recalculate() {
+        Long quantity = 0L;
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        BigDecimal totalPriceForParent = BigDecimal.ZERO;
+        CalculationItemDto firstCalculationItem = calculationItems.get(0);
+        Long parentQuantity = firstCalculationItem.getParentQuantity();
+        BigDecimal price = firstCalculationItem.getPrice();
         for (CalculationItemDto calculationItem : calculationItems) {
-            sumQuantity.add(calculationItem.getQuantity());
-            sumTotalPrice.add(calculationItem.getTotalPrice());
-            sumTotalPriceForParent.add(calculationItem.getTotalPriceForParent());
+            quantity += calculationItem.getQuantity();
+            totalPrice = totalPrice.add(calculationItem.getTotalPrice());
+            totalPriceForParent = totalPriceForParent.add(calculationItem.getTotalPriceForParent());
         }
-        Long quantity = calculator.sum(sumQuantity);
         if (quantityLabel != null) {
             quantityLabel.setQuantity(quantity);
         }
@@ -76,13 +76,13 @@ public class ComputableCalculationItem {
             priceLabel.setPrice(price);
         }
         if (totalPriceLabel != null) {
-            totalPriceLabel.setPrice(calculator.sum(sumTotalPrice));
+            totalPriceLabel.setPrice(totalPrice);
         }
         if (parentQuantityLabel != null) {
             parentQuantityLabel.setQuantity(parentQuantity);
         }
         if (totalPriceForParentLabel != null) {
-            totalPriceForParentLabel.setPrice(calculator.sum(sumTotalPriceForParent));
+            totalPriceForParentLabel.setPrice(totalPriceForParent);
         }
     }
 }

@@ -3,6 +3,7 @@ package lv.odylab.evemanage.client.rpc.dto.calculation;
 import lv.odylab.evemanage.client.rpc.PathExpression;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class CalculationItemDto implements Serializable {
     private PathExpression pathExpression;
@@ -14,11 +15,9 @@ public class CalculationItemDto implements Serializable {
     private Long parentQuantity;
     private Long perfectQuantity;
     private Integer wasteFactor;
-    private String price;
-    private String priceOverride;
-    private String totalPrice;
-    private String totalPriceOverride;
-    private String totalPriceForParent;
+    private BigDecimal price;
+    private BigDecimal totalPrice;
+    private BigDecimal totalPriceForParent;
 
     public PathExpression getPathExpression() {
         return pathExpression;
@@ -92,43 +91,27 @@ public class CalculationItemDto implements Serializable {
         this.wasteFactor = wasteFactor;
     }
 
-    public String getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public String getPriceOverride() {
-        return priceOverride;
-    }
-
-    public void setPriceOverride(String priceOverride) {
-        this.priceOverride = priceOverride;
-    }
-
-    public String getTotalPrice() {
+    public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(String totalPrice) {
+    public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
 
-    public String getTotalPriceOverride() {
-        return totalPriceOverride;
-    }
-
-    public void setTotalPriceOverride(String totalPriceOverride) {
-        this.totalPriceOverride = totalPriceOverride;
-    }
-
-    public String getTotalPriceForParent() {
+    public BigDecimal getTotalPriceForParent() {
         return totalPriceForParent;
     }
 
-    public void setTotalPriceForParent(String totalPriceForParent) {
+    public void setTotalPriceForParent(BigDecimal totalPriceForParent) {
         this.totalPriceForParent = totalPriceForParent;
     }
 }

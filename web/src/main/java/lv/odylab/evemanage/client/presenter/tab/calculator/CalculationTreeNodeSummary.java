@@ -1,30 +1,34 @@
-package lv.odylab.evemanage.domain.calculation;
+package lv.odylab.evemanage.client.presenter.tab.calculator;
 
-import com.googlecode.objectify.annotation.Unindexed;
+import java.math.BigDecimal;
 
-import java.io.Serializable;
-
-@Unindexed
-public class CalculationItem implements Serializable {
-    private String path;
+public class CalculationTreeNodeSummary {
+    private String pathNodesString;
+    private Long[] pathNodes;
     private Long itemTypeID;
     private Long itemCategoryID;
     private String itemTypeName;
     private String itemTypeIcon;
     private Long quantity;
     private Long parentQuantity;
-    private Long perfectQuantity;
-    private Integer wasteFactor;
-    private String price;
-    private String totalPrice;
-    private String totalPriceForParent;
+    private BigDecimal price;
+    private BigDecimal totalPrice;
+    private BigDecimal totalPriceForParent;
 
-    public String getPath() {
-        return path;
+    public String getPathNodesString() {
+        return pathNodesString;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setPathNodesString(String pathNodesString) {
+        this.pathNodesString = pathNodesString;
+    }
+
+    public Long[] getPathNodes() {
+        return pathNodes;
+    }
+
+    public void setPathNodes(Long[] pathNodes) {
+        this.pathNodes = pathNodes;
     }
 
     public Long getItemTypeID() {
@@ -75,43 +79,27 @@ public class CalculationItem implements Serializable {
         this.parentQuantity = parentQuantity;
     }
 
-    public Long getPerfectQuantity() {
-        return perfectQuantity;
-    }
-
-    public void setPerfectQuantity(Long perfectQuantity) {
-        this.perfectQuantity = perfectQuantity;
-    }
-
-    public Integer getWasteFactor() {
-        return wasteFactor;
-    }
-
-    public void setWasteFactor(Integer wasteFactor) {
-        this.wasteFactor = wasteFactor;
-    }
-
-    public String getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public String getTotalPrice() {
+    public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(String totalPrice) {
+    public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
 
-    public String getTotalPriceForParent() {
+    public BigDecimal getTotalPriceForParent() {
         return totalPriceForParent;
     }
 
-    public void setTotalPriceForParent(String totalPriceForParent) {
+    public void setTotalPriceForParent(BigDecimal totalPriceForParent) {
         this.totalPriceForParent = totalPriceForParent;
     }
 }

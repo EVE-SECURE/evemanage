@@ -12,7 +12,6 @@ import lv.odylab.evedb.rpc.dto.InvTypeBasicInfoDto;
 import lv.odylab.evedb.rpc.dto.InvTypeMaterialDto;
 import lv.odylab.evedb.rpc.dto.RamTypeRequirementDto;
 import lv.odylab.evemanage.application.exception.validation.InvalidPriceException;
-import lv.odylab.evemanage.client.rpc.ErrorCode;
 import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.dto.ItemTypeDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
@@ -137,7 +136,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         requirementDto.setRequiredTypeGroupID(ramTypeRequirementDto.getRequiredTypeGroupID());
         requirementDto.setRequiredTypeGroupName(ramTypeRequirementDto.getRequiredTypeGroupName());
         requirementDto.setQuantity(ramTypeRequirementDto.getQuantity());
-        requirementDto.setDamagePerJob(ramTypeRequirementDto.getDamagePerJob());
+        requirementDto.setDamagePerJob(new BigDecimal(ramTypeRequirementDto.getDamagePerJob()));
         requirementDto.setRequiredTypeNameGraphicIcon(ramTypeRequirementDto.getRequiredTypeIcon());
         return requirementDto;
     }
@@ -265,7 +264,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         requirementDto.setRequiredTypeGroupID(typeRequirementDto.getRequiredTypeGroupID());
         requirementDto.setRequiredTypeGroupName(typeRequirementDto.getRequiredTypeGroupName());
         requirementDto.setQuantity(typeRequirementDto.getQuantity());
-        requirementDto.setDamagePerJob(typeRequirementDto.getDamagePerJob());
+        requirementDto.setDamagePerJob(new BigDecimal(typeRequirementDto.getDamagePerJob()));
         requirementDto.setRequiredTypeNameGraphicIcon(typeRequirementDto.getRequiredTypeNameGraphicIcon());
         return requirementDto;
     }
@@ -277,18 +276,8 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         priceSetItem.setItemCategoryID(priceSetItemDto.getItemCategoryID());
         priceSetItem.setItemTypeName(priceSetItemDto.getItemTypeName());
         priceSetItem.setItemTypeIcon(priceSetItemDto.getItemTypeIcon());
-        priceSetItem.setPrice(formatPrice(priceSetItemDto.getPrice()));
+        priceSetItem.setPrice(priceSetItemDto.getPrice().toPlainString());
         return priceSetItem;
-    }
-
-    private String formatPrice(String price) throws InvalidPriceException {
-        try {
-            return new BigDecimal(price).setScale(2).toPlainString();
-        } catch (ArithmeticException ae) {
-            throw new InvalidPriceException(price, ErrorCode.INVALID_PRICE);
-        } catch (NumberFormatException nfe) {
-            throw new InvalidPriceException(price, ErrorCode.INVALID_PRICE);
-        }
     }
 
     @Override
@@ -298,7 +287,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         priceSetItemDto.setItemCategoryID(priceSetItem.getItemCategoryID());
         priceSetItemDto.setItemTypeName(priceSetItem.getItemTypeName());
         priceSetItemDto.setItemTypeIcon(priceSetItem.getItemTypeIcon());
-        priceSetItemDto.setPrice(new BigDecimal(priceSetItem.getPrice()).setScale(2).toPlainString());
+        priceSetItemDto.setPrice(new BigDecimal(priceSetItem.getPrice()));
         return priceSetItemDto;
     }
 
@@ -319,8 +308,8 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
             priceSetDto.setAttachedCharacterName(map(priceSet.getAttachedCharacterInfo(), CharacterNameDto.class));
         }
         priceSetDto.setSharingLevel(priceSet.getSharingLevel());
-        priceSetDto.setCreatedDate(priceSet.getCreatedDate().toString());
-        priceSetDto.setUpdatedDate(priceSet.getUpdatedDate().toString());
+        priceSetDto.setCreatedDate(priceSet.getCreatedDate());
+        priceSetDto.setUpdatedDate(priceSet.getUpdatedDate());
         List<PriceSetItemDto> priceSetItemDtoList = new ArrayList<PriceSetItemDto>();
         for (PriceSetItem priceSetItem : priceSet.getItems()) {
             priceSetItemDtoList.add(map(priceSetItem, PriceSetItemDto.class));
@@ -554,7 +543,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         CalculationDto calculationDto = new CalculationDto();
         calculationDto.setId(calculation.getId());
         calculationDto.setName(calculation.getName());
-        calculationDto.setPrice(calculation.getPrice());
+        calculationDto.setPrice(new BigDecimal(calculation.getPrice()));
         calculationDto.setBlueprintTypeID(calculation.getBlueprintTypeID());
         calculationDto.setBlueprintTypeName(calculation.getBlueprintTypeName());
         calculationDto.setProductTypeName(calculation.getProductTypeName());
@@ -583,11 +572,9 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         calculationItemDto.setParentQuantity(calculationItem.getParentQuantity());
         calculationItemDto.setPerfectQuantity(calculationItem.getPerfectQuantity());
         calculationItemDto.setWasteFactor(calculationItem.getWasteFactor());
-        calculationItemDto.setPrice(calculationItem.getPrice());
-        calculationItemDto.setPriceOverride(calculationItem.getPriceOverride());
-        calculationItemDto.setTotalPrice(calculationItem.getTotalPrice());
-        calculationItemDto.setTotalPriceOverride(calculationItem.getTotalPriceOverride());
-        calculationItemDto.setTotalPriceForParent(calculationItem.getTotalPriceForParent());
+        calculationItemDto.setPrice(new BigDecimal(calculationItem.getPrice()));
+        calculationItemDto.setTotalPrice(new BigDecimal(calculationItem.getTotalPrice()));
+        calculationItemDto.setTotalPriceForParent(new BigDecimal(calculationItem.getTotalPriceForParent()));
         return calculationItemDto;
     }
 }
