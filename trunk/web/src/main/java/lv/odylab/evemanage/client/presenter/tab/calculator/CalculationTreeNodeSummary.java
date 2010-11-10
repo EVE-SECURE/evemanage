@@ -11,6 +11,7 @@ public class CalculationTreeNodeSummary {
     private String itemTypeIcon;
     private Long quantity;
     private Long parentQuantity;
+    private BigDecimal damagePerJob;
     private BigDecimal price;
     private BigDecimal totalPrice;
     private BigDecimal totalPriceForParent;
@@ -77,6 +78,14 @@ public class CalculationTreeNodeSummary {
 
     public void setParentQuantity(Long parentQuantity) {
         this.parentQuantity = parentQuantity;
+    }
+
+    public BigDecimal getDamagePerJob() {
+        return damagePerJob;
+    }
+
+    public void setDamagePerJob(BigDecimal damagePerJob) {
+        this.damagePerJob = damagePerJob;
     }
 
     public BigDecimal getPrice() {

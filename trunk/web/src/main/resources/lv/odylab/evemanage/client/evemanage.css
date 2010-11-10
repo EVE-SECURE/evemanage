@@ -88,6 +88,11 @@ img {
     font-style: italic;
 }
 
+.damagePerJob {
+    color: gray;
+    font-size: x-small;
+}
+
 .inGameLinkLabel {
     color: #ff3300;
 }

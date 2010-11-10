@@ -15,6 +15,7 @@ public class CalculationItem implements Serializable {
     private Long parentQuantity;
     private Long perfectQuantity;
     private Integer wasteFactor;
+    private String damagePerJob;
     private String price;
     private String totalPrice;
     private String totalPriceForParent;
@@ -89,6 +90,14 @@ public class CalculationItem implements Serializable {
 
     public void setWasteFactor(Integer wasteFactor) {
         this.wasteFactor = wasteFactor;
+    }
+
+    public String getDamagePerJob() {
+        return damagePerJob;
+    }
+
+    public void setDamagePerJob(String damagePerJob) {
+        this.damagePerJob = damagePerJob;
     }
 
     public String getPrice() {

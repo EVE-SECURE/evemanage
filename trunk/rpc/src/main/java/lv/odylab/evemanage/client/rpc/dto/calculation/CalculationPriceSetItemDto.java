@@ -10,6 +10,7 @@ public class CalculationPriceSetItemDto implements Serializable {
     private String itemTypeIcon;
     private BigDecimal price;
     private Long quantity;
+    private BigDecimal damagePerJob;
     private BigDecimal totalPrice;
 
     public Long getItemTypeID() {
@@ -58,6 +59,14 @@ public class CalculationPriceSetItemDto implements Serializable {
 
     public void setQuantity(Long quantity) {
         this.quantity = quantity;
+    }
+
+    public BigDecimal getDamagePerJob() {
+        return damagePerJob;
+    }
+
+    public void setDamagePerJob(BigDecimal damagePerJob) {
+        this.damagePerJob = damagePerJob;
     }
 
     public BigDecimal getTotalPrice() {

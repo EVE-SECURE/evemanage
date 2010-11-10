@@ -36,6 +36,7 @@ public class CalculationTreeNode {
         summary.setItemTypeName(firstCalculationItemDto.getItemTypeName());
         summary.setItemTypeIcon(firstCalculationItemDto.getItemTypeIcon());
         summary.setParentQuantity(firstCalculationItemDto.getParentQuantity());
+        summary.setDamagePerJob(firstCalculationItemDto.getDamagePerJob());
         summary.setPrice(firstCalculationItemDto.getPrice());
         if (calculationItems.size() > 1) {
             Long quantity = 0L;
