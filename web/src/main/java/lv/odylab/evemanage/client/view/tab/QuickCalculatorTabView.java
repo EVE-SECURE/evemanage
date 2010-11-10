@@ -41,6 +41,7 @@ import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceSetItemDto;
 import lv.odylab.evemanage.client.util.EveImageUrlProvider;
+import lv.odylab.evemanage.client.widget.DamagePerJobLabel;
 import lv.odylab.evemanage.client.widget.EveCentralQuicklookLink;
 import lv.odylab.evemanage.client.widget.EveItemInfoLink;
 import lv.odylab.evemanage.client.widget.EveItemMarketDetailsLink;
@@ -644,7 +645,16 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         rootCalculationItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, calculationTreeNodeSummary.getItemTypeName(), calculationTreeNodeSummary.getItemTypeID()));
         rootCalculationItemTable.setWidget(index, 2, new Label("x"));
         QuantityLabel quantityForParentLabel = new QuantityLabel(calculationTreeNodeSummary.getParentQuantity() * calculationTreeNodeSummary.getQuantity());
-        rootCalculationItemTable.setWidget(index, 3, quantityForParentLabel);
+        HorizontalPanel quantityAndDamagePerJobPanel = new HorizontalPanel();
+        quantityAndDamagePerJobPanel.add(quantityForParentLabel);
+        BigDecimal damagePerJob = calculationTreeNodeSummary.getDamagePerJob();
+        if (BigDecimal.ONE.compareTo(damagePerJob) == 1) {
+            DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
+            damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+            quantityAndDamagePerJobPanel.add(damagePerJobLabel);
+            quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
+        }
+        rootCalculationItemTable.setWidget(index, 3, quantityAndDamagePerJobPanel);
         rootCalculationItemTable.setWidget(index, 4, new Label("x"));
         PriceLabel priceLabel = new PriceLabel(calculationTreeNodeSummary.getPrice());
         rootCalculationItemTable.setWidget(index, 5, priceLabel);
@@ -898,7 +908,16 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         priceSetItemTable.setWidget(index, 4, new EveMetricsItemPriceLink(constants, urlMessages, eveMetricsImage, calculationPriceSetItem.getItemCategoryID(), typeID));
         priceSetItemTable.setWidget(index, 5, new Label("x"));
         QuantityLabel quantityLabel = new QuantityLabel(calculationPriceSetItem.getQuantity());
-        priceSetItemTable.setWidget(index, 6, quantityLabel);
+        HorizontalPanel quantityAndDamagePerJobPanel = new HorizontalPanel();
+        quantityAndDamagePerJobPanel.add(quantityLabel);
+        BigDecimal damagePerJob = calculationPriceSetItem.getDamagePerJob();
+        if (BigDecimal.ONE.compareTo(damagePerJob) == 1) {
+            DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
+            damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+            quantityAndDamagePerJobPanel.add(damagePerJobLabel);
+            quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
+        }
+        priceSetItemTable.setWidget(index, 6, quantityAndDamagePerJobPanel);
         priceSetItemTable.setWidget(index, 7, new Label("="));
         PriceLabel totalPriceLabel = new PriceLabel(calculationPriceSetItem.getTotalPrice());
         priceSetItemTable.setWidget(index, 8, totalPriceLabel);

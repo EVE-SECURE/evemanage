@@ -572,6 +572,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         calculationItemDto.setParentQuantity(calculationItem.getParentQuantity());
         calculationItemDto.setPerfectQuantity(calculationItem.getPerfectQuantity());
         calculationItemDto.setWasteFactor(calculationItem.getWasteFactor());
+        calculationItemDto.setDamagePerJob(new BigDecimal(calculationItem.getDamagePerJob()));
         calculationItemDto.setPrice(new BigDecimal(calculationItem.getPrice()));
         calculationItemDto.setTotalPrice(new BigDecimal(calculationItem.getTotalPrice()));
         calculationItemDto.setTotalPriceForParent(new BigDecimal(calculationItem.getTotalPriceForParent()));

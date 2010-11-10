@@ -15,6 +15,7 @@ public class CalculationItemDto implements Serializable {
     private Long parentQuantity;
     private Long perfectQuantity;
     private Integer wasteFactor;
+    private BigDecimal damagePerJob;
     private BigDecimal price;
     private BigDecimal totalPrice;
     private BigDecimal totalPriceForParent;
@@ -89,6 +90,14 @@ public class CalculationItemDto implements Serializable {
 
     public void setWasteFactor(Integer wasteFactor) {
         this.wasteFactor = wasteFactor;
+    }
+
+    public BigDecimal getDamagePerJob() {
+        return damagePerJob;
+    }
+
+    public void setDamagePerJob(BigDecimal damagePerJob) {
+        this.damagePerJob = damagePerJob;
     }
 
     public BigDecimal getPrice() {

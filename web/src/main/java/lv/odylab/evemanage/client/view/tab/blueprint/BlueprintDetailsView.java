@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
@@ -21,6 +22,7 @@ import lv.odylab.evemanage.client.rpc.dto.blueprint.RequirementDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterInfoDto;
 import lv.odylab.evemanage.client.util.EveImageUrlProvider;
 import lv.odylab.evemanage.client.widget.AttachedCharacterLabel;
+import lv.odylab.evemanage.client.widget.DamagePerJobLabel;
 import lv.odylab.evemanage.client.widget.EveItemInfoLink;
 import lv.odylab.evemanage.client.widget.EveItemMarketDetailsLink;
 import lv.odylab.evemanage.client.widget.QuantityLabel;
@@ -28,6 +30,7 @@ import lv.odylab.evemanage.client.widget.SharingLevelLabel;
 import lv.odylab.evemanage.client.widget.TimeLabel;
 import lv.odylab.evemanage.client.widget.WasteLabel;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,7 +99,16 @@ public class BlueprintDetailsView implements BlueprintDetailsPresenter.Display {
             materialsTable.setWidget(i + materials.size(), 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, requirement.getRequiredTypeName(), requirement.getRequiredTypeID()));
             materialsTable.setWidget(i + materials.size(), 2, new Label("x"));
             QuantityLabel quantityLabel = new QuantityLabel();
-            materialsTable.setWidget(i + materials.size(), 3, quantityLabel);
+            HorizontalPanel quantityAndDamagePerJobPanel = new HorizontalPanel();
+            quantityAndDamagePerJobPanel.add(quantityLabel);
+            BigDecimal damagePerJob = requirement.getDamagePerJob();
+            if (BigDecimal.ONE.compareTo(damagePerJob) == 1 && BigDecimal.ZERO.compareTo(damagePerJob) != 0) {
+                DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
+                damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+                quantityAndDamagePerJobPanel.add(damagePerJobLabel);
+                quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
+            }
+            materialsTable.setWidget(i + materials.size(), 3, quantityAndDamagePerJobPanel);
             requirementToWidgetMap.put(requirement, quantityLabel);
         }
 
@@ -200,7 +212,17 @@ public class BlueprintDetailsView implements BlueprintDetailsPresenter.Display {
             disclosurePanelTable.setWidget(i, 0, imageItemInfoLink);
             disclosurePanelTable.setWidget(i, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, requirement.getRequiredTypeName(), requirement.getRequiredTypeID()));
             disclosurePanelTable.setWidget(i, 2, new Label("x"));
-            disclosurePanelTable.setWidget(i, 3, new QuantityLabel(requirement.getQuantity()));
+            QuantityLabel quantityLabel = new QuantityLabel(requirement.getQuantity());
+            HorizontalPanel quantityAndDamagePerJobPanel = new HorizontalPanel();
+            quantityAndDamagePerJobPanel.add(quantityLabel);
+            BigDecimal damagePerJob = requirement.getDamagePerJob();
+            if (BigDecimal.ONE.compareTo(damagePerJob) == 1 && BigDecimal.ZERO.compareTo(damagePerJob) != 0) {
+                DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
+                damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+                quantityAndDamagePerJobPanel.add(damagePerJobLabel);
+                quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
+            }
+            disclosurePanelTable.setWidget(i, 3, quantityAndDamagePerJobPanel);
         }
         Image stationImage = new Image(resources.station());
         stationImage.setTitle(messages.timeStation());

@@ -67,6 +67,7 @@ public class CalculationServiceImpl implements CalculationService {
             calculationItem.setParentQuantity(1L);
             calculationItem.setPerfectQuantity(materialDto.getQuantity());
             calculationItem.setWasteFactor(blueprintTypeDto.getWasteFactor());
+            calculationItem.setDamagePerJob("1.00");
             calculationItem.setPrice("0.00");
             calculationItem.setTotalPrice("0.00");
             calculationItem.setTotalPriceForParent("0.00");
@@ -88,6 +89,7 @@ public class CalculationServiceImpl implements CalculationService {
             calculationItem.setParentQuantity(1L);
             calculationItem.setPerfectQuantity(requirementDto.getQuantity());
             calculationItem.setWasteFactor(blueprintTypeDto.getWasteFactor());
+            calculationItem.setDamagePerJob(requirementDto.getDamagePerJob());
             calculationItem.setPrice("0.00");
             calculationItem.setTotalPrice("0.00");
             calculationItem.setTotalPriceForParent("0.00");

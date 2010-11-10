@@ -47,7 +47,7 @@ public class PricingProcessor {
                 nodePrice = nodePrice.add(recursivelyApplyPrices(typeIdToCalculationPriceSetItemMap, existingTypeIdToCalculationPriceSetItemMap, quantity * parentQuantity, node));
             }
             calculationItem.setPrice(nodePrice);
-            totalPrice = totalPrice.add(nodePrice.multiply(BigDecimal.valueOf(calculationItem.getQuantity())));
+            totalPrice = totalPrice.add(nodePrice.multiply(BigDecimal.valueOf(calculationItem.getQuantity())).multiply(calculationItem.getDamagePerJob()));
             calculationItem.setTotalPrice(totalPrice);
             BigDecimal totalPriceForParent = totalPrice.multiply(BigDecimal.valueOf(parentQuantity));
             calculationItem.setTotalPriceForParent(totalPriceForParent);
@@ -65,9 +65,9 @@ public class PricingProcessor {
             calculationItem.setParentQuantity(parentQuantity);
             Long priceSetItemQuantity = calculationPriceSetItem.getQuantity() + quantity * parentQuantity;
             calculationPriceSetItem.setQuantity(priceSetItemQuantity);
-            calculationPriceSetItem.setTotalPrice(calculationPriceSetItem.getPrice().multiply(BigDecimal.valueOf(priceSetItemQuantity)));
-            totalPrice = totalPrice.add(calculationPriceSetItem.getPrice().multiply(BigDecimal.valueOf(quantity)));
-            BigDecimal totalPriceForParent = calculationPriceSetItem.getPrice().multiply(BigDecimal.valueOf(quantity)).multiply(BigDecimal.valueOf(parentQuantity));
+            calculationPriceSetItem.setTotalPrice(calculationPriceSetItem.getPrice().multiply(BigDecimal.valueOf(priceSetItemQuantity)).multiply(calculationItem.getDamagePerJob()));
+            totalPrice = totalPrice.add(calculationPriceSetItem.getPrice().multiply(BigDecimal.valueOf(quantity)).multiply(calculationItem.getDamagePerJob()));
+            BigDecimal totalPriceForParent = calculationPriceSetItem.getPrice().multiply(BigDecimal.valueOf(quantity)).multiply(BigDecimal.valueOf(parentQuantity)).multiply(calculationItem.getDamagePerJob());
             calculationItem.setPrice(calculationPriceSetItem.getPrice());
             calculationItem.setTotalPrice(totalPrice);
             calculationItem.setTotalPriceForParent(totalPriceForParent);
@@ -93,6 +93,7 @@ public class PricingProcessor {
                 calculationPriceSetItem.setPrice(calculationItem.getPrice());
             }
             calculationPriceSetItem.setQuantity(0L);
+            calculationPriceSetItem.setDamagePerJob(calculationItem.getDamagePerJob());
             calculationPriceSetItem.setTotalPrice(BigDecimal.ZERO);
             typeIdToCalculationPriceSetItemMap.put(calculationItem.getItemTypeID(), calculationPriceSetItem);
         }

@@ -38,6 +38,8 @@ public interface EveManageCssResource extends CssResource {
 
     String hintLabel();
 
+    String damagePerJob();
+
     String tabHeaderPanel();
 
     String tabHeaderText();
