@@ -2,6 +2,10 @@
 
 = News =
 
+== 2010.11.10 ==
+  * Fixed Issue 1. Damage per job is not factored in calculations
+  * Various improvements (moving calculation from strings to BigDecimal's)
+
 == 2010.11.08 ==
   * Fixed Issue 15. Wrong Rocket Fuel amount for Scourge Fury Heavy Missile Blueprint
 
