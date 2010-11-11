@@ -5,7 +5,7 @@
 == 2010.11.11 ==
   * Fixed Issue 6. Numeric inputs and validation for dots, minus signs and copy-pasted strings
   * Fixed Issue 5. Numeric inputs and keyboard shortcuts
-  * Adjusted some error messages
+  * Adjusted error messages for I/O exceptons from EVE-Central and EVE Metrics
 
 == 2010.11.10 ==
   * Fixed Issue 1. Damage per job is not factored in calculations
