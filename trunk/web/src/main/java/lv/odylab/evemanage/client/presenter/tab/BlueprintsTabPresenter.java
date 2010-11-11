@@ -77,9 +77,8 @@ import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
 import lv.odylab.evemanage.client.widget.AttachedCharacterListBox;
-import lv.odylab.evemanage.client.widget.DefaultNumberChangeHandler;
-import lv.odylab.evemanage.client.widget.OnlyDigitsAndMinusKeyPressHandler;
-import lv.odylab.evemanage.client.widget.OnlyDigitsKeyPressHandler;
+import lv.odylab.evemanage.client.widget.OnlyDigitsAndMinusChangeHandler;
+import lv.odylab.evemanage.client.widget.OnlyDigitsChangeHandler;
 import lv.odylab.evemanage.client.widget.SharingLevelListBox;
 
 import java.util.ArrayList;
@@ -418,11 +417,9 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
             }
         }));
         final TextBox newBlueprintMeTextBox = display.getNewBlueprintMeTextBox();
-        staticHandlerRegistrations.add(newBlueprintMeTextBox.addKeyPressHandler(new OnlyDigitsAndMinusKeyPressHandler(newBlueprintMeTextBox, 3)));
         final TextBox newBlueprintPeTextBox = display.getNewBlueprintPeTextBox();
-        staticHandlerRegistrations.add(newBlueprintPeTextBox.addKeyPressHandler(new OnlyDigitsAndMinusKeyPressHandler(newBlueprintPeTextBox, 3)));
-        staticHandlerRegistrations.add(newBlueprintMeTextBox.addChangeHandler(new DefaultNumberChangeHandler(newBlueprintMeTextBox)));
-        staticHandlerRegistrations.add(newBlueprintPeTextBox.addChangeHandler(new DefaultNumberChangeHandler(newBlueprintPeTextBox)));
+        staticHandlerRegistrations.add(newBlueprintMeTextBox.addChangeHandler(new OnlyDigitsAndMinusChangeHandler(newBlueprintMeTextBox, 3)));
+        staticHandlerRegistrations.add(newBlueprintPeTextBox.addChangeHandler(new OnlyDigitsAndMinusChangeHandler(newBlueprintPeTextBox, 3)));
         final Button importButton = display.getImportButton();
         staticHandlerRegistrations.add(importButton.addClickHandler(new ClickHandler() {
             @Override
@@ -670,11 +667,9 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
                 });
             }
         }));
-        dynamicHandlerRegistrations.add(meLevelTextBox.addKeyPressHandler(new OnlyDigitsAndMinusKeyPressHandler(meLevelTextBox, 3)));
-        dynamicHandlerRegistrations.add(peLevelTextBox.addKeyPressHandler(new OnlyDigitsAndMinusKeyPressHandler(peLevelTextBox, 3)));
-        dynamicHandlerRegistrations.add(itemIdTextBox.addKeyPressHandler(new OnlyDigitsKeyPressHandler(itemIdTextBox, 15)));
-        dynamicHandlerRegistrations.add(meLevelTextBox.addChangeHandler(new DefaultNumberChangeHandler(meLevelTextBox)));
-        dynamicHandlerRegistrations.add(peLevelTextBox.addChangeHandler(new DefaultNumberChangeHandler(peLevelTextBox)));
+        dynamicHandlerRegistrations.add(itemIdTextBox.addChangeHandler(new OnlyDigitsChangeHandler(itemIdTextBox, 15)));
+        dynamicHandlerRegistrations.add(meLevelTextBox.addChangeHandler(new OnlyDigitsAndMinusChangeHandler(meLevelTextBox, 3)));
+        dynamicHandlerRegistrations.add(peLevelTextBox.addChangeHandler(new OnlyDigitsAndMinusChangeHandler(peLevelTextBox, 3)));
     }
 
     private void unbindDynamic() {
