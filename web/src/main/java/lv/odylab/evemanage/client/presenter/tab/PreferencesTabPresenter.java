@@ -49,7 +49,7 @@ import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
-import lv.odylab.evemanage.client.widget.OnlyDigitsKeyPressHandler;
+import lv.odylab.evemanage.client.widget.OnlyDigitsChangeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -276,7 +276,7 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
             }
         }));
         final TextBox newApiKeyUserIdTextBox = display.getNewApiKeyUserIdTextBox();
-        staticHandlerRegistrations.add(newApiKeyUserIdTextBox.addKeyPressHandler(new OnlyDigitsKeyPressHandler(newApiKeyUserIdTextBox, 15)));
+        staticHandlerRegistrations.add(newApiKeyUserIdTextBox.addChangeHandler(new OnlyDigitsChangeHandler(newApiKeyUserIdTextBox, 15)));
     }
 
     private void bindDynamic() {

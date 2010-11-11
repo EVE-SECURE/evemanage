@@ -58,9 +58,8 @@ import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseB
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseBlueprintActionResponse;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
-import lv.odylab.evemanage.client.widget.DefaultNumberChangeHandler;
-import lv.odylab.evemanage.client.widget.OnlyDigitsAndMinusKeyPressHandler;
-import lv.odylab.evemanage.client.widget.OnlyDigitsKeyPressHandler;
+import lv.odylab.evemanage.client.widget.OnlyDigitsAndMinusChangeHandler;
+import lv.odylab.evemanage.client.widget.OnlyDigitsChangeHandler;
 import lv.odylab.evemanage.client.widget.OpaqueLoadableBlueprintImage;
 
 import java.math.BigDecimal;
@@ -415,12 +414,9 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
                 display.changeMePeQuantity(Integer.valueOf(meTextBox.getText()), Integer.valueOf(peTextBox.getText()), Long.valueOf(quantityTextBox.getText()));
             }
         }));
-        dynamicHandlerRegistrations.add(meTextBox.addKeyPressHandler(new OnlyDigitsAndMinusKeyPressHandler(meTextBox, 3)));
-        dynamicHandlerRegistrations.add(peTextBox.addKeyPressHandler(new OnlyDigitsAndMinusKeyPressHandler(peTextBox, 3)));
-        dynamicHandlerRegistrations.add(quantityTextBox.addKeyPressHandler(new OnlyDigitsKeyPressHandler(quantityTextBox, 9)));
-        dynamicHandlerRegistrations.add(meTextBox.addChangeHandler(new DefaultNumberChangeHandler(meTextBox)));
-        dynamicHandlerRegistrations.add(peTextBox.addChangeHandler(new DefaultNumberChangeHandler(peTextBox)));
-        dynamicHandlerRegistrations.add(quantityTextBox.addChangeHandler(new DefaultNumberChangeHandler(quantityTextBox, "1")));
+        dynamicHandlerRegistrations.add(meTextBox.addChangeHandler(new OnlyDigitsAndMinusChangeHandler(meTextBox, 3)));
+        dynamicHandlerRegistrations.add(peTextBox.addChangeHandler(new OnlyDigitsAndMinusChangeHandler(peTextBox, 3)));
+        dynamicHandlerRegistrations.add(quantityTextBox.addChangeHandler(new OnlyDigitsChangeHandler(quantityTextBox, 9)));
     }
 
     private void bindApplyButton(final EditableCalculationItem editableCalculationItem, final ComputableCalculationItem computableCalculationItem) {
@@ -434,10 +430,8 @@ public class QuickCalculatorTabPresenter implements Presenter, QuickCalculatorTa
                 display.changeMePe(computableCalculationItem.getCalculationTreeNodeSummary().getPathNodes(), Integer.valueOf(meTextBox.getText()), Integer.valueOf(peTextBox.getText()));
             }
         }));
-        dynamicHandlerRegistrations.add(meTextBox.addKeyPressHandler(new OnlyDigitsAndMinusKeyPressHandler(meTextBox, 3)));
-        dynamicHandlerRegistrations.add(peTextBox.addKeyPressHandler(new OnlyDigitsAndMinusKeyPressHandler(peTextBox, 3)));
-        dynamicHandlerRegistrations.add(meTextBox.addChangeHandler(new DefaultNumberChangeHandler(meTextBox)));
-        dynamicHandlerRegistrations.add(peTextBox.addChangeHandler(new DefaultNumberChangeHandler(peTextBox)));
+        dynamicHandlerRegistrations.add(meTextBox.addChangeHandler(new OnlyDigitsAndMinusChangeHandler(meTextBox, 3)));
+        dynamicHandlerRegistrations.add(peTextBox.addChangeHandler(new OnlyDigitsAndMinusChangeHandler(peTextBox, 3)));
     }
 
     private void bindUseAllBlueprintsImage(final OpaqueLoadableBlueprintImage useAllBlueprintsImage) {
