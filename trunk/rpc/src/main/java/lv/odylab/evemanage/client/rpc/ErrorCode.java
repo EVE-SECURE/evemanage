@@ -35,5 +35,11 @@ public interface ErrorCode {
     String API_UNABLE_TO_PARSE_RESULT = "apiUnableToParseResult";
     String API_UNABLE_TO_GET_RESULT_FROM_SERVER = "apiUnableToGetResultFromServer";
 
+    String EVECENTRAL_UNABLE_TO_PARSE_RESULT = "eveCentralUnableToParseResult";
+    String EVECENTRAL_UNABLE_TO_GET_RESULT_FROM_SERVER = "eveCentralUnableToGetResultFromServer";
+
+    String EVEMETRICS_UNABLE_TO_PARSE_RESULT = "eveMetricsUnableToParseResult";
+    String EVEMETRICS_UNABLE_TO_GET_RESULT_FROM_SERVER = "eveMetricsUnableToGetResultFromServer";
+
     String UNABLE_TO_IMPORT_JOBS_FROM_XML = "unableToImportJobsFromXml";
 }

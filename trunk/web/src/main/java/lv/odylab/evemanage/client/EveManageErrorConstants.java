@@ -49,11 +49,23 @@ public interface EveManageErrorConstants extends ConstantsWithLookup {
     @DefaultStringValue("Api response has errors")
     String apiResponseHasErrors();
 
-    @DefaultStringValue("Unable to parse response from api")
+    @DefaultStringValue("Unable to parse response from api server")
     String apiUnableToParseResult();
 
     @DefaultStringValue("Unable to get result from api server")
     String apiUnableToGetResultFromServer();
+
+    @DefaultStringValue("Unable to parse response from EVE-Central server")
+    String eveCentralUnableToParseResult();
+
+    @DefaultStringValue("Unable to get result from EVE-Central server")
+    String eveCentralUnableToGetResultFromServer();
+
+    @DefaultStringValue("Unable to parse response from EVE Metrics server")
+    String eveMetricsUnableToParseResult();
+
+    @DefaultStringValue("Unable to get result from EVE Metrics server")
+    String eveMetricsUnableToGetResultFromServer();
 
     @DefaultStringValue("Unable to import jobs from xml")
     String unableToImportJobsFromXml();
