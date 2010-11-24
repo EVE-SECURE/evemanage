@@ -1,4 +1,59 @@
 #summary How to import blueprints from CSV
 
 = Importing from CSV =
-TBD
+You can import blueprints by posting CSV into specialized window on blueprints tab. It is flexible, meaning that some fields are not necessary to specify and not-supported columns will be ignored.
+
+== CSV fields ==
+|| *name* or *typeID* || String || Either blueprint name or blueprint typeID must be specified ||
+|| *ME* || Integer || Material level, optional ||
+|| *PE* || Integer || Productivity level, optional ||
+|| *itemID* || Integer || Blueprint itemID, optional ||
+
+== Examples ==
+
+Either name or typeID must be specified (not both!):
+{{{
+name,ME,PE,itemID
+1MN Afterburner I Blueprint,50,50,1461877558
+Damage Control I Blueprint,9,30,1627580639
+}}}
+
+{{{
+typeID,ME,PE,itemID
+1072,50,50,1461877558
+2047,9,30,1627580639
+}}}
+
+Column order does not matter:
+{{{
+name,itemID,ME
+1MN Afterburner I Blueprint,1461877558,50
+Damage Control I Blueprint,1627580639,9
+}}}
+
+Column names are case-insensitive:
+{{{
+itemid,me,name
+1461877558,50,1MN Afterburner I Blueprint
+1627580639,9,Damage Control I Blueprint
+}}}
+
+By default ME=0 and PE=0:
+{{{
+name
+1MN Afterburner I Blueprint
+Damage Control I Blueprint
+}}}
+
+{{{
+typeID
+1072
+2047
+}}}
+
+Unknown columns are ignored:
+{{{
+name,blah,region,station
+1MN Afterburner I Blueprint,bad,column,name
+Damage Control I Blueprint,bad,column,name
+}}}
