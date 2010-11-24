@@ -57,3 +57,17 @@ name,blah,region,station
 1MN Afterburner I Blueprint,bad,column,name
 Damage Control I Blueprint,bad,column,name
 }}}
+
+EveHQ needs some adjustments (remove top lines and change Blueprint to name):
+{{{
+EveHQ BP Manager Owned Blueprint Export
+
+Blueprint,Location,Specific Location,Tech,ME,PE,Runs,Status
+Eagle Blueprint,icydo's Secret BP Stash,icydo's Secret BP Stash,2,-4,0,BPO,Present
+Dominix Blueprint,icydo's Secret BP Stash,icydo's Secret BP Stash,1,40,50,BPO,Present
+}}}
+{{{
+name,Location,Specific Location,Tech,ME,PE,Runs,Status
+Eagle Blueprint,icydo's Secret BP Stash,icydo's Secret BP Stash,2,-4,0,BPO,Present
+Dominix Blueprint,icydo's Secret BP Stash,icydo's Secret BP Stash,1,40,50,BPO,Present
+}}}
