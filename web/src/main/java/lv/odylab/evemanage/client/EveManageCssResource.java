@@ -76,6 +76,8 @@ public interface EveManageCssResource extends CssResource {
 
     String apiKeyUserIdInput();
 
+    String apiKeyCharacterIdInput();
+
     String apiKeyStringInput();
 
     String corpTitle();

@@ -32,6 +32,8 @@ public interface EveManageApplicationFacade {
 
     List<String> getAvailableSharingLevels();
 
+    List<ApiKey> getFullApiKeys();
+
     Blueprint createBlueprint(String blueprintTypeName, Integer meLevel, Integer peLevel) throws EveDbException, InvalidNameException;
 
     List<Blueprint> getBlueprints();
@@ -46,7 +48,13 @@ public interface EveManageApplicationFacade {
 
     BlueprintDetailsDto getBlueprintDetails(Long blueprintTypeID) throws EveDbException;
 
-    void importBlueprints(String importXml, Long attachedCharacterID, String sharingLevel) throws EveApiException;
+    void importBlueprintsFromXml(String importXml, Long attachedCharacterID, String sharingLevel) throws EveApiException;
+
+    void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, String sharingLevel);
+
+    void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException;
+
+    void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException;
 
     List<PriceSet> getPriceSets();
 

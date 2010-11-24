@@ -76,11 +76,8 @@ public interface EveManageMessages extends Messages {
     @DefaultMessage("API import")
     String apiImport();
 
-    @DefaultMessage("Full Access API Key")
-    String fullAccessApiKey();
-
-    @DefaultMessage("You can import your blueprints from EVE API using {0}. Since you are not likely going to share it, you should use links below to retrieve data manually. Copy link, edit request attributes (apiKey, userID and characterID), execute and copy response into text box below")
-    String descriptionYouCanImport(String fullAccessApiKeyHtml);
+    @DefaultMessage("You can import your blueprints from EVE API using <a target=\"blank\" href=\"http://www.eveonline.com/api/default.asp\">Full Access API Key</a>. Since you are not likely going to share it, you should use links below to retrieve data manually. Copy link, edit request attributes (apiKey, userID and characterID), execute and copy response into text box below")
+    String descriptionYouCanImportXml();
 
     @DefaultMessage("Note: only BPOs from manufacturing jobs will be imported")
     String noteOnlyBPOs();
@@ -94,6 +91,27 @@ public interface EveManageMessages extends Messages {
     @DefaultMessage("Hint: blueprint itemIDs are also imported, making them clickable when using IGB")
     String hintBlueprintItemIDs();
 
+    @DefaultMessage("Post XML from API")
+    String postXmlFromApi();
+
+    @DefaultMessage("or if you are lazy to do that")
+    String orIfYouAreLazy();
+
+    @DefaultMessage("Note: full API key will not be stored or cached in application")
+    String noteFullApiKeyWillNotBeStored();
+
+    @DefaultMessage("or post CSV")
+    String orPostCsv();
+
+    @DefaultMessage("You can import also import CSV. Please read about it <a target=\"_blank\" href=\"http://code.google.com/p/evemanage/wiki/ImportingCSV\">here</a>")
+    String descriptionYouCanImportCsv();
+
+    @DefaultMessage("or if you have full API key entered in preferences")
+    String orIfYouHaveFullApiKeyEnteredInPreferences();
+
+    @DefaultMessage("and attach to")
+    String andAttachTo();
+
     @DefaultMessage("Attached character")
     String attachedCharacter();
 
@@ -105,6 +123,12 @@ public interface EveManageMessages extends Messages {
 
     @DefaultMessage("Sharing level")
     String sharingLevel();
+
+    @DefaultMessage("Level")
+    String level();
+
+    @DefaultMessage("Character")
+    String character();
 
     @DefaultMessage("Personal")
     String personal();
@@ -265,6 +289,9 @@ public interface EveManageMessages extends Messages {
     @DefaultMessage("Hint: if you do not want to be able to share your blueprints or price sets with your corpmates, you can don''t bother with characters and API keys")
     String hintOnlyForSharing();
 
+    @DefaultMessage("Blueprints cost")
+    String blueprintsCost();
+
     @DefaultMessage("Characters")
     String characters();
 
@@ -310,8 +337,17 @@ public interface EveManageMessages extends Messages {
     @DefaultMessage("Limited API key")
     String limitedApiKey();
 
-    @DefaultMessage("Full api key")
+    @DefaultMessage("Full API key")
     String fullApiKey();
+
+    @DefaultMessage("Character with full API key")
+    String characterWithFullApiKey();
+
+    @DefaultMessage("User ID")
+    String userID();
+
+    @DefaultMessage("Character ID")
+    String characterID();
 
     @DefaultMessage("EVE API Key Management")
     String eveApiKeyManagement();

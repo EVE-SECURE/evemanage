@@ -1,5 +1,7 @@
 package lv.odylab.evemanage.client.presenter.tab;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -9,6 +11,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -41,6 +44,10 @@ import lv.odylab.evemanage.client.event.blueprints.BlueprintsTabFirstLoadEvent;
 import lv.odylab.evemanage.client.event.blueprints.BlueprintsTabFirstLoadEventHandler;
 import lv.odylab.evemanage.client.event.error.BlueprintsTabErrorEvent;
 import lv.odylab.evemanage.client.event.error.BlueprintsTabErrorEventHandler;
+import lv.odylab.evemanage.client.event.preferences.PreferencesApiKeyAddedEvent;
+import lv.odylab.evemanage.client.event.preferences.PreferencesApiKeyAddedEventHandler;
+import lv.odylab.evemanage.client.event.preferences.PreferencesApiKeyDeletedEvent;
+import lv.odylab.evemanage.client.event.preferences.PreferencesApiKeyDeletedEventHandler;
 import lv.odylab.evemanage.client.event.preferences.PreferencesCharacterAddedEvent;
 import lv.odylab.evemanage.client.event.preferences.PreferencesCharacterAddedEventHandler;
 import lv.odylab.evemanage.client.event.preferences.PreferencesCharacterDeletedEvent;
@@ -74,6 +81,7 @@ import lv.odylab.evemanage.client.rpc.action.blueprints.BlueprintsTabFirstLoadAc
 import lv.odylab.evemanage.client.rpc.action.blueprints.BlueprintsTabFirstLoadActionResponse;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDetailsDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
 import lv.odylab.evemanage.client.widget.AttachedCharacterListBox;
@@ -86,7 +94,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEventHandler, BlueprintsTabFirstLoadEventHandler, BlueprintAddedEventHandler, BlueprintDeletedEventHandler, BlueprintSavedEventHandler, BlueprintGotBlueprintDetailsEventHandler, BlueprintsImportedEventHandler, BlueprintsReloadedEventHandler, BlueprintsReloadedForCorporationEventHandler, BlueprintsReloadedForAllianceEventHandler, BlueprintGotCorporationBlueprintDetailsEventHandler, BlueprintGotAllianceBlueprintDetailsEventHandler, PreferencesCharacterAddedEventHandler, PreferencesCharacterDeletedEventHandler, PreferencesMainCharacterSetEventHandler {
+public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEventHandler, BlueprintsTabFirstLoadEventHandler, BlueprintAddedEventHandler, BlueprintDeletedEventHandler, BlueprintSavedEventHandler, BlueprintGotBlueprintDetailsEventHandler, BlueprintsImportedEventHandler, BlueprintsReloadedEventHandler, BlueprintsReloadedForCorporationEventHandler, BlueprintsReloadedForAllianceEventHandler, BlueprintGotCorporationBlueprintDetailsEventHandler, BlueprintGotAllianceBlueprintDetailsEventHandler, PreferencesCharacterAddedEventHandler, PreferencesCharacterDeletedEventHandler, PreferencesApiKeyAddedEventHandler, PreferencesApiKeyDeletedEventHandler, PreferencesMainCharacterSetEventHandler {
 
     public interface Display extends AttachableDisplay {
 
@@ -104,13 +112,29 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
 
         Button getAddNewBlueprintButton();
 
-        TextArea getImportTextArea();
+        TextArea getImportXmlTextArea();
+
+        TextBox getOneTimeFullApiKeyTextBox();
+
+        TextBox getOneTimeUserIdTextBox();
+
+        TextBox getOneTimeCharacterIdTextBox();
+
+        ListBox getOneTimeLevelListBox();
+
+        TextArea getImportCsvTextArea();
+
+        ListBox getFullApiKeyCharacterListBox();
+
+        ListBox getFullApiKeyLevelListBox();
 
         void setAttachedCharacterNames(List<CharacterNameDto> attachedCharacterNames);
 
         AttachedCharacterListBox getAttachedCharacterNames();
 
         void setSharingLevels(List<String> sharingLevels);
+
+        void setFullApiKeys(List<ApiKeyDto> fullApiKeys);
 
         SharingLevelListBox getSharingLevels();
 
@@ -214,6 +238,8 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
         eventBus.addHandler(BlueprintGotAllianceBlueprintDetailsEvent.TYPE, this);
         eventBus.addHandler(PreferencesCharacterAddedEvent.TYPE, this);
         eventBus.addHandler(PreferencesCharacterDeletedEvent.TYPE, this);
+        eventBus.addHandler(PreferencesApiKeyAddedEvent.TYPE, this);
+        eventBus.addHandler(PreferencesApiKeyDeletedEvent.TYPE, this);
         eventBus.addHandler(PreferencesMainCharacterSetEvent.TYPE, this);
     }
 
@@ -246,10 +272,11 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
         display.setAttachedCharacterNames(event.getAttachedCharacterNames());
         display.getAttachedCharacterNames().setAttachedCharacterNames(event.getAttachedCharacterNames());
         display.setSharingLevels(event.getSharingLevels());
+        display.setFullApiKeys(event.getFullApiKeys());
         display.setCurrentBlueprints(event.getBlueprints());
         bindDynamic();
         hideSpinner();
-        enableButton();
+        enableButtons();
     }
 
     @Override
@@ -300,7 +327,17 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
         Timer timer = new Timer() {
             @Override
             public void run() {
+                display.getImportButton().setEnabled(true);
+                display.getImportXmlTextArea().setText("");
+                display.getImportCsvTextArea().setText("");
+                display.getOneTimeFullApiKeyTextBox().setText("");
+                display.getOneTimeUserIdTextBox().setText("");
+                display.getOneTimeCharacterIdTextBox().setText("");
+                display.getOneTimeLevelListBox().setSelectedIndex(0);
+                display.getFullApiKeyCharacterListBox().setSelectedIndex(0);
+                display.getFullApiKeyLevelListBox().setSelectedIndex(0);
                 display.getReloadButton().click();
+                enableButtons();
             }
         };
         timer.schedule(5000);
@@ -308,8 +345,6 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
 
     @Override
     public void onBlueprintsReloaded(BlueprintsReloadedEvent event) {
-        display.getImportButton().setEnabled(true);
-        display.getImportTextArea().setText("");
         unbindDynamic();
         display.setAttachedCharacterNames(event.getAttachedCharacterNames());
         display.setSharingLevels(event.getSharingLevels());
@@ -376,6 +411,28 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
     }
 
     @Override
+    public void onApiKeyAdded(PreferencesApiKeyAddedEvent event) {
+        List<ApiKeyDto> fullApiKeys = new ArrayList<ApiKeyDto>();
+        for (ApiKeyDto apiKeyDto : event.getApiKeys()) {
+            if ("FULL".equals(apiKeyDto.getKeyType())) {
+                fullApiKeys.add(apiKeyDto);
+            }
+        }
+        display.setFullApiKeys(fullApiKeys);
+    }
+
+    @Override
+    public void onApiKeyDeleted(PreferencesApiKeyDeletedEvent event) {
+        List<ApiKeyDto> fullApiKeys = new ArrayList<ApiKeyDto>();
+        for (ApiKeyDto apiKeyDto : event.getApiKeys()) {
+            if ("FULL".equals(apiKeyDto.getKeyType())) {
+                fullApiKeys.add(apiKeyDto);
+            }
+        }
+        display.setFullApiKeys(fullApiKeys);
+    }
+
+    @Override
     public void onMainCharacterSet(PreferencesMainCharacterSetEvent event) {
         display.resetCorporationAndAllianceBlueprints();
     }
@@ -416,10 +473,105 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
                 });
             }
         }));
+        final TextArea importXmlTextArea = display.getImportXmlTextArea();
         final TextBox newBlueprintMeTextBox = display.getNewBlueprintMeTextBox();
         final TextBox newBlueprintPeTextBox = display.getNewBlueprintPeTextBox();
         staticHandlerRegistrations.add(newBlueprintMeTextBox.addChangeHandler(new OnlyDigitsAndMinusChangeHandler(newBlueprintMeTextBox, 3)));
         staticHandlerRegistrations.add(newBlueprintPeTextBox.addChangeHandler(new OnlyDigitsAndMinusChangeHandler(newBlueprintPeTextBox, 3)));
+        final TextBox oneTimeFullApiKeyTextBox = display.getOneTimeFullApiKeyTextBox();
+        final TextBox oneTimeUserIdTextBox = display.getOneTimeUserIdTextBox();
+        final TextBox oneTimeCharacterIdTextBox = display.getOneTimeCharacterIdTextBox();
+        final ListBox oneTimeLevelListBox = display.getOneTimeLevelListBox();
+        final TextArea importCsvTextArea = display.getImportCsvTextArea();
+        final ListBox fullApiKeyCharacterListBox = display.getFullApiKeyCharacterListBox();
+        final ListBox fullApiKeyLevelListBox = display.getFullApiKeyLevelListBox();
+        staticHandlerRegistrations.add(oneTimeUserIdTextBox.addChangeHandler(new OnlyDigitsChangeHandler(oneTimeUserIdTextBox, 15)));
+        staticHandlerRegistrations.add(oneTimeCharacterIdTextBox.addChangeHandler(new OnlyDigitsChangeHandler(oneTimeCharacterIdTextBox, 15)));
+        staticHandlerRegistrations.add(importXmlTextArea.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                if (importXmlTextArea.getText().length() > 0) {
+                    importCsvTextArea.setEnabled(false);
+                    oneTimeFullApiKeyTextBox.setEnabled(false);
+                    oneTimeUserIdTextBox.setEnabled(false);
+                    oneTimeCharacterIdTextBox.setEnabled(false);
+                    oneTimeLevelListBox.setEnabled(false);
+                    fullApiKeyCharacterListBox.setEnabled(false);
+                    fullApiKeyLevelListBox.setEnabled(false);
+                } else {
+                    importCsvTextArea.setEnabled(true);
+                    oneTimeFullApiKeyTextBox.setEnabled(true);
+                    oneTimeUserIdTextBox.setEnabled(true);
+                    oneTimeCharacterIdTextBox.setEnabled(true);
+                    oneTimeLevelListBox.setEnabled(true);
+                    fullApiKeyCharacterListBox.setEnabled(true);
+                    fullApiKeyLevelListBox.setEnabled(true);
+                }
+            }
+        }));
+        ChangeHandler oneTimeFieldsChangeHandler = new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                if (oneTimeFullApiKeyTextBox.getText().length() > 0 ||
+                        oneTimeUserIdTextBox.getText().length() > 0 ||
+                        oneTimeCharacterIdTextBox.getText().length() > 0) {
+                    importXmlTextArea.setEnabled(false);
+                    importCsvTextArea.setEnabled(false);
+                    fullApiKeyCharacterListBox.setEnabled(false);
+                    fullApiKeyLevelListBox.setEnabled(false);
+                } else {
+                    importXmlTextArea.setEnabled(true);
+                    importCsvTextArea.setEnabled(true);
+                    fullApiKeyCharacterListBox.setEnabled(true);
+                    fullApiKeyLevelListBox.setEnabled(true);
+                }
+            }
+        };
+        staticHandlerRegistrations.add(oneTimeFullApiKeyTextBox.addChangeHandler(oneTimeFieldsChangeHandler));
+        staticHandlerRegistrations.add(oneTimeUserIdTextBox.addChangeHandler(oneTimeFieldsChangeHandler));
+        staticHandlerRegistrations.add(oneTimeCharacterIdTextBox.addChangeHandler(oneTimeFieldsChangeHandler));
+        staticHandlerRegistrations.add(importCsvTextArea.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                if (importCsvTextArea.getText().length() > 0) {
+                    importXmlTextArea.setEnabled(false);
+                    oneTimeFullApiKeyTextBox.setEnabled(false);
+                    oneTimeUserIdTextBox.setEnabled(false);
+                    oneTimeCharacterIdTextBox.setEnabled(false);
+                    oneTimeLevelListBox.setEnabled(false);
+                    fullApiKeyCharacterListBox.setEnabled(false);
+                    fullApiKeyLevelListBox.setEnabled(false);
+                } else {
+                    importXmlTextArea.setEnabled(true);
+                    oneTimeFullApiKeyTextBox.setEnabled(true);
+                    oneTimeUserIdTextBox.setEnabled(true);
+                    oneTimeCharacterIdTextBox.setEnabled(true);
+                    oneTimeLevelListBox.setEnabled(true);
+                    fullApiKeyCharacterListBox.setEnabled(true);
+                    fullApiKeyLevelListBox.setEnabled(true);
+                }
+            }
+        }));
+        staticHandlerRegistrations.add(fullApiKeyCharacterListBox.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                if (fullApiKeyCharacterListBox.getSelectedIndex() != 0) {
+                    importXmlTextArea.setEnabled(false);
+                    oneTimeFullApiKeyTextBox.setEnabled(false);
+                    oneTimeUserIdTextBox.setEnabled(false);
+                    oneTimeCharacterIdTextBox.setEnabled(false);
+                    oneTimeLevelListBox.setEnabled(false);
+                    importCsvTextArea.setEnabled(false);
+                } else {
+                    importXmlTextArea.setEnabled(true);
+                    oneTimeFullApiKeyTextBox.setEnabled(true);
+                    oneTimeUserIdTextBox.setEnabled(true);
+                    oneTimeCharacterIdTextBox.setEnabled(true);
+                    oneTimeLevelListBox.setEnabled(true);
+                    importCsvTextArea.setEnabled(true);
+                }
+            }
+        }));
         final Button importButton = display.getImportButton();
         staticHandlerRegistrations.add(importButton.addClickHandler(new ClickHandler() {
             @Override
@@ -428,7 +580,14 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
                 BlueprintsImportAction action = new BlueprintsImportAction();
                 action.setAttachedCharacterID(display.getAttachedCharacterNames().getAttachedCharacterName().getId());
                 action.setSharingLevel(display.getSharingLevels().getSharingLevel());
-                action.setImportXml(display.getImportTextArea().getText());
+                action.setImportXml(importXmlTextArea.getText().isEmpty() ? null : importXmlTextArea.getText());
+                action.setImportCsv(importCsvTextArea.getText().isEmpty() ? null : importCsvTextArea.getText());
+                action.setOneTimeFullApiKey(oneTimeFullApiKeyTextBox.getText().isEmpty() ? null : oneTimeFullApiKeyTextBox.getText());
+                action.setOneTimeUserID(oneTimeUserIdTextBox.getText().isEmpty() ? null : Long.valueOf(oneTimeUserIdTextBox.getText()));
+                action.setOneTimeCharacterID(oneTimeCharacterIdTextBox.getText().isEmpty() ? null : Long.valueOf(oneTimeCharacterIdTextBox.getText()));
+                action.setOneTimeLevel(oneTimeLevelListBox.getValue(oneTimeLevelListBox.getSelectedIndex()));
+                action.setFullApiKeyCharacterID(Long.valueOf(fullApiKeyCharacterListBox.getValue(fullApiKeyCharacterListBox.getSelectedIndex())));
+                action.setFullApiKeyLevel(fullApiKeyLevelListBox.getValue(fullApiKeyLevelListBox.getSelectedIndex()));
                 showSpinner();
                 rpcService.execute(action, new BlueprintsTabActionCallback<BlueprintsImportActionResponse>(eventBus, trackingManager, constants) {
                     @Override
@@ -721,12 +880,19 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
         display.getSpinnerImage().setVisible(false);
     }
 
-    private void enableButton() {
+    private void enableButtons() {
         display.getNewBlueprintTextBox().getTextBox().setEnabled(true);
         display.getNewBlueprintMeTextBox().setEnabled(true);
         display.getNewBlueprintPeTextBox().setEnabled(true);
         display.getAddNewBlueprintButton().setEnabled(true);
-        display.getImportTextArea().setEnabled(true);
+        display.getImportXmlTextArea().setEnabled(true);
+        display.getOneTimeFullApiKeyTextBox().setEnabled(true);
+        display.getOneTimeUserIdTextBox().setEnabled(true);
+        display.getOneTimeCharacterIdTextBox().setEnabled(true);
+        display.getOneTimeLevelListBox().setEnabled(true);
+        display.getImportCsvTextArea().setEnabled(true);
+        display.getFullApiKeyCharacterListBox().setEnabled(true);
+        display.getFullApiKeyLevelListBox().setEnabled(true);
         display.getAttachedCharacterNames().setEnabled(true);
         display.getSharingLevels().setEnabled(true);
         display.getImportButton().setEnabled(true);

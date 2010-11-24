@@ -5,7 +5,6 @@ import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.application.exception.EveDbException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
-import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
@@ -39,10 +38,12 @@ public interface BlueprintManagementService {
 
     void deleteBlueprint(Long blueprintID, Key<User> userKey);
 
-    void importBlueprints(String importXml, Long attachedCharacterID, String sharingLevel, Key<User> userKey) throws EveApiException;
+    void importBlueprintsFromXml(String importXml, Long attachedCharacterID, String sharingLevel, Key<User> userKey) throws EveApiException;
 
-    void attachedCharacterDeleted(Key<Character> characterKey);
+    void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, String sharingLevel, Key<User> userKey);
 
-    void attachedCharacterUpdated(Key<Character> characterKey, Character character);
+    void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, String sharingLevel, Key<User> userKey) throws EveApiException;
+
+    void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, String sharingLevel, Key<User> userKey) throws EveApiException;
 
 }

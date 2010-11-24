@@ -5,6 +5,7 @@ import com.googlecode.objectify.Key;
 import lv.odylab.evemanage.application.exception.EveDbException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.domain.user.User;
+import lv.odylab.evemanage.integration.evedb.EveDbGateway;
 import lv.odylab.evemanage.service.blueprint.BlueprintManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,12 @@ import java.io.IOException;
 public class AddBlueprintTaskServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private BlueprintManagementService blueprintManagementService;
+    private final EveDbGateway eveDbGateway;
+    private final BlueprintManagementService blueprintManagementService;
 
     @Inject
-    public AddBlueprintTaskServlet(BlueprintManagementService blueprintManagementService) {
+    public AddBlueprintTaskServlet(EveDbGateway eveDbGateway, BlueprintManagementService blueprintManagementService) {
+        this.eveDbGateway = eveDbGateway;
         this.blueprintManagementService = blueprintManagementService;
     }
 
@@ -29,12 +32,18 @@ public class AddBlueprintTaskServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             Long userID = Long.valueOf(req.getParameter("userID"));
-            Long blueprintTypeID = Long.valueOf(req.getParameter("blueprintTypeID"));
-            Long itemID = Long.valueOf(req.getParameter("itemID"));
+            String blueprintTypeIdString = req.getParameter("blueprintTypeID");
+            Long blueprintTypeID = blueprintTypeIdString == null ? null : Long.valueOf(blueprintTypeIdString);
+            String blueprintTypeName = req.getParameter("blueprintTypeName");
+            if (blueprintTypeName != null) {
+                blueprintTypeID = eveDbGateway.getTypeID(blueprintTypeName);
+            }
+            String itemIdString = req.getParameter("itemID");
+            Long itemID = itemIdString == null ? null : Long.valueOf(itemIdString);
             Integer meLevel = Integer.valueOf(req.getParameter("meLevel"));
             Integer peLevel = Integer.valueOf(req.getParameter("peLevel"));
             String attachedCharacterIdString = req.getParameter("attachedCharacterID");
-            Long attachedCharacterID = attachedCharacterIdString != null ? Long.valueOf(attachedCharacterIdString) : null;
+            Long attachedCharacterID = attachedCharacterIdString == null ? null : Long.valueOf(attachedCharacterIdString);
             String sharingLevel = req.getParameter("sharingLevel");
             blueprintManagementService.createBlueprint(blueprintTypeID, itemID, meLevel, peLevel, attachedCharacterID, sharingLevel, new Key<User>(User.class, userID));
         } catch (EveDbException e) {

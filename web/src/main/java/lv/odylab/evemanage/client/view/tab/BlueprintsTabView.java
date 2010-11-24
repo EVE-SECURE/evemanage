@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -33,10 +34,13 @@ import lv.odylab.evemanage.client.oracle.BlueprintTypeSuggestOracle;
 import lv.odylab.evemanage.client.presenter.tab.BlueprintsTabPresenter;
 import lv.odylab.evemanage.client.presenter.tab.blueprint.EditableBlueprintDetails;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyCharacterInfoDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterInfoDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.util.EveImageUrlProvider;
 import lv.odylab.evemanage.client.widget.AttachedCharacterListBox;
+import lv.odylab.evemanage.client.widget.CharacterOrCorporationLevelListBox;
 import lv.odylab.evemanage.client.widget.EveCharacterInfoLink;
 import lv.odylab.evemanage.client.widget.EveCorporationInfoLink;
 import lv.odylab.evemanage.client.widget.EveItemInfoLink;
@@ -76,9 +80,9 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
 
     private DisclosurePanel importDisclosurePanel;
     private VerticalPanel importPanel;
-    private FlexTable importDescriptionTable;
-    private TextArea importTextArea;
-    private HTML descriptionYouCanImportLabel;
+    private FlexTable importXmlDescriptionTable;
+    private TextArea importXmlTextArea;
+    private HTML descriptionYouCanImportXmlLabel;
     private Anchor charIndustryJobAnchor;
     private Anchor corpIndustryJobAnchor;
     private Label noteOnlyBposLabel;
@@ -86,6 +90,23 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
     private Label hintYouCanImportLabel;
     private Label hintBlueprintItemIdsLabel;
     private FlexTable importTable;
+    private Label postXmlLabel;
+    private Label orIfLazyLabel;
+    private FlexTable importOneTimeTable;
+    private TextBox oneTimeFullApiKeyTextBox;
+    private TextBox oneTimeUserIdTextBox;
+    private TextBox oneTimeCharacterIdTextBox;
+    private CharacterOrCorporationLevelListBox oneTimeLevelListBox;
+    private Label noteOneTime;
+    private Label orPostCsvLabel;
+    private FlexTable importCsvDescriptionTable;
+    private HTML descriptionYouCanImportCsvLabel;
+    private TextArea importCsvTextArea;
+    private Label orFullApiKeyLabel;
+    private ListBox fullApiKeyCharacterListBox;
+    private CharacterOrCorporationLevelListBox fullApiKeyLevelListBox;
+    private FlexTable importWithFullApiKeyTable;
+    private Label andAttachLabel;
     private Label attachToCharacterLabel;
     private AttachedCharacterListBox attachToCharacterListBox;
     private Label importSharingLabel;
@@ -185,12 +206,11 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
 
         importDisclosurePanel = new DisclosurePanel(messages.apiImport());
         importPanel = new VerticalPanel();
-        importDescriptionTable = new FlexTable();
-        importTextArea = new TextArea();
-        importTextArea.addStyleName(resources.css().importTextArea());
-        importTextArea.setEnabled(false);
-        Anchor eveApiKeyManagementPageAnchor = new Anchor(messages.fullAccessApiKey(), constants.eveApiKeyManagementPageUrl(), "_blank");
-        descriptionYouCanImportLabel = new HTML(messages.descriptionYouCanImport(eveApiKeyManagementPageAnchor.toString()) + ".");
+        importXmlDescriptionTable = new FlexTable();
+        importXmlTextArea = new TextArea();
+        importXmlTextArea.addStyleName(resources.css().importTextArea());
+        importXmlTextArea.setEnabled(false);
+        descriptionYouCanImportXmlLabel = new HTML(messages.descriptionYouCanImportXml() + ".");
         charIndustryJobAnchor = new Anchor(constants.charIndustryJobsTitle(), constants.charIndustryJobsUrl(), "_blank");
         corpIndustryJobAnchor = new Anchor(constants.corpIndustryJobsTitle(), constants.corpIndustryJobsUrl(), "_blank");
         noteOnlyBposLabel = new Label(messages.noteOnlyBPOs() + ".");
@@ -202,7 +222,41 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
         hintBlueprintItemIdsLabel = new Label(messages.hintBlueprintItemIDs() + ".");
         hintBlueprintItemIdsLabel.addStyleName(resources.css().hintLabel());
         importTable = new FlexTable();
-        attachToCharacterLabel = new Label(messages.attachToCharacter() + ":");
+        postXmlLabel = new Label(messages.postXmlFromApi());
+        postXmlLabel.addStyleName(resources.css().tabHeadingText());
+        orIfLazyLabel = new Label(messages.orIfYouAreLazy());
+        orIfLazyLabel.addStyleName(resources.css().tabHeadingText());
+        importOneTimeTable = new FlexTable();
+        oneTimeFullApiKeyTextBox = new TextBox();
+        oneTimeFullApiKeyTextBox.addStyleName(resources.css().apiKeyStringInput());
+        oneTimeFullApiKeyTextBox.setEnabled(false);
+        oneTimeUserIdTextBox = new TextBox();
+        oneTimeUserIdTextBox.addStyleName(resources.css().apiKeyUserIdInput());
+        oneTimeUserIdTextBox.setEnabled(false);
+        oneTimeCharacterIdTextBox = new TextBox();
+        oneTimeCharacterIdTextBox.addStyleName(resources.css().apiKeyCharacterIdInput());
+        oneTimeCharacterIdTextBox.setEnabled(false);
+        oneTimeLevelListBox = new CharacterOrCorporationLevelListBox(messages);
+        oneTimeLevelListBox.setEnabled(false);
+        noteOneTime = new Label(messages.noteFullApiKeyWillNotBeStored() + ".");
+        noteOneTime.addStyleName(resources.css().noteLabel());
+        orPostCsvLabel = new Label(messages.orPostCsv());
+        orPostCsvLabel.addStyleName(resources.css().tabHeadingText());
+        importCsvDescriptionTable = new FlexTable();
+        descriptionYouCanImportCsvLabel = new HTML(messages.descriptionYouCanImportCsv() + ".");
+        importCsvTextArea = new TextArea();
+        importCsvTextArea.addStyleName(resources.css().importTextArea());
+        importCsvTextArea.setEnabled(false);
+        orFullApiKeyLabel = new Label(messages.orIfYouHaveFullApiKeyEnteredInPreferences());
+        orFullApiKeyLabel.addStyleName(resources.css().tabHeadingText());
+        fullApiKeyCharacterListBox = new ListBox();
+        fullApiKeyCharacterListBox.setEnabled(false);
+        fullApiKeyLevelListBox = new CharacterOrCorporationLevelListBox(messages);
+        fullApiKeyLevelListBox.setEnabled(false);
+        importWithFullApiKeyTable = new FlexTable();
+        andAttachLabel = new Label(messages.andAttachTo());
+        andAttachLabel.addStyleName(resources.css().tabHeadingText());
+        attachToCharacterLabel = new Label(messages.character() + ":");
         attachToCharacterListBox = new AttachedCharacterListBox(messages);
         attachToCharacterListBox.setEnabled(false);
         importSharingLabel = new Label(messages.sharingLevel() + ":");
@@ -373,16 +427,40 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
         container.add(newBlueprintMePeTable);
         container.add(hintCanAddBothBpoAndBpcLabel);
 
-        importDescriptionTable.setWidget(0, 0, descriptionYouCanImportLabel);
-        importDescriptionTable.setWidget(1, 0, charIndustryJobAnchor);
-        importDescriptionTable.setWidget(2, 0, corpIndustryJobAnchor);
-        importPanel.add(importDescriptionTable);
-        importPanel.add(importTextArea);
+        importXmlDescriptionTable.setWidget(0, 0, descriptionYouCanImportXmlLabel);
+        importXmlDescriptionTable.setWidget(1, 0, charIndustryJobAnchor);
+        importXmlDescriptionTable.setWidget(2, 0, corpIndustryJobAnchor);
+
+        importPanel.add(postXmlLabel);
+        importPanel.add(importXmlDescriptionTable);
+        importPanel.add(importXmlTextArea);
         importPanel.add(noteOnlyBposLabel);
         importPanel.add(noteSinceApiDoesNotProvide);
         importPanel.add(hintYouCanImportLabel);
         importPanel.add(hintBlueprintItemIdsLabel);
+        importPanel.add(orIfLazyLabel);
+        importOneTimeTable.setWidget(0, 0, new Label(messages.fullApiKey() + ":"));
+        importOneTimeTable.setWidget(0, 1, oneTimeFullApiKeyTextBox);
+        importOneTimeTable.setWidget(1, 0, new Label(messages.userID() + ":"));
+        importOneTimeTable.setWidget(1, 1, oneTimeUserIdTextBox);
+        importOneTimeTable.setWidget(2, 0, new Label(messages.characterID() + ":"));
+        importOneTimeTable.setWidget(2, 1, oneTimeCharacterIdTextBox);
+        importOneTimeTable.setWidget(3, 0, new Label(messages.level() + ":"));
+        importOneTimeTable.setWidget(3, 1, oneTimeLevelListBox);
+        importPanel.add(importOneTimeTable);
+        importPanel.add(noteOneTime);
+        importPanel.add(orPostCsvLabel);
+        importCsvDescriptionTable.setWidget(0, 0, descriptionYouCanImportCsvLabel);
+        importPanel.add(importCsvDescriptionTable);
+        importPanel.add(importCsvTextArea);
+        importPanel.add(orFullApiKeyLabel);
+        importWithFullApiKeyTable.setWidget(0, 0, new Label(messages.character() + ":"));
 
+        importWithFullApiKeyTable.setWidget(0, 1, fullApiKeyCharacterListBox);
+        importWithFullApiKeyTable.setWidget(1, 0, new Label(messages.level() + ":"));
+        importWithFullApiKeyTable.setWidget(1, 1, fullApiKeyLevelListBox);
+        importPanel.add(importWithFullApiKeyTable);
+        importPanel.add(andAttachLabel);
         importTable.setWidget(0, 0, attachToCharacterLabel);
         importTable.setWidget(0, 1, attachToCharacterListBox);
         importTable.setWidget(0, 2, importSharingLabel);
@@ -455,8 +533,43 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
     }
 
     @Override
-    public TextArea getImportTextArea() {
-        return importTextArea;
+    public TextArea getImportXmlTextArea() {
+        return importXmlTextArea;
+    }
+
+    @Override
+    public TextBox getOneTimeFullApiKeyTextBox() {
+        return oneTimeFullApiKeyTextBox;
+    }
+
+    @Override
+    public TextBox getOneTimeUserIdTextBox() {
+        return oneTimeUserIdTextBox;
+    }
+
+    @Override
+    public TextBox getOneTimeCharacterIdTextBox() {
+        return oneTimeCharacterIdTextBox;
+    }
+
+    @Override
+    public ListBox getOneTimeLevelListBox() {
+        return oneTimeLevelListBox;
+    }
+
+    @Override
+    public TextArea getImportCsvTextArea() {
+        return importCsvTextArea;
+    }
+
+    @Override
+    public ListBox getFullApiKeyCharacterListBox() {
+        return fullApiKeyCharacterListBox;
+    }
+
+    @Override
+    public ListBox getFullApiKeyLevelListBox() {
+        return fullApiKeyLevelListBox;
     }
 
     @Override
@@ -475,6 +588,18 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
         sharingLevelListBox.clear();
         for (String sharingLevel : sharingLevels) {
             sharingLevelListBox.addItem(sharingLevel);
+        }
+    }
+
+    @Override
+    public void setFullApiKeys(List<ApiKeyDto> fullApiKeys) {
+        fullApiKeyCharacterListBox.clear();
+        fullApiKeyCharacterListBox.addItem(messages.none(), "-1");
+        for (ApiKeyDto fullApiKey : fullApiKeys) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (ApiKeyCharacterInfoDto apiKeyCharacterInfo : fullApiKey.getCharacterInfos()) {
+                fullApiKeyCharacterListBox.addItem(apiKeyCharacterInfo.getName(), apiKeyCharacterInfo.getCharacterID().toString());
+            }
         }
     }
 
