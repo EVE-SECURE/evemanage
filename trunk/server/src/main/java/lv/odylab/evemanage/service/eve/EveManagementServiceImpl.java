@@ -101,6 +101,11 @@ public class EveManagementServiceImpl implements EveManagementService {
     }
 
     @Override
+    public List<ApiKey> getFullApiKeys(Key<User> userKey) {
+        return apiKeyDao.getAllFull(userKey);
+    }
+
+    @Override
     public void createApiKey(String apiKeyString, Long apiKeyUserID, Key<User> userKey) throws EveApiException, ApiKeyShouldBeRemovedException {
         ApiKey apiKey = new ApiKey();
         apiKey.setApiKeyUserID(apiKeyUserID);

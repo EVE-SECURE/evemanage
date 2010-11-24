@@ -78,6 +78,16 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
+    public List<ApiKeyDto> getFullApiKeys() {
+        List<ApiKey> fullApiKeys = applicationFacade.getFullApiKeys();
+        List<ApiKeyDto> fullApiKeyDtos = new ArrayList<ApiKeyDto>();
+        for (ApiKey fullApiKey : fullApiKeys) {
+            fullApiKeyDtos.add(mapper.map(fullApiKey, ApiKeyDto.class));
+        }
+        return fullApiKeyDtos;
+    }
+
+    @Override
     public BlueprintDto createBlueprint(String blueprintTypeName, Integer meLevel, Integer peLevel) throws EveDbException, InvalidNameException {
         Blueprint blueprint = applicationFacade.createBlueprint(blueprintTypeName, meLevel, peLevel);
         return mapper.map(blueprint, BlueprintDto.class);
@@ -132,8 +142,26 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
 
     @Override
     @Logging(logArguments = false)
-    public void importBlueprints(String importXml, Long attachedCharacterID, String sharingLevel) throws EveApiException {
-        applicationFacade.importBlueprints(importXml, attachedCharacterID, sharingLevel);
+    public void importBlueprintsFromXml(String importXml, Long attachedCharacterID, String sharingLevel) throws EveApiException {
+        applicationFacade.importBlueprintsFromXml(importXml, attachedCharacterID, sharingLevel);
+    }
+
+    @Override
+    @Logging(logArguments = false)
+    public void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, String sharingLevel) {
+        applicationFacade.importBlueprintsFromCsv(importCsv, attachedCharacterID, sharingLevel);
+    }
+
+    @Override
+    @Logging(logArguments = false)
+    public void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException {
+        applicationFacade.importBlueprintsUsingOneTimeFullApiKey(fullApiKey, userID, characterID, level, attachedCharacterID, sharingLevel);
+    }
+
+    @Override
+    @Logging(logArguments = false)
+    public void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException {
+        applicationFacade.importBlueprintsUsingFullApiKey(characterID, level, attachedCharacterID, sharingLevel);
     }
 
     @Override

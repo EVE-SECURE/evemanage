@@ -29,10 +29,29 @@ public class AddBlueprintTaskLauncher implements EveManageServletModuleMapping {
         Queue queue = appEngineServices.getQueue(queueName);
         TaskOptions taskOptions = url(TASK_ADD_BLUEPRINT).param("userID", String.valueOf(userID))
                 .param("blueprintTypeID", String.valueOf(blueprintTypeID))
-                .param("itemID", String.valueOf(itemID))
                 .param("meLevel", String.valueOf(meLevel))
                 .param("peLevel", String.valueOf(peLevel))
                 .param("sharingLevel", sharingLevel);
+        if (itemID != null) {
+            taskOptions.param("itemID", String.valueOf(itemID));
+        }
+        if (attachedCharacterID != null) {
+            taskOptions.param("attachedCharacterID", String.valueOf(attachedCharacterID));
+        }
+        queue.add(taskOptions);
+    }
+
+    public void launch(Long userID, String blueprintTypeName, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, String sharingLevel) {
+        logger.info("Scheduling blueprint add task");
+        Queue queue = appEngineServices.getQueue(queueName);
+        TaskOptions taskOptions = url(TASK_ADD_BLUEPRINT).param("userID", String.valueOf(userID))
+                .param("blueprintTypeName", String.valueOf(blueprintTypeName))
+                .param("meLevel", String.valueOf(meLevel))
+                .param("peLevel", String.valueOf(peLevel))
+                .param("sharingLevel", sharingLevel);
+        if (itemID != null) {
+            taskOptions.param("itemID", String.valueOf(itemID));
+        }
         if (attachedCharacterID != null) {
             taskOptions.param("attachedCharacterID", String.valueOf(attachedCharacterID));
         }

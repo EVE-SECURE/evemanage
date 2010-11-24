@@ -3,6 +3,7 @@ package lv.odylab.evemanage.application.background.blueprint;
 import com.googlecode.objectify.Key;
 import lv.odylab.evemanage.application.exception.EveDbException;
 import lv.odylab.evemanage.domain.user.User;
+import lv.odylab.evemanage.integration.evedb.EveDbGateway;
 import lv.odylab.evemanage.service.blueprint.BlueprintManagementService;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +21,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class AddBlueprintTaskServletTest {
     @Mock
+    private EveDbGateway eveDbGateway;
+    @Mock
     private BlueprintManagementService blueprintManagementService;
     @Mock
     private HttpServletRequest httpServletRequest;
@@ -29,7 +32,7 @@ public class AddBlueprintTaskServletTest {
 
     @Before
     public void setUp() {
-        addBlueprintTaskServlet = new AddBlueprintTaskServlet(blueprintManagementService);
+        addBlueprintTaskServlet = new AddBlueprintTaskServlet(eveDbGateway, blueprintManagementService);
     }
 
     @Test

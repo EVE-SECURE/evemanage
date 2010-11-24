@@ -5,6 +5,7 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyFactory;
 import lv.odylab.evemanage.application.exception.validation.DifferentUserException;
 import lv.odylab.evemanage.application.exception.validation.DuplicateApiKeyException;
+import lv.odylab.evemanage.domain.ApiKeyType;
 import lv.odylab.evemanage.domain.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,20 @@ public class ApiKeyDao {
         return objectifyFactory.begin().query(ApiKey.class)
                 .filter("user", userKey)
                 .filter("characterInfos.characterID", characterID).getKey();
+    }
+
+    public List<ApiKey> getAllFull(Key<User> userKey) {
+        return objectifyFactory.begin().query(ApiKey.class)
+                .filter("user", userKey)
+                .filter("keyType", ApiKeyType.FULL.toString())
+                .order("apiKeyUserID").list();
+    }
+
+    public ApiKey getFullForCharacterID(Long characterID, Key<User> userKey) {
+        return objectifyFactory.begin().query(ApiKey.class)
+                .filter("user", userKey)
+                .filter("keyType", ApiKeyType.FULL.toString())
+                .filter("characterInfos.characterID", characterID).get();
     }
 
     public void put(ApiKey apiKey, Key<User> userKey) {

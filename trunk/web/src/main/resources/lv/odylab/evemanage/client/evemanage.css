@@ -169,11 +169,11 @@ img {
     color: #ff3300;
 }
 
-.apiKeyUserIdInput, .apiKeyStringInput {
+.apiKeyUserIdInput, .apiKeyCharacterIdInput, .apiKeyStringInput {
     font-family: monospace;
 }
 
-.apiKeyUserIdInput {
+.apiKeyUserIdInput, .apiKeyCharacterIdInput {
     width: 100px;
 }
 

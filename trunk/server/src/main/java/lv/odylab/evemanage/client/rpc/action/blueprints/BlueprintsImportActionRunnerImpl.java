@@ -13,7 +13,15 @@ public class BlueprintsImportActionRunnerImpl implements BlueprintsImportActionR
 
     @Override
     public BlueprintsImportActionResponse execute(BlueprintsImportAction action) throws Exception {
-        clientFacade.importBlueprints(action.getImportXml(), action.getAttachedCharacterID(), action.getSharingLevel());
+        if (action.getOneTimeFullApiKey() != null) {
+            clientFacade.importBlueprintsUsingOneTimeFullApiKey(action.getOneTimeFullApiKey(), action.getOneTimeUserID(), action.getOneTimeCharacterID(), action.getOneTimeLevel(), action.getAttachedCharacterID(), action.getSharingLevel());
+        } else if (action.getImportCsv() != null) {
+            clientFacade.importBlueprintsFromCsv(action.getImportCsv(), action.getAttachedCharacterID(), action.getSharingLevel());
+        } else if (action.getFullApiKeyCharacterID() != -1) {
+            clientFacade.importBlueprintsUsingFullApiKey(action.getFullApiKeyCharacterID(), action.getFullApiKeyLevel(), action.getAttachedCharacterID(), action.getSharingLevel());
+        } else {
+            clientFacade.importBlueprintsFromXml(action.getImportXml(), action.getAttachedCharacterID(), action.getSharingLevel());
+        }
         return new BlueprintsImportActionResponse();
     }
 }

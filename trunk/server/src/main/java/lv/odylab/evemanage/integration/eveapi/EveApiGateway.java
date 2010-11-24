@@ -21,6 +21,10 @@ public interface EveApiGateway {
 
     CharacterSheetDto getCharacterSheet(String apiKeyString, Long apiKeyUserID, Long characterID) throws EveApiException;
 
+    List<IndustryJobDto> getCharacterIndustryJobs(String apiKey, Long userID, Long characterID) throws EveApiException;
+
     CorporationSheetDto getCorporationSheet(Long corporationID) throws EveApiException;
+
+    List<IndustryJobDto> getCorporationIndustryJobs(String apiKey, Long userID, Long characterID) throws EveApiException;
 
 }

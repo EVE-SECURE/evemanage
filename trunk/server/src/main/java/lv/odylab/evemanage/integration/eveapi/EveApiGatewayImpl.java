@@ -142,6 +142,29 @@ public class EveApiGatewayImpl implements EveApiGateway {
     }
 
     @Override
+    @Logging(logArguments = false)
+    public List<IndustryJobDto> getCharacterIndustryJobs(String apiKey, Long userID, Long characterID) throws EveApiException {
+        try {
+            ApiIndustryJobResponse response = facade.getCharacterIndustryJobs(apiKey, userID, characterID);
+            List<ApiIndustryJobRow> apiIndustryJobRows = response.getResult().getRowset().getRows();
+            List<IndustryJobDto> industryJobDtos = new ArrayList<IndustryJobDto>();
+            for (ApiIndustryJobRow apiIndustryJobRow : apiIndustryJobRows) {
+                industryJobDtos.add(mapper.map(apiIndustryJobRow, IndustryJobDto.class));
+            }
+            return industryJobDtos;
+        } catch (ApiErrorException e) {
+            logger.warn("Caught ApiErrorException", e.getMessage());
+            throw new EveApiException(e);
+        } catch (ApiParserException e) {
+            logger.error("Caught ApiParserException", e);
+            throw new EveApiException(e);
+        } catch (ApiIoException e) {
+            logger.error("Caught ApiIoException", e);
+            throw new EveApiException(e);
+        }
+    }
+
+    @Override
     @Logging
     @Caching(expiration = Caching.TEN_MINUTES)
     public CorporationSheetDto getCorporationSheet(Long corporationID) throws EveApiException {
@@ -149,6 +172,29 @@ public class EveApiGatewayImpl implements EveApiGateway {
             ApiCorporationSheetResponse response = facade.getCorporationSheet(corporationID);
             ApiCorporationSheetResult apiCorporationSheetResult = response.getResult();
             return mapper.map(apiCorporationSheetResult, CorporationSheetDto.class);
+        } catch (ApiErrorException e) {
+            logger.warn("Caught ApiErrorException", e.getMessage());
+            throw new EveApiException(e);
+        } catch (ApiParserException e) {
+            logger.error("Caught ApiParserException", e);
+            throw new EveApiException(e);
+        } catch (ApiIoException e) {
+            logger.error("Caught ApiIoException", e);
+            throw new EveApiException(e);
+        }
+    }
+
+    @Override
+    @Logging(logArguments = false)
+    public List<IndustryJobDto> getCorporationIndustryJobs(String apiKey, Long userID, Long characterID) throws EveApiException {
+        try {
+            ApiIndustryJobResponse response = facade.getCorporationIndustryJobs(apiKey, userID, characterID);
+            List<ApiIndustryJobRow> apiIndustryJobRows = response.getResult().getRowset().getRows();
+            List<IndustryJobDto> industryJobDtos = new ArrayList<IndustryJobDto>();
+            for (ApiIndustryJobRow apiIndustryJobRow : apiIndustryJobRows) {
+                industryJobDtos.add(mapper.map(apiIndustryJobRow, IndustryJobDto.class));
+            }
+            return industryJobDtos;
         } catch (ApiErrorException e) {
             logger.warn("Caught ApiErrorException", e.getMessage());
             throw new EveApiException(e);

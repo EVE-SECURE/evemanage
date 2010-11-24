@@ -3,6 +3,7 @@ package lv.odylab.evemanage.client.event.blueprints;
 import lv.odylab.evemanage.client.EveManageConstants;
 import lv.odylab.evemanage.client.rpc.action.blueprints.BlueprintsTabFirstLoadActionResponse;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
 
@@ -13,6 +14,7 @@ public class BlueprintsTabFirstLoadEvent extends BlueprintsTabEvent<BlueprintsTa
     private List<BlueprintDto> blueprints;
     private List<CharacterNameDto> attachedCharacterNames;
     private List<String> sharingLevels;
+    private List<ApiKeyDto> fullApiKeys;
 
     public BlueprintsTabFirstLoadEvent(TrackingManager trackingManager, EveManageConstants constants, BlueprintsTabFirstLoadActionResponse response, Long msDuration) {
         super(trackingManager, constants, msDuration);
@@ -20,6 +22,7 @@ public class BlueprintsTabFirstLoadEvent extends BlueprintsTabEvent<BlueprintsTa
         this.blueprints = response.getBlueprints();
         this.attachedCharacterNames = response.getAttachedCharacterNames();
         this.sharingLevels = response.getSharingLevels();
+        this.fullApiKeys = response.getFullApiKeys();
     }
 
     @Override
@@ -37,6 +40,10 @@ public class BlueprintsTabFirstLoadEvent extends BlueprintsTabEvent<BlueprintsTa
 
     public List<String> getSharingLevels() {
         return sharingLevels;
+    }
+
+    public List<ApiKeyDto> getFullApiKeys() {
+        return fullApiKeys;
     }
 
     @Override

@@ -24,6 +24,8 @@ public interface EveManagementService {
 
     List<ApiKey> getApiKeys(Key<User> userKey);
 
+    List<ApiKey> getFullApiKeys(Key<User> userKey);
+
     void createApiKey(String apiKeyString, Long apiKeyUserID, Key<User> userKey) throws EveApiException, ApiKeyShouldBeRemovedException;
 
     void deleteApiKey(Long apiKeyID, Key<User> userKey);

@@ -84,6 +84,11 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
+    public List<ApiKey> getFullApiKeys() {
+        return eveManagementService.getFullApiKeys(getCurrentUserKey());
+    }
+
+    @Override
     public Blueprint createBlueprint(String blueprintTypeName, Integer meLevel, Integer peLevel) throws EveDbException, InvalidNameException {
         return blueprintManagementService.createBlueprint(blueprintTypeName, meLevel, peLevel, getCurrentUserKey());
     }
@@ -119,8 +124,23 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public void importBlueprints(String importXml, Long attachedCharacterID, String sharingLevel) throws EveApiException {
-        blueprintManagementService.importBlueprints(importXml, attachedCharacterID, sharingLevel, getCurrentUserKey());
+    public void importBlueprintsFromXml(String importXml, Long attachedCharacterID, String sharingLevel) throws EveApiException {
+        blueprintManagementService.importBlueprintsFromXml(importXml, attachedCharacterID, sharingLevel, getCurrentUserKey());
+    }
+
+    @Override
+    public void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, String sharingLevel) {
+        blueprintManagementService.importBlueprintsFromCsv(importCsv, attachedCharacterID, sharingLevel, getCurrentUserKey());
+    }
+
+    @Override
+    public void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException {
+        blueprintManagementService.importBlueprintsUsingOneTimeFullApiKey(fullApiKey, userID, characterID, level, attachedCharacterID, sharingLevel, getCurrentUserKey());
+    }
+
+    @Override
+    public void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException {
+        blueprintManagementService.importBlueprintsUsingFullApiKey(characterID, level, attachedCharacterID, sharingLevel, getCurrentUserKey());
     }
 
     @Override

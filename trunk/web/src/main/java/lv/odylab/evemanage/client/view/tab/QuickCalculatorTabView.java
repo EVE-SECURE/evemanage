@@ -87,6 +87,9 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     private FlexTable.FlexCellFormatter rootCalculationItemTableFlexFormatter;
     private HTMLTable.RowFormatter rootCalculationItemTableRowFormatter;
 
+    private Label blueprintsCostLabel;
+    private FlexTable blueprintsCostItemTable;
+
     private Label priceSetLabel;
     private FlexTable priceSetItemTable;
 
@@ -148,6 +151,10 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         rootCalculationItemTableFlexFormatter = rootCalculationItemTable.getFlexCellFormatter();
         rootCalculationItemTableRowFormatter = rootCalculationItemTable.getRowFormatter();
 
+        blueprintsCostLabel = new Label(messages.blueprintsCost());
+        blueprintsCostLabel.addStyleName(resources.css().tabHeadingText());
+        blueprintsCostItemTable = new FlexTable();
+
         priceSetLabel = new Label(messages.prices());
         priceSetLabel.addStyleName(resources.css().tabHeadingText());
         priceSetItemTable = new FlexTable();
@@ -198,6 +205,9 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
 
         container.add(blueprintInfoTable);
         container.add(rootCalculationItemTable);
+
+        //container.add(blueprintsCostLabel);
+        //container.add(blueprintsCostItemTable);
 
         container.add(priceSetLabel);
         container.add(priceSetItemTable);
