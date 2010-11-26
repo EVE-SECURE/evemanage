@@ -94,7 +94,8 @@ public class ContentPresenter implements Presenter, ValueChangeHandler<String>, 
 
     @Override
     public void onValueChange(ValueChangeEvent<String> event) {
-        String token = event.getValue();
+        String[] tokens = event.getValue().split("\\|");
+        String token = tokens[0];
         if (constants.dashboardToken().equals(token)) {
             display.setSelectedTab(currentTabNames.indexOf(token));
             dashboardTabPresenter.go(display.getDashboardTabContainer());
@@ -162,7 +163,10 @@ public class ContentPresenter implements Presenter, ValueChangeHandler<String>, 
             @Override
             public void onSelection(SelectionEvent<Integer> event) {
                 Integer selectedTabIndex = event.getSelectedItem();
-                History.newItem(currentTabNames.get(selectedTabIndex));
+                String currentTabName = currentTabNames.get(selectedTabIndex);
+                if (!History.getToken().startsWith(currentTabName)) {
+                    History.newItem(currentTabName);
+                }
             }
         });
     }

@@ -8,4 +8,6 @@ public interface EveManageSecurityManager {
 
     byte[] decrypt(byte[] data);
 
+    String decodeUrlString(String string);
+
 }

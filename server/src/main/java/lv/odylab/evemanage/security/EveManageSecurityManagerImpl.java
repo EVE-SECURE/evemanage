@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -91,6 +93,18 @@ public class EveManageSecurityManagerImpl implements EveManageSecurityManager {
             return cipher.doFinal(data);
         } catch (Exception e) {
             throw new EveManageSecurityException(e);
+        }
+    }
+
+    @Override
+    public String decodeUrlString(String string) {
+        if (string == null) {
+            return null;
+        }
+        try {
+            return URLDecoder.decode(string, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

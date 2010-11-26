@@ -93,6 +93,8 @@ import lv.odylab.evemanage.client.rpc.action.priceset.PriceSetSaveActionRunner;
 import lv.odylab.evemanage.client.rpc.action.priceset.PriceSetSaveActionRunnerImpl;
 import lv.odylab.evemanage.client.rpc.action.priceset.PriceSetTabFirstLoadActionRunner;
 import lv.odylab.evemanage.client.rpc.action.priceset.PriceSetTabFirstLoadActionRunnerImpl;
+import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorDirectSetActionRunner;
+import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorDirectSetActionRunnerImpl;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorFetchPricesFromEveCentralActionRunner;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorFetchPricesFromEveCentralActionRunnerImpl;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorFetchPricesFromEveMetricsActionRunner;
@@ -247,6 +249,7 @@ public class EveManageModule extends AbstractModule {
 
         bind(QuickCalculatorTabFirstLoadActionRunner.class).to(QuickCalculatorTabFirstLoadActionRunnerImpl.class).in(Singleton.class);
         bind(QuickCalculatorSetActionRunner.class).to(QuickCalculatorSetActionRunnerImpl.class).in(Singleton.class);
+        bind(QuickCalculatorDirectSetActionRunner.class).to(QuickCalculatorDirectSetActionRunnerImpl.class).in(Singleton.class);
         bind(QuickCalculatorUseBlueprintActionRunner.class).to(QuickCalculatorUseBlueprintActionRunnerImpl.class).in(Singleton.class);
         bind(QuickCalculatorUseAllBlueprintsActionRunner.class).to(QuickCalculatorUseAllBlueprintsActionRunnerImpl.class).in(Singleton.class);
         bind(QuickCalculatorFetchPricesFromEveCentralActionRunner.class).to(QuickCalculatorFetchPricesFromEveCentralActionRunnerImpl.class).in(Singleton.class);

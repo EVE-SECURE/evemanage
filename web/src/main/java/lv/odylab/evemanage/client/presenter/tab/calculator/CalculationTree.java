@@ -1,10 +1,12 @@
 package lv.odylab.evemanage.client.presenter.tab.calculator;
 
+import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -89,5 +91,68 @@ public class CalculationTree {
 
     public void removeAllNodes() {
         nodeMap.clear();
+    }
+
+    public void populateCalculationExpressionWithBlueprintInformation(CalculationExpression calculationExpression) {
+        Map<String, PathExpression> pathNodesToPathExpressionMap = new HashMap<String, PathExpression>();
+        for (Map.Entry<Long, CalculationTreeNode> node : nodeMap.entrySet()) {
+            String pathNodes = String.valueOf(node.getKey());
+            CalculationTreeNode calculationTreeNode = node.getValue();
+            Map<Long, CalculationTreeNode> calculationTreeNodeMap = calculationTreeNode.getNodeMap();
+            if (calculationTreeNodeMap.size() > 0 && !calculationTreeNode.isExcludeChildNodesFromCalculation()) {
+                pathNodesToPathExpressionMap.put(pathNodes, calculationTreeNodeMap.values().iterator().next().getCalculationItems().get(0).getPathExpression());
+                recursivelyPopulateCalculationExpressionWithBlueprintInformation(pathNodes, calculationTreeNode, pathNodesToPathExpressionMap);
+            }
+        }
+        for (Map.Entry<String, PathExpression> entry : pathNodesToPathExpressionMap.entrySet()) {
+            String blueprintPath = entry.getKey();
+            PathExpression pathExpression = entry.getValue();
+            calculationExpression.getBlueprintPathToMeLevelMap().put(blueprintPath, pathExpression.getMeLevel());
+            calculationExpression.getBlueprintPathToPeLevelMap().put(blueprintPath, pathExpression.getPeLevel());
+        }
+    }
+
+    private void recursivelyPopulateCalculationExpressionWithBlueprintInformation(String parentPathNodes, CalculationTreeNode treeNode, Map<String, PathExpression> pathNodesToPathExpressionMap) {
+        for (Map.Entry<Long, CalculationTreeNode> node : treeNode.getNodeMap().entrySet()) {
+            String pathNodes = parentPathNodes + "/" + String.valueOf(node.getKey());
+            CalculationTreeNode calculationTreeNode = node.getValue();
+            Map<Long, CalculationTreeNode> calculationTreeNodeMap = calculationTreeNode.getNodeMap();
+            if (calculationTreeNodeMap.size() > 0 && !calculationTreeNode.isExcludeChildNodesFromCalculation()) {
+                pathNodesToPathExpressionMap.put(pathNodes, calculationTreeNodeMap.values().iterator().next().getCalculationItems().get(0).getPathExpression());
+                recursivelyPopulateCalculationExpressionWithBlueprintInformation(pathNodes, calculationTreeNode, pathNodesToPathExpressionMap);
+            }
+        }
+    }
+
+    public void populateCalculationExpressionWithPriceInformation(CalculationExpression calculationExpression) {
+        Map<Long, BigDecimal> typeIdToPriceMap = new HashMap<Long, BigDecimal>();
+        for (Map.Entry<Long, CalculationTreeNode> node : nodeMap.entrySet()) {
+            CalculationTreeNode calculationTreeNode = node.getValue();
+            if (calculationTreeNode.getNodeMap().size() > 0 && !calculationTreeNode.isExcludeChildNodesFromCalculation()) {
+                recursivelyPopulateCalculationExpressionWithPriceInformation(calculationTreeNode, typeIdToPriceMap);
+            } else {
+                CalculationItemDto calculationItem = calculationTreeNode.getCalculationItems().get(0);
+                typeIdToPriceMap.put(calculationItem.getItemTypeID(), calculationItem.getPrice());
+            }
+        }
+        for (Map.Entry<Long, BigDecimal> entry : typeIdToPriceMap.entrySet()) {
+            Long typeID = entry.getKey();
+            BigDecimal price = entry.getValue();
+            if (price.compareTo(BigDecimal.ZERO) > 0) {
+                calculationExpression.getPriceSetItemTypeIdToPriceMap().put(typeID, price.toPlainString());
+            }
+        }
+    }
+
+    private void recursivelyPopulateCalculationExpressionWithPriceInformation(CalculationTreeNode treeNode, Map<Long, BigDecimal> typeIdToPriceMap) {
+        for (Map.Entry<Long, CalculationTreeNode> node : treeNode.getNodeMap().entrySet()) {
+            CalculationTreeNode calculationTreeNode = node.getValue();
+            if (calculationTreeNode.getNodeMap().size() > 0 && !calculationTreeNode.isExcludeChildNodesFromCalculation()) {
+                recursivelyPopulateCalculationExpressionWithPriceInformation(calculationTreeNode, typeIdToPriceMap);
+            } else {
+                CalculationItemDto calculationItem = calculationTreeNode.getCalculationItems().get(0);
+                typeIdToPriceMap.put(calculationItem.getItemTypeID(), calculationItem.getPrice());
+            }
+        }
     }
 }

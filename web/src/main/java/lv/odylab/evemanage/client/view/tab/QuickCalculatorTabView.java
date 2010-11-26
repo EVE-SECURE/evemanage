@@ -3,6 +3,7 @@ package lv.odylab.evemanage.client.view.tab;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DecoratedPopupPanel;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -15,6 +16,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import lv.odylab.evemanage.client.CcpJsMessages;
@@ -35,6 +37,7 @@ import lv.odylab.evemanage.client.presenter.tab.calculator.EditableCalculationIt
 import lv.odylab.evemanage.client.presenter.tab.calculator.EditableCalculationPriceSetItem;
 import lv.odylab.evemanage.client.presenter.tab.calculator.PricingProcessor;
 import lv.odylab.evemanage.client.presenter.tab.calculator.PricingProcessorResult;
+import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.EveCalculator;
 import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
@@ -99,6 +102,10 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     private Button fetchEveMetricsPricesButton;
     private Label notePricesAreTakenFrom;
     private Label noteQuickCalculatorIsIntended;
+
+    private FlexTable directLinkTable;
+    private VerticalPanel directLinkPanel;
+    private Button createDirectLinkButton;
 
     private CalculationTree calculationTree;
 
@@ -171,6 +178,11 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         noteQuickCalculatorIsIntended = new Label(messages.noteQuickCalculatorIsIntended() + ".");
         noteQuickCalculatorIsIntended.addStyleName(resources.css().noteLabel());
 
+        directLinkTable = new FlexTable();
+        directLinkPanel = new VerticalPanel();
+        createDirectLinkButton = new Button("Create direct link");
+        createDirectLinkButton.setEnabled(false);
+
         calculationTree = new CalculationTree();
         computableCalculation = new ComputableCalculation();
         editableCalculation = new EditableCalculation();
@@ -218,6 +230,11 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         container.add(applyAndFetchPricesTable);
         container.add(notePricesAreTakenFrom);
         container.add(noteQuickCalculatorIsIntended);
+
+        directLinkTable.setWidget(0, 0, createDirectLinkButton);
+        directLinkTable.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
+        directLinkTable.setWidget(0, 1, directLinkPanel);
+        container.add(directLinkTable);
     }
 
     @Override
@@ -258,6 +275,31 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     @Override
     public Button getFetchEveMetricsPricesButton() {
         return fetchEveMetricsPricesButton;
+    }
+
+    @Override
+    public Button getCreateDirectLinkButton() {
+        return createDirectLinkButton;
+    }
+
+    @Override
+    public void createDirectLink() {
+        String blueprintTypeName = enterBlueprintSuggestBox.getText();
+        String meLevel = editableCalculation.getMeTextBox().getText();
+        String peLevel = editableCalculation.getPeTextBox().getText();
+        String quantity = editableCalculation.getQuantityTextBox().getText();
+        StringBuilder directUrlNameStringBuilder = new StringBuilder(blueprintTypeName);
+        directUrlNameStringBuilder.append(", ME:").append(meLevel).append(", PE:").append(peLevel).append(", Q:").append(quantity);
+
+        CalculationExpression calculationExpression = new CalculationExpression();
+        calculationExpression.setBlueprintTypeName(blueprintTypeName);
+        calculationExpression.setMeLevel(Integer.valueOf(meLevel));
+        calculationExpression.setPeLevel(Integer.valueOf(peLevel));
+        calculationExpression.setQuantity(Long.valueOf(quantity));
+        calculationTree.populateCalculationExpressionWithBlueprintInformation(calculationExpression);
+        calculationTree.populateCalculationExpressionWithPriceInformation(calculationExpression);
+        String url = "#" + constants.quickCalculatorToken() + calculationExpression.getExpression();
+        directLinkPanel.insert(new Anchor(directUrlNameStringBuilder.toString(), url), 0);
     }
 
     @Override
@@ -341,6 +383,11 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     }
 
     @Override
+    public Map<Long, CalculationPriceSetItemDto> getExistingTypeIdToCalculationPriceSetItemMap() {
+        return existingTypeIdToCalculationPriceSetItemMap;
+    }
+
+    @Override
     public void setNewCalculation(CalculationDto calculation) {
         Map<Long, CalculationPriceSetItemDto> existingCalculationPriceSetItemDtoMap = createExistingTypeIdToCalculationPriceSetItemMap();
         blueprintInfoTable.removeAllRows();
@@ -395,6 +442,9 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
             }
             CalculationTreeNode node = calculationTree.getNodeByPathNodes(pathNodes);
             for (CalculationTreeNode calculationTreeNode : node.getNodeMap().values()) {
+                //for (CalculationTreeNode treeNode : calculationTreeNode.getNodeMap().values()) {
+                calculationTreeNode.changeMePe(calculation.getMaterialLevel(), calculation.getProductivityLevel());
+                //}
                 drawCalculationItem(table, calculationTreeNode);
             }
             showBlueprintDetails(editableCalculationItem);
@@ -451,6 +501,12 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
 
     @Override
     public void changeMePeQuantity(Integer meLevel, Integer peLevel, Long quantity) {
+        editableCalculation.getMeLabel().setText(String.valueOf(meLevel));
+        editableCalculation.getPeLabel().setText(String.valueOf(peLevel));
+        editableCalculation.getQuantityLabel().setText(String.valueOf(quantity));
+        editableCalculation.getMeTextBox().setText(String.valueOf(meLevel));
+        editableCalculation.getPeTextBox().setText(String.valueOf(peLevel));
+        editableCalculation.getQuantityTextBox().setText(String.valueOf(quantity));
         calculationTree.changeRootNodesMePeQuantity(meLevel, peLevel, quantity);
         computableCalculation.getCalculation().setMaterialLevel(meLevel);
         computableCalculation.getCalculation().setProductivityLevel(peLevel);

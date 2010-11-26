@@ -10,6 +10,7 @@ import lv.odylab.evemanage.application.exception.EveMetricsApiException;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.application.exception.validation.InvalidPriceException;
+import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDetailsDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
@@ -366,8 +367,20 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
+    public CalculationDto getQuickCalculationForExpression(CalculationExpression calculationExpression) throws EveDbException, InvalidNameException {
+        Calculation calculation = applicationFacade.getCalculationForExpression(calculationExpression);
+        return mapper.map(calculation, CalculationDto.class);
+    }
+
+    @Override
     public CalculationDto getQuickCalculation(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
         Calculation calculation = applicationFacade.getCalculation(pathNodes, blueprintName);
+        return mapper.map(calculation, CalculationDto.class);
+    }
+
+    @Override
+    public CalculationDto getQuickCalculation(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException {
+        Calculation calculation = applicationFacade.getCalculation(pathNodes, blueprintProductTypeID);
         return mapper.map(calculation, CalculationDto.class);
     }
 
