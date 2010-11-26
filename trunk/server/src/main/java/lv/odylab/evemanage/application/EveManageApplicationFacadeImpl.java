@@ -10,6 +10,7 @@ import lv.odylab.evemanage.application.exception.EveDbException;
 import lv.odylab.evemanage.application.exception.EveMetricsApiException;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
+import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
 import lv.odylab.evemanage.domain.SharingLevel;
@@ -279,8 +280,19 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
+    public Calculation getCalculationForExpression(CalculationExpression calculationExpression) throws EveDbException, InvalidNameException {
+        return calculationService.getCalculationForExpression(calculationExpression);
+    }
+
+    @Override
     public Calculation getCalculation(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
         return calculationService.getCalculation(pathNodes, blueprintName);
+    }
+
+    @Override
+    public Calculation getCalculation(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException {
+        String typeName = eveDbGateway.getTypeName(blueprintProductTypeID);
+        return getCalculation(pathNodes, typeName + " Blueprint");
     }
 
     @Override

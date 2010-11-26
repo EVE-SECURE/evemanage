@@ -183,6 +183,19 @@ public class EveDbGatewayImpl implements EveDbGateway {
     }
 
     @Override
+    public String getTypeName(Long typeID) throws EveDbException, InvalidItemTypeException {
+        try {
+            return client.getTypeIdToTypeName(typeID);
+        } catch (BadRequestException e) {
+            logger.error("Caught BadRequestException", e);
+            throw new InvalidItemTypeException(String.valueOf(typeID), ErrorCode.INVALID_NAME);
+        } catch (RuntimeException e) {
+            logger.error("Caught RuntimeException", e);
+            throw new EveDbException(e);
+        }
+    }
+
+    @Override
     public String getEveDbVersion() throws EveDbException {
         try {
             return client.getVersion();

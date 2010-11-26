@@ -31,6 +31,8 @@ public interface EveDbGateway {
 
     Long getTypeID(String typeName) throws EveDbException, InvalidNameException;
 
+    String getTypeName(Long typeID) throws EveDbException, InvalidItemTypeException;
+
     String getEveDbVersion() throws EveDbException;
 
 }

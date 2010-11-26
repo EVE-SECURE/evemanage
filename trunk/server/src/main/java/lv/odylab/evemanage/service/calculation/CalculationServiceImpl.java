@@ -3,6 +3,7 @@ package lv.odylab.evemanage.service.calculation;
 import com.google.inject.Inject;
 import lv.odylab.evemanage.application.exception.EveDbException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
+import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.domain.calculation.Calculation;
 import lv.odylab.evemanage.domain.calculation.CalculationItem;
@@ -11,15 +12,20 @@ import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintTypeDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
+import lv.odylab.evemanage.security.EveManageSecurityManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class CalculationServiceImpl implements CalculationService {
+    private final EveManageSecurityManager securityManager;
     private final EveDbGateway eveDbGateway;
 
     @Inject
-    public CalculationServiceImpl(EveDbGateway eveDbGateway) {
+    public CalculationServiceImpl(EveManageSecurityManager securityManager, EveDbGateway eveDbGateway) {
+        this.securityManager = securityManager;
         this.eveDbGateway = eveDbGateway;
     }
 
@@ -28,16 +34,30 @@ public class CalculationServiceImpl implements CalculationService {
         BlueprintDetailsDto blueprintDetailsDto = eveDbGateway.getBlueprintDetailsForTypeName(blueprintName);
         BlueprintTypeDto blueprintTypeDto = blueprintDetailsDto.getBlueprintTypeDto();
         Long[] pathNodes = new Long[]{blueprintTypeDto.getProductTypeID()};
-        return getCalculation(pathNodes, blueprintDetailsDto);
+        return getCalculation(pathNodes, blueprintDetailsDto, Collections.<Long, String>emptyMap());
     }
 
     @Override
     public Calculation getCalculation(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
         BlueprintDetailsDto blueprintDetailsDto = eveDbGateway.getBlueprintDetailsForTypeName(blueprintName);
-        return getCalculation(pathNodes, blueprintDetailsDto);
+        return getCalculation(pathNodes, blueprintDetailsDto, Collections.<Long, String>emptyMap());
     }
 
-    private Calculation getCalculation(Long[] pathNodes, BlueprintDetailsDto blueprintDetailsDto) {
+    @Override
+    public Calculation getCalculationForExpression(CalculationExpression calculationExpression) throws EveDbException, InvalidNameException {
+        String blueprintTypeNameFromUrl = calculationExpression.getBlueprintTypeName();
+        String blueprintTypeName = securityManager.decodeUrlString(blueprintTypeNameFromUrl);
+        calculationExpression.setBlueprintTypeName(blueprintTypeName);
+        BlueprintDetailsDto blueprintDetailsDto = eveDbGateway.getBlueprintDetailsForTypeName(blueprintTypeName);
+        BlueprintTypeDto blueprintTypeDto = blueprintDetailsDto.getBlueprintTypeDto();
+        Long[] pathNodes = new Long[]{blueprintTypeDto.getProductTypeID()};
+        Calculation calculation = getCalculation(pathNodes, blueprintDetailsDto, calculationExpression.getPriceSetItemTypeIdToPriceMap());
+        calculation.setMaterialLevel(calculationExpression.getMeLevel());
+        calculation.setProductivityLevel(calculationExpression.getPeLevel());
+        return calculation;
+    }
+
+    private Calculation getCalculation(Long[] pathNodes, BlueprintDetailsDto blueprintDetailsDto, Map<Long, String> priceSetItemTypeIdToPriceMap) {
         Calculation calculation = new Calculation();
         BlueprintTypeDto blueprintTypeDto = blueprintDetailsDto.getBlueprintTypeDto();
         calculation.setBlueprintTypeID(blueprintTypeDto.getBlueprintTypeID());
@@ -68,7 +88,8 @@ public class CalculationServiceImpl implements CalculationService {
             calculationItem.setPerfectQuantity(materialDto.getQuantity());
             calculationItem.setWasteFactor(blueprintTypeDto.getWasteFactor());
             calculationItem.setDamagePerJob("1.00");
-            calculationItem.setPrice("0.00");
+            String price = priceSetItemTypeIdToPriceMap.get(materialDto.getMaterialTypeID());
+            calculationItem.setPrice(price == null ? "0.00" : price);
             calculationItem.setTotalPrice("0.00");
             calculationItem.setTotalPriceForParent("0.00");
             calculationItems.add(calculationItem);
@@ -90,7 +111,8 @@ public class CalculationServiceImpl implements CalculationService {
             calculationItem.setPerfectQuantity(requirementDto.getQuantity());
             calculationItem.setWasteFactor(blueprintTypeDto.getWasteFactor());
             calculationItem.setDamagePerJob(requirementDto.getDamagePerJob());
-            calculationItem.setPrice("0.00");
+            String price = priceSetItemTypeIdToPriceMap.get(requirementDto.getRequiredTypeID());
+            calculationItem.setPrice(price == null ? "0.00" : price);
             calculationItem.setTotalPrice("0.00");
             calculationItem.setTotalPriceForParent("0.00");
             calculationItems.add(calculationItem);

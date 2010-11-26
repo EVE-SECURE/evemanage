@@ -7,6 +7,7 @@ import lv.odylab.evemanage.application.exception.EveDbException;
 import lv.odylab.evemanage.application.exception.EveMetricsApiException;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
+import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
@@ -110,7 +111,11 @@ public interface EveManageApplicationFacade {
 
     Calculation getCalculation(String blueprintName) throws EveDbException, InvalidNameException;
 
+    Calculation getCalculationForExpression(CalculationExpression historyToken) throws EveDbException, InvalidNameException;
+
     Calculation getCalculation(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException;
+
+    Calculation getCalculation(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException;
 
     String getEveManageVersion();
 
