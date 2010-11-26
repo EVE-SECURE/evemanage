@@ -74,4 +74,10 @@
         <property name="apiKey" direction="asc"/>
     </datastore-index>
 
+    <datastore-index kind="ApiKey" ancestor="false" source="manual">
+        <property name="keyType" direction="asc"/>
+        <property name="user" direction="asc"/>
+        <property name="apiKeyUserID" direction="asc"/>
+    </datastore-index>
+
 </datastore-indexes>
