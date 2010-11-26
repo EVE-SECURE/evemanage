@@ -227,6 +227,7 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
             display.getSetButton().setEnabled(false);
             QuickCalculatorDirectSetAction action = new QuickCalculatorDirectSetAction();
             action.setCalculationExpression(calculationExpression);
+            action.setHistoryToken(historyToken);
             showSpinner();
             rpcService.execute(action, new QuickCalculatorTabActionCallback<QuickCalculatorDirectSetActionResponse>(eventBus, trackingManager, constants) {
                 @Override
