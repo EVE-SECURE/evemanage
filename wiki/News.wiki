@@ -2,6 +2,12 @@
 
 = News =
 
+== 2010.11.26==
+  * *Introduced QuickCalculator links*
+  * Fixed Issue 21. QuickCalculator links
+  * Fixed Issue 20. One time use of full API key for blueprint import
+  * Fixed Issue 18. Import on BPO/BPC library from csv file
+
 == 2010.11.11 ==
   * Fixed Issue 6. Numeric inputs and validation for dots, minus signs and copy-pasted strings
   * Fixed Issue 5. Numeric inputs and keyboard shortcuts
