@@ -180,7 +180,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
 
         directLinkTable = new FlexTable();
         directLinkPanel = new VerticalPanel();
-        createDirectLinkButton = new Button("Create direct link");
+        createDirectLinkButton = new Button(messages.createDirectLink());
         createDirectLinkButton.setEnabled(false);
 
         calculationTree = new CalculationTree();

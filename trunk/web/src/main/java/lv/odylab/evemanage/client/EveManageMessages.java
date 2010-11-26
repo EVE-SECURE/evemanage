@@ -376,6 +376,9 @@ public interface EveManageMessages extends Messages {
     @DefaultMessage("Note: quick calculator is intended for quick calculations: it does not allow to save calculation result, use library blueprints and existing price sets")
     String noteQuickCalculatorIsIntended();
 
+    @DefaultMessage("Create direct link")
+    String createDirectLink();
+
     @DefaultMessage("Quicklook in EVE-Central")
     String eveCentralQuicklook();
 
