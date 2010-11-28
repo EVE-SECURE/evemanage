@@ -2,7 +2,7 @@
 
 = Roadmap =
 
-== Release 1.0 (end of November 2010) ==
+== Release 1.0 (mid December 2010) ==
 
 *Features that are still in implementation*:
   * Calculation tab -- quick calculator + blueprint library + price sets, saving calculations
