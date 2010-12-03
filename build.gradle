@@ -1,0 +1,22 @@
+subprojects {
+  apply plugin: 'java'
+
+  repositories {
+    mavenCentral()
+    mavenRepo urls: 'http://odylab.googlecode.com/svn/mvnrepo'
+    mavenRepo urls: 'http://evedb.googlecode.com/svn/mvnrepo'
+    mavenRepo urls: 'http://maven-gae-plugin.googlecode.com/svn/repository'
+    mavenRepo urls: 'http://odylab.googlecode.com/svn/mvnsnapshotrepo'
+    mavenRepo urls: 'http://evedb.googlecode.com/svn/mvnsnapshotrepo'
+
+  }
+
+  sourceCompatibility = 1.6
+  version = '1.0-SNAPSHOT'
+  gwt_version = '2.1.0'
+  junit_version = '4.4'
+
+  dependencies {
+    testCompile group: 'junit', name: 'junit', version: junit_version
+  }
+}
