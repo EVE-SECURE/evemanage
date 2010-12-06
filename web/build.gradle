@@ -1,0 +1,8 @@
+apply plugin: 'war'
+
+dependencies {
+  compile project(':server')
+  compile group: 'org.slf4j', name: 'slf4j-jdk14', version: slf4j_version
+  compile group: 'com.googlecode.gwt.inject', name: 'gin', version: gin_version
+  //providedCompile group: 'com.google.gwt', name: 'gwt-user', version: gwt_version
+}
