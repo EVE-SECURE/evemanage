@@ -1,1 +1,1 @@
-include "rpc"
+include 'rpc', 'server', 'web'
