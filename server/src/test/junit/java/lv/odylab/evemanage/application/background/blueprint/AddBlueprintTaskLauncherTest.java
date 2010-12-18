@@ -1,7 +1,7 @@
 package lv.odylab.evemanage.application.background.blueprint;
 
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import lv.odylab.appengine.GoogleAppEngineServices;
 import org.junit.Before;
 import org.junit.Test;

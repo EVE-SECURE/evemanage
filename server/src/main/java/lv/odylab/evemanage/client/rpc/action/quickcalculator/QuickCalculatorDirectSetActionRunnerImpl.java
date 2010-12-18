@@ -4,15 +4,12 @@ import com.google.inject.Inject;
 import lv.odylab.evemanage.application.EveManageClientFacade;
 import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class QuickCalculatorDirectSetActionRunnerImpl implements QuickCalculatorDirectSetActionRunner {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final EveManageClientFacade clientFacade;
 
     @Inject
@@ -23,7 +20,6 @@ public class QuickCalculatorDirectSetActionRunnerImpl implements QuickCalculator
     @Override
     public QuickCalculatorDirectSetActionResponse execute(QuickCalculatorDirectSetAction action) throws Exception {
         CalculationExpression calculationExpression = action.getCalculationExpression();
-        logger.info("Token: {}", action.getHistoryToken());
         CalculationDto calculationDto = clientFacade.getQuickCalculationForExpression(calculationExpression);
 
         Map<Long[], CalculationDto> pathNodesToCalculationDtoMap = new TreeMap<Long[], CalculationDto>(new LongArrayComparator());

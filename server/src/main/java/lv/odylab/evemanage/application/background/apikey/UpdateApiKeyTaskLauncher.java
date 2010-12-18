@@ -1,6 +1,6 @@
 package lv.odylab.evemanage.application.background.apikey;
 
-import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.Queue;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.googlecode.objectify.Key;
@@ -11,7 +11,7 @@ import lv.odylab.evemanage.domain.user.UserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 public class UpdateApiKeyTaskLauncher implements EveManageServletModuleMapping {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -34,7 +34,7 @@ public class UpdateApiKeyTaskLauncher implements EveManageServletModuleMapping {
         Iterable<Key<User>> userKeys = userDao.getAllKeys();
         for (Key<User> userKey : userKeys) {
             logger.info("Scheduling api keys update for userID: {}", userKey.getId());
-            queue.add(url(TASK_UPDATE_API_KEY).param("userID", String.valueOf(userKey.getId())));
+            queue.add(withUrl(TASK_UPDATE_API_KEY).param("userID", String.valueOf(userKey.getId())));
         }
     }
 }

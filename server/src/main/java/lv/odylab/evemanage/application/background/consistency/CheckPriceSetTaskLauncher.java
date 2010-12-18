@@ -1,6 +1,6 @@
 package lv.odylab.evemanage.application.background.consistency;
 
-import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.Queue;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.googlecode.objectify.Key;
@@ -11,7 +11,7 @@ import lv.odylab.evemanage.domain.priceset.PriceSetDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 public class CheckPriceSetTaskLauncher implements EveManageServletModuleMapping {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -34,7 +34,7 @@ public class CheckPriceSetTaskLauncher implements EveManageServletModuleMapping 
         Iterable<Key<PriceSet>> priceSetKeys = priceSetDao.getAllKeys();
         for (Key<PriceSet> priceSetKey : priceSetKeys) {
             logger.info("Scheduling price set for consistency check: {}", priceSetKey.getId());
-            queue.add(url(TASK_CHECK_PRICE_SET).param("priceSetID", String.valueOf(priceSetKey.getId())));
+            queue.add(withUrl(TASK_CHECK_PRICE_SET).param("priceSetID", String.valueOf(priceSetKey.getId())));
         }
     }
 }

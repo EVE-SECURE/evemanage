@@ -90,8 +90,8 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     private FlexTable.FlexCellFormatter rootCalculationItemTableFlexFormatter;
     private HTMLTable.RowFormatter rootCalculationItemTableRowFormatter;
 
-    private Label blueprintsCostLabel;
-    private FlexTable blueprintsCostItemTable;
+    private Label blueprintCostLabel;
+    private FlexTable blueprintCostItemTable;
 
     private Label priceSetLabel;
     private FlexTable priceSetItemTable;
@@ -107,6 +107,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     private VerticalPanel directLinkPanel;
     private Button createDirectLinkButton;
 
+    private CalculationDto calculation;
     private CalculationTree calculationTree;
 
     private EditableCalculation editableCalculation;
@@ -117,6 +118,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     private Map<Long, EditableCalculationPriceSetItem> typeIdToEditableCalculationPriceSetItemMap;
     private Map<Long, ComputableCalculationPriceSetItem> typeIdToComputableCalculationPriceSetItemMap;
     private Map<Long, CalculationPriceSetItemDto> existingTypeIdToCalculationPriceSetItemMap;
+    private Map<CalculationDto, Integer> calculationToBlueprintCostRowMap;
 
     private List<HandlerRegistration> handlerRegistrations;
 
@@ -158,9 +160,9 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         rootCalculationItemTableFlexFormatter = rootCalculationItemTable.getFlexCellFormatter();
         rootCalculationItemTableRowFormatter = rootCalculationItemTable.getRowFormatter();
 
-        blueprintsCostLabel = new Label(messages.blueprintsCost());
-        blueprintsCostLabel.addStyleName(resources.css().tabHeadingText());
-        blueprintsCostItemTable = new FlexTable();
+        blueprintCostLabel = new Label(messages.blueprintCost());
+        blueprintCostLabel.addStyleName(resources.css().tabHeadingText());
+        blueprintCostItemTable = new FlexTable();
 
         priceSetLabel = new Label(messages.prices());
         priceSetLabel.addStyleName(resources.css().tabHeadingText());
@@ -192,6 +194,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         typeIdToEditableCalculationPriceSetItemMap = new HashMap<Long, EditableCalculationPriceSetItem>();
         typeIdToComputableCalculationPriceSetItemMap = new HashMap<Long, ComputableCalculationPriceSetItem>();
         existingTypeIdToCalculationPriceSetItemMap = new TreeMap<Long, CalculationPriceSetItemDto>();
+        calculationToBlueprintCostRowMap = new HashMap<CalculationDto, Integer>();
 
         handlerRegistrations = new ArrayList<HandlerRegistration>();
     }
@@ -218,8 +221,8 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         container.add(blueprintInfoTable);
         container.add(rootCalculationItemTable);
 
-        //container.add(blueprintsCostLabel);
-        //container.add(blueprintsCostItemTable);
+        //container.add(blueprintCostLabel);
+        //container.add(blueprintCostItemTable);
 
         container.add(priceSetLabel);
         container.add(priceSetItemTable);
@@ -389,9 +392,11 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
 
     @Override
     public void setNewCalculation(CalculationDto calculation) {
+        this.calculation = calculation;
         Map<Long, CalculationPriceSetItemDto> existingCalculationPriceSetItemDtoMap = createExistingTypeIdToCalculationPriceSetItemMap();
         blueprintInfoTable.removeAllRows();
         rootCalculationItemTable.removeAllRows();
+        //blueprintCostItemTable.removeAllRows();
         priceSetItemTable.removeAllRows();
         pathNodesStringToEditableCalculationItemMap.clear();
         pathNodesStringToComputableCalculationItemMap.clear();
@@ -406,6 +411,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         PricingProcessorResult pricingProcessorResult = pricingProcessor.process(1L, calculationTree, existingCalculationPriceSetItemDtoMap);
         Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap = pricingProcessorResult.getTypeIdToCalculationPriceSetItemMap();
         drawCalculationTree();
+        //drawBlueprintCostItem(calculation);
         drawCalculationPriceSetItems(new ArrayList<CalculationPriceSetItemDto>(typeIdToCalculationPriceSetItemMap.values()));
         recalculate();
     }
@@ -414,6 +420,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     public List<String> addCalculationTreeNode(Long[] pathNodes, CalculationDto calculation) {
         Map<Long[], CalculationDto> pathNodesToCalculationMap = new HashMap<Long[], CalculationDto>();
         pathNodesToCalculationMap.put(pathNodes, calculation);
+        drawBlueprintCostItem(calculation);
         return addCalculationTreeNodes(pathNodesToCalculationMap);
     }
 
@@ -581,6 +588,13 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
 
         for (CalculationTreeNode calculationTreeNode : calculationTree.getNodeMap().values()) {
             drawRootCalculationItem(calculationTreeNode);
+        }
+    }
+
+    private void drawBlueprintCostItems() {
+        drawBlueprintCostItem(calculation);
+        for (CalculationDto calculation : pathNodesStringToUsedCalculationMap.values()) {
+            drawBlueprintCostItem(calculation);
         }
     }
 
@@ -837,7 +851,16 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         calculationItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, calculationTreeNodeSummary.getItemTypeName(), calculationTreeNodeSummary.getItemTypeID()));
         calculationItemTable.setWidget(index, 2, new Label("x"));
         QuantityLabel quantityLabel = new QuantityLabel(calculationTreeNodeSummary.getQuantity());
-        calculationItemTable.setWidget(index, 3, quantityLabel);
+        HorizontalPanel quantityAndDamagePerJobPanel = new HorizontalPanel();
+        quantityAndDamagePerJobPanel.add(quantityLabel);
+        BigDecimal damagePerJob = calculationTreeNodeSummary.getDamagePerJob();
+        if (BigDecimal.ONE.compareTo(damagePerJob) == 1) {
+            DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
+            damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+            quantityAndDamagePerJobPanel.add(damagePerJobLabel);
+            quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
+        }
+        calculationItemTable.setWidget(index, 3, quantityAndDamagePerJobPanel);
         calculationItemTable.setWidget(index, 4, new Label("x"));
         PriceLabel priceLabel = new PriceLabel(calculationTreeNodeSummary.getPrice());
         calculationItemTable.setWidget(index, 5, priceLabel);
@@ -944,6 +967,19 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         computableCalculationItem.setTotalPriceLabel(totalPriceLabel);
         computableCalculationItem.setParentQuantityLabel(parentQuantityLabel);
         computableCalculationItem.setTotalPriceForParentLabel(totalPriceForParentLabel);
+
+    }
+    
+    private void drawBlueprintCostItem(CalculationDto calculation) {
+        int index = blueprintCostItemTable.getRowCount();
+        calculationToBlueprintCostRowMap.put(calculation, index);
+
+        String blueprintImageUrl = imageUrlProvider.getBlueprintImageUrl(calculation.getBlueprintTypeID());
+        Image blueprintImage = new Image(blueprintImageUrl);
+        blueprintImage.addStyleName(resources.css().image32());
+        EveItemInfoLink blueprintImageItemInfoLink = new EveItemInfoLink(ccpJsMessages, blueprintImage, calculation.getBlueprintTypeID());
+        blueprintCostItemTable.setWidget(index, 0, blueprintImageItemInfoLink);
+        blueprintCostItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, calculation.getBlueprintTypeName(), calculation.getBlueprintTypeID()));
     }
 
     private void drawCalculationPriceSetItem(CalculationPriceSetItemDto calculationPriceSetItem) {

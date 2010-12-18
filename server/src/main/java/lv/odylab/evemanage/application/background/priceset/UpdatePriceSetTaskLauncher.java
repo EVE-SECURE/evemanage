@@ -1,7 +1,7 @@
 package lv.odylab.evemanage.application.background.priceset;
 
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.googlecode.objectify.Key;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 public class UpdatePriceSetTaskLauncher implements EveManageServletModuleMapping {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -39,7 +39,7 @@ public class UpdatePriceSetTaskLauncher implements EveManageServletModuleMapping
         for (PriceSet priceSet : characterPriceSets) {
             logger.info("Scheduling price set update task for priceSetID: {}, userID: {}", priceSet.getId(), userID);
             Queue queue = appEngineServices.getQueue(queueName);
-            TaskOptions taskOptions = url(TASK_UPDATE_PRICE_SET).param("userID", String.valueOf(userID))
+            TaskOptions taskOptions = withUrl(TASK_UPDATE_PRICE_SET).param("userID", String.valueOf(userID))
                     .param("priceSetID", String.valueOf(priceSet.getId()))
                     .param("characterID", String.valueOf(character.getCharacterID()))
                     .param("characterName", character.getName());
@@ -62,7 +62,7 @@ public class UpdatePriceSetTaskLauncher implements EveManageServletModuleMapping
         for (PriceSet priceSet : characterPriceSets) {
             logger.info("Scheduling price set update for detach task for priceSetID: {}, userID: {}", priceSet.getId(), userID);
             Queue queue = appEngineServices.getQueue(queueName);
-            TaskOptions taskOptions = url(TASK_UPDATE_PRICE_SET).param("userID", String.valueOf(userID))
+            TaskOptions taskOptions = withUrl(TASK_UPDATE_PRICE_SET).param("userID", String.valueOf(userID))
                     .param("priceSetID", String.valueOf(priceSet.getId()))
                     .param("characterID", String.valueOf(character.getCharacterID()))
                     .param("characterName", character.getName());
@@ -76,7 +76,7 @@ public class UpdatePriceSetTaskLauncher implements EveManageServletModuleMapping
         for (PriceSet priceSet : characterPriceSets) {
             logger.info("Scheduling price set update for delete task for priceSetID: {}, userID: {}", priceSet.getId(), userID);
             Queue queue = appEngineServices.getQueue(queueName);
-            TaskOptions taskOptions = url(TASK_UPDATE_PRICE_SET).param("userID", String.valueOf(userID))
+            TaskOptions taskOptions = withUrl(TASK_UPDATE_PRICE_SET).param("userID", String.valueOf(userID))
                     .param("priceSetID", String.valueOf(priceSet.getId()));
             queue.add(taskOptions);
         }
