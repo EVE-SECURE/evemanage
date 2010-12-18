@@ -22,7 +22,7 @@ public interface EveManageUrlMessages extends Messages {
     @Messages.DefaultMessage("{0}icons/64_64/icon{1}.png")
     String imgIcon64Url(String base, String graphicName);
 
-    @Messages.DefaultMessage("{0}blueprints/{1}.png")
+    @Messages.DefaultMessage("{0}blueprints/64_64/{1}.png")
     String imgBlueprint64Url(String base, Long itemCategoryID);
 
     @Messages.DefaultMessage("{0}types/dronetypes_png/32_32/{1}.png")

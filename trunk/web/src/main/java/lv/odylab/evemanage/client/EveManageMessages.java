@@ -289,8 +289,8 @@ public interface EveManageMessages extends Messages {
     @DefaultMessage("Hint: if you do not want to be able to share your blueprints or price sets with your corpmates, you can don''t bother with characters and API keys")
     String hintOnlyForSharing();
 
-    @DefaultMessage("Blueprints cost")
-    String blueprintsCost();
+    @DefaultMessage("Blueprint cost")
+    String blueprintCost();
 
     @DefaultMessage("Characters")
     String characters();

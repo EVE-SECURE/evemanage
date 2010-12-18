@@ -1,7 +1,7 @@
 package lv.odylab.evemanage.application.background.apikey;
 
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.googlecode.objectify.Key;
 import lv.odylab.appengine.GoogleAppEngineServices;
 import lv.odylab.evemanage.domain.user.User;

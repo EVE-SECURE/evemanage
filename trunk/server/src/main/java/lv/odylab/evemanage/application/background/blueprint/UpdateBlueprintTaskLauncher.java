@@ -1,7 +1,7 @@
 package lv.odylab.evemanage.application.background.blueprint;
 
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.googlecode.objectify.Key;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 public class UpdateBlueprintTaskLauncher implements EveManageServletModuleMapping {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -39,7 +39,7 @@ public class UpdateBlueprintTaskLauncher implements EveManageServletModuleMappin
         for (Blueprint blueprint : characterBlueprints) {
             logger.info("Scheduling blueprint update task for blueprintID: {}, userID: {}", blueprint.getId(), userID);
             Queue queue = appEngineServices.getQueue(queueName);
-            TaskOptions taskOptions = url(TASK_UPDATE_BLUEPRINT).param("userID", String.valueOf(userID))
+            TaskOptions taskOptions = withUrl(TASK_UPDATE_BLUEPRINT).param("userID", String.valueOf(userID))
                     .param("blueprintID", String.valueOf(blueprint.getId()))
                     .param("characterID", String.valueOf(character.getCharacterID()))
                     .param("characterName", character.getName());
@@ -62,7 +62,7 @@ public class UpdateBlueprintTaskLauncher implements EveManageServletModuleMappin
         for (Blueprint blueprint : characterBlueprints) {
             logger.info("Scheduling blueprint update for detach task for blueprintID: {}, userID: {}", blueprint.getId(), userID);
             Queue queue = appEngineServices.getQueue(queueName);
-            TaskOptions taskOptions = url(TASK_UPDATE_BLUEPRINT).param("userID", String.valueOf(userID))
+            TaskOptions taskOptions = withUrl(TASK_UPDATE_BLUEPRINT).param("userID", String.valueOf(userID))
                     .param("blueprintID", String.valueOf(blueprint.getId()))
                     .param("characterID", String.valueOf(character.getCharacterID()))
                     .param("characterName", character.getName());
@@ -76,7 +76,7 @@ public class UpdateBlueprintTaskLauncher implements EveManageServletModuleMappin
         for (Blueprint blueprint : characterBlueprints) {
             logger.info("Scheduling blueprint update for delete task for blueprintID: {}, userID: {}", blueprint.getId(), userID);
             Queue queue = appEngineServices.getQueue(queueName);
-            TaskOptions taskOptions = url(TASK_UPDATE_BLUEPRINT).param("userID", String.valueOf(userID))
+            TaskOptions taskOptions = withUrl(TASK_UPDATE_BLUEPRINT).param("userID", String.valueOf(userID))
                     .param("blueprintID", String.valueOf(blueprint.getId()));
             queue.add(taskOptions);
         }
