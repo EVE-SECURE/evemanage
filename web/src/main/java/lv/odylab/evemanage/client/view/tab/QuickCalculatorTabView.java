@@ -644,6 +644,12 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         PriceLabel totalPriceLabel = new PriceLabel(calculation.getPrice());
         totalPriceLabel.addStyleName(resources.css().totalPriceLabel());
         productTable.setWidget(0, 4, totalPriceLabel);
+        Image eveCentralImage = new Image(resources.eveCentralIcon16());
+        eveCentralImage.setTitle(messages.eveCentralQuicklook());
+        Image eveMetricsImage = new Image(resources.eveMetricsIcon16());
+        eveMetricsImage.setTitle(messages.eveMetricsItemPrice());
+        productTable.setWidget(0, 5, new EveCentralQuicklookLink(constants, urlMessages, eveCentralImage, calculation.getProductTypeID()));
+        productTable.setWidget(0, 6, new EveMetricsItemPriceLink(constants, urlMessages, eveMetricsImage, calculation.getProductTypeCategoryID(), calculation.getProductTypeID()));
         blueprintInfoTable.setWidget(1, 0, productTable);
 
         FlexTable.FlexCellFormatter imageTableCellFormatter = blueprintInfoTable.getFlexCellFormatter();
