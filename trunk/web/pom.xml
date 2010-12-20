@@ -95,12 +95,13 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwt.version}</version>
+                <version>${gwt.maven.version}</version>
                 <configuration>
                     <soyc>false</soyc>
                     <runTarget>evemanage.html</runTarget>
                     <hostedWebapp>${project.build.directory}/gwt-webapp/evemanage</hostedWebapp>
                     <webappDirectory>${project.build.directory}/gwt-webapp/evemanage</webappDirectory>
+                    <server>com.google.appengine.tools.development.gwt.AppEngineLauncher</server>
                 </configuration>
                 <executions>
                     <execution>

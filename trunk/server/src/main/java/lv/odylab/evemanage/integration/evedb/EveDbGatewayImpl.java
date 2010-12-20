@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Logging
-@Caching
 public class EveDbGatewayImpl implements EveDbGateway {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -45,6 +44,7 @@ public class EveDbGatewayImpl implements EveDbGateway {
     }
 
     @Override
+    @Caching
     public BlueprintTypeDto getBlueprintTypeByTypeID(Long typeID) throws EveDbException {
         try {
             InvBlueprintTypeDto invBlueprintTypeDto = client.getBlueprintTypeByTypeID(typeID);
@@ -56,6 +56,7 @@ public class EveDbGatewayImpl implements EveDbGateway {
     }
 
     @Override
+    @Caching
     public BlueprintDetailsDto getBlueprintDetailsForTypeID(Long typeID) throws EveDbException {
         try {
             lv.odylab.evedb.rpc.dto.BlueprintDetailsDto blueprintDetailsDto = client.getBlueprintDetailsForTypeID(typeID);
@@ -67,6 +68,7 @@ public class EveDbGatewayImpl implements EveDbGateway {
     }
 
     @Override
+    @Caching
     public BlueprintDetailsDto getBlueprintDetailsForTypeName(String typeName) throws EveDbException, InvalidNameException {
         try {
             if (typeName.length() == 0) {
@@ -84,6 +86,7 @@ public class EveDbGatewayImpl implements EveDbGateway {
     }
 
     @Override
+    @Caching
     public List<TypeMaterialDto> getBaseMaterialsForTypeID(Long typeID) throws EveDbException {
         try {
             List<InvTypeMaterialDto> invTypeMaterialDtos = client.getBaseMaterialsForTypeID(typeID);
@@ -102,6 +105,7 @@ public class EveDbGatewayImpl implements EveDbGateway {
     }
 
     @Override
+    @Caching
     public List<TypeRequirementDto> getExtraMaterialsForTypeID(Long typeID) throws EveDbException {
         try {
             List<RamTypeRequirementDto> ramTypeRequirementDtos = client.getExtraMaterialsForTypeID(typeID);
@@ -120,6 +124,7 @@ public class EveDbGatewayImpl implements EveDbGateway {
     }
 
     @Override
+    @Caching
     public ItemTypeDto getItemTypeDtoByName(String itemTypeName) throws EveDbException, InvalidItemTypeException {
         try {
             if (itemTypeName.length() == 0) {
@@ -137,6 +142,7 @@ public class EveDbGatewayImpl implements EveDbGateway {
     }
 
     @Override
+    @Caching
     public List<ItemTypeDto> lookupType(String query) throws EveDbException {
         try {
             List<InvTypeBasicInfoDto> invTypeBasicInfoDtoList = client.lookupType(query);
@@ -152,6 +158,7 @@ public class EveDbGatewayImpl implements EveDbGateway {
     }
 
     @Override
+    @Caching
     public List<ItemTypeDto> lookupBlueprintType(String query) throws EveDbException {
         try {
             List<InvTypeBasicInfoDto> invTypeBasicInfoDtoList = client.lookupBlueprintType(query);
@@ -167,6 +174,7 @@ public class EveDbGatewayImpl implements EveDbGateway {
     }
 
     @Override
+    @Caching
     public Long getTypeID(String typeName) throws EveDbException, InvalidNameException {
         try {
             if (typeName.length() == 0) {
@@ -183,6 +191,7 @@ public class EveDbGatewayImpl implements EveDbGateway {
     }
 
     @Override
+    @Caching
     public String getTypeName(Long typeID) throws EveDbException, InvalidItemTypeException {
         try {
             return client.getTypeIdToTypeName(typeID);
