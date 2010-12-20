@@ -2,17 +2,18 @@
 
 = Release notes =
 
-== 2010.11.??, version 1.0 ==
+== 2010.12.??, version 1.0 ==
  
  * *Initial release on [http://code.google.com/p/evemanage/ code.google.com]*
  * Tabs: *Blueprints*, *Price sets*, *Calculator*, *Quick Calculator*, *Preferences*, *Dashboard*, *About*
 
- * Issue 21. QuickCalculator links
- * Issue 20. One time use of full API key for blueprint import
- * Issue 18. Import on BPO/BPC library from csv file
- * Issue 16. Introduce blueprint prices for quick calculator
- * Issue 15. Wrong Rocket Fuel amount for Scourge Fury Heavy Missile Blueprint
- * Issue 8. Introduce calculation tab
- * Issue 6. Numeric inputs and validation for dots, minus signs and copy-pasted strings
- * Issue 5. Numeric inputs and keyboard shortcuts
- * Issue 1. Damage per job is not factored in calculations
+ * Issue 24: Quiklook price of product on 'Quick calculator' screen
+ * Issue 21: QuickCalculator links
+ * Issue 20: One time use of full API key for blueprint import
+ * Issue 18: Import on BPO/BPC library from csv file
+ * Issue 16: Introduce blueprint prices for quick calculator
+ * Issue 15: Wrong Rocket Fuel amount for Scourge Fury Heavy Missile Blueprint
+ * Issue 8: Introduce calculation tab
+ * Issue 6: Numeric inputs and validation for dots, minus signs and copy-pasted strings
+ * Issue 5: Numeric inputs and keyboard shortcuts
+ * Issue 1: Damage per job is not factored in calculations
