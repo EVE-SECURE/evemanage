@@ -14,8 +14,11 @@ import lv.odylab.evemanage.domain.blueprint.Blueprint;
 import lv.odylab.evemanage.domain.calculation.Calculation;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.eve.Character;
+import lv.odylab.evemanage.domain.eve.Region;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
+import lv.odylab.evemanage.domain.user.PriceFetchOption;
+import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
 import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
@@ -34,6 +37,22 @@ public interface EveManageApplicationFacade {
     List<String> getAvailableSharingLevels();
 
     List<ApiKey> getFullApiKeys();
+
+    List<SkillLevel> getSkillLevelsForCalculation();
+
+    void saveSkillLevelsForCalculation(List<SkillLevel> skillLevelsForCalculation);
+
+    List<SkillLevel> fetchCalculationSkillLevelsForMainCharacter() throws EveApiException;
+
+    List<Region> getRegions();
+
+    Region getPreferredRegion();
+
+    List<PriceFetchOption> getPriceFetchOptions();
+
+    PriceFetchOption getPreferredPriceFetchOption();
+
+    void savePriceFetchConfiguration(Long preferredRegionID, PriceFetchOption preferredPriceFetchOption);
 
     Blueprint createBlueprint(String blueprintTypeName, Integer meLevel, Integer peLevel) throws EveDbException, InvalidNameException;
 

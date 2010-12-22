@@ -17,6 +17,9 @@ public class CalculationDto implements Serializable {
     private Integer productivityLevel;
     private Integer materialLevel;
     private Integer wasteFactor;
+    private Integer maxProductionLimit;
+    private BigDecimal productVolume;
+    private Integer productPortionSize;
     private List<CalculationItemDto> items;
 
     public Long getId() {
@@ -113,6 +116,30 @@ public class CalculationDto implements Serializable {
 
     public void setWasteFactor(Integer wasteFactor) {
         this.wasteFactor = wasteFactor;
+    }
+
+    public Integer getMaxProductionLimit() {
+        return maxProductionLimit;
+    }
+
+    public void setMaxProductionLimit(Integer maxProductionLimit) {
+        this.maxProductionLimit = maxProductionLimit;
+    }
+
+    public BigDecimal getProductVolume() {
+        return productVolume;
+    }
+
+    public void setProductVolume(BigDecimal productVolume) {
+        this.productVolume = productVolume;
+    }
+
+    public Integer getProductPortionSize() {
+        return productPortionSize;
+    }
+
+    public void setProductPortionSize(Integer productPortionSize) {
+        this.productPortionSize = productPortionSize;
     }
 
     public List<CalculationItemDto> getItems() {

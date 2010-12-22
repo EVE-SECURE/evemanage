@@ -59,6 +59,12 @@ import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesDeleteApiKey
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesDeleteApiKeyActionRunnerImpl;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesDeleteCharacterActionRunner;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesDeleteCharacterActionRunnerImpl;
+import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesFetchCalculationSkillLevelsActionRunner;
+import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesFetchCalculationSkillLevelsActionRunnerImpl;
+import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesSavePriceFetchConfigurationActionRunner;
+import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesSavePriceFetchConfigurationActionRunnerImpl;
+import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesSaveSkillLevelsForCalculationActionRunner;
+import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesSaveSkillLevelsForCalculationActionRunnerImpl;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesSetMainCharacterActionRunner;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesSetMainCharacterActionRunnerImpl;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesTabFirstLoadActionRunner;
@@ -246,6 +252,9 @@ public class EveManageModule extends AbstractModule {
         bind(PreferencesSetMainCharacterActionRunner.class).to(PreferencesSetMainCharacterActionRunnerImpl.class).in(Singleton.class);
         bind(PreferencesAddApiKeyActionRunner.class).to(PreferencesAddApiKeyActionRunnerImpl.class).in(Singleton.class);
         bind(PreferencesDeleteApiKeyActionRunner.class).to(PreferencesDeleteApiKeyActionRunnerImpl.class).in(Singleton.class);
+        bind(PreferencesSaveSkillLevelsForCalculationActionRunner.class).to(PreferencesSaveSkillLevelsForCalculationActionRunnerImpl.class).in(Singleton.class);
+        bind(PreferencesFetchCalculationSkillLevelsActionRunner.class).to(PreferencesFetchCalculationSkillLevelsActionRunnerImpl.class).in(Singleton.class);
+        bind(PreferencesSavePriceFetchConfigurationActionRunner.class).to(PreferencesSavePriceFetchConfigurationActionRunnerImpl.class).in(Singleton.class);
 
         bind(QuickCalculatorTabFirstLoadActionRunner.class).to(QuickCalculatorTabFirstLoadActionRunnerImpl.class).in(Singleton.class);
         bind(QuickCalculatorSetActionRunner.class).to(QuickCalculatorSetActionRunnerImpl.class).in(Singleton.class);

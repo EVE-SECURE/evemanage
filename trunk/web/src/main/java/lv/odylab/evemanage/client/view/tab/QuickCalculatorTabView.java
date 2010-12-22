@@ -44,6 +44,7 @@ import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceSetItemDto;
 import lv.odylab.evemanage.client.util.EveImageUrlProvider;
+import lv.odylab.evemanage.client.widget.BatchQuantityLabel;
 import lv.odylab.evemanage.client.widget.DamagePerJobLabel;
 import lv.odylab.evemanage.client.widget.EveCentralQuicklookLink;
 import lv.odylab.evemanage.client.widget.EveItemInfoLink;
@@ -221,8 +222,8 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         container.add(blueprintInfoTable);
         container.add(rootCalculationItemTable);
 
-        //container.add(blueprintCostLabel);
-        //container.add(blueprintCostItemTable);
+        container.add(blueprintCostLabel);
+        container.add(blueprintCostItemTable);
 
         container.add(priceSetLabel);
         container.add(priceSetItemTable);
@@ -396,7 +397,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         Map<Long, CalculationPriceSetItemDto> existingCalculationPriceSetItemDtoMap = createExistingTypeIdToCalculationPriceSetItemMap();
         blueprintInfoTable.removeAllRows();
         rootCalculationItemTable.removeAllRows();
-        //blueprintCostItemTable.removeAllRows();
+        blueprintCostItemTable.removeAllRows();
         priceSetItemTable.removeAllRows();
         pathNodesStringToEditableCalculationItemMap.clear();
         pathNodesStringToComputableCalculationItemMap.clear();
@@ -411,7 +412,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         PricingProcessorResult pricingProcessorResult = pricingProcessor.process(1L, calculationTree, existingCalculationPriceSetItemDtoMap);
         Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap = pricingProcessorResult.getTypeIdToCalculationPriceSetItemMap();
         drawCalculationTree();
-        //drawBlueprintCostItem(calculation);
+        drawBlueprintCostItem(calculation);
         drawCalculationPriceSetItems(new ArrayList<CalculationPriceSetItemDto>(typeIdToCalculationPriceSetItemMap.values()));
         recalculate();
     }
@@ -510,7 +511,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     public void changeMePeQuantity(Integer meLevel, Integer peLevel, Long quantity) {
         editableCalculation.getMeLabel().setText(String.valueOf(meLevel));
         editableCalculation.getPeLabel().setText(String.valueOf(peLevel));
-        editableCalculation.getQuantityLabel().setText(String.valueOf(quantity));
+        editableCalculation.getQuantityLabel().setQuantity(quantity);
         editableCalculation.getMeTextBox().setText(String.valueOf(meLevel));
         editableCalculation.getPeTextBox().setText(String.valueOf(peLevel));
         editableCalculation.getQuantityTextBox().setText(String.valueOf(quantity));
@@ -636,7 +637,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         blueprintInfoTable.setWidget(0, 2, blueprintTable);
 
         FlexTable productTable = new FlexTable();
-        QuantityLabel quantityLabel = new QuantityLabel(1L);
+        QuantityLabel quantityLabel = new BatchQuantityLabel(1L, calculation.getProductPortionSize());
         productTable.setWidget(0, 0, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, calculation.getProductTypeName(), calculation.getProductTypeID()));
         productTable.setWidget(0, 1, new Label("x"));
         productTable.setWidget(0, 2, quantityLabel);
@@ -975,7 +976,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         computableCalculationItem.setTotalPriceForParentLabel(totalPriceForParentLabel);
 
     }
-    
+
     private void drawBlueprintCostItem(CalculationDto calculation) {
         int index = blueprintCostItemTable.getRowCount();
         calculationToBlueprintCostRowMap.put(calculation, index);

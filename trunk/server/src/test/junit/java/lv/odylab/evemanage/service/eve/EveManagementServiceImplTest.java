@@ -116,7 +116,7 @@ public class EveManagementServiceImplTest {
         Key<User> userKey = new Key<User>(User.class, 1);
         Key<ApiKey> apiKeyKey = new Key<ApiKey>(ApiKey.class, 2);
 
-        when(apiKeyDao.getWithCharacterID(1L, userKey)).thenReturn(apiKeyKey);
+        when(apiKeyDao.getKeyWithCharacterID(1L, userKey)).thenReturn(apiKeyKey);
         eveManagementService.createCharacter(1L, userKey);
 
         verify(eveApiDataService, times(1)).populateCharacterData(characterCaptor.capture());

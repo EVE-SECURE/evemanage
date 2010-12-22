@@ -15,10 +15,13 @@ import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
+import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
+import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
 
 import java.math.BigDecimal;
@@ -36,6 +39,22 @@ public interface EveManageClientFacade {
     List<String> getAvailableSharingLevels();
 
     List<ApiKeyDto> getFullApiKeys();
+
+    List<SkillLevelDto> getSkillLevelsForCalculation();
+
+    void saveSkillLevelsForCalculation(List<SkillLevelDto> skillLevelsForCalculation);
+
+    List<SkillLevelDto> fetchCalculationSkillLevelsForMainCharacter() throws EveApiException;
+
+    List<RegionDto> getRegions();
+
+    RegionDto getPreferredRegion();
+
+    List<PriceFetchOptionDto> getPriceFetchOptions();
+
+    PriceFetchOptionDto getPreferredPriceFetchOption();
+
+    void savePriceFetchConfiguration(Long preferredRegionID, String preferredPriceFetchOption);
 
     BlueprintDto createBlueprint(String blueprintTypeName, Integer meLevel, Integer peLevel) throws EveDbException, InvalidNameException;
 

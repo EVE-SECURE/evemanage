@@ -26,7 +26,7 @@ public class SharingLevelListBox extends ListBox {
     public void setSharingLevel(String sharingLevel) {
         int itemCount = getItemCount();
         for (int i = 0; i < itemCount; i++) {
-            if (getValue(i).equals(sharingLevel)) {
+            if (getItemText(i).equals(sharingLevel)) {
                 setSelectedIndex(i);
                 return;
             }

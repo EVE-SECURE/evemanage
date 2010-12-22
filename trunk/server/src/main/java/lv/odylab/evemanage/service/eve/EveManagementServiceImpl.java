@@ -10,11 +10,16 @@ import lv.odylab.evemanage.domain.eve.ApiKeyCharacterInfo;
 import lv.odylab.evemanage.domain.eve.ApiKeyDao;
 import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.eve.CharacterDao;
+import lv.odylab.evemanage.domain.eve.SkillForCalculation;
+import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
+import lv.odylab.evemanage.integration.eveapi.dto.SkillLevelDto;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EveManagementServiceImpl implements EveManagementService {
     private final EveApiDataService eveApiDataService;
@@ -74,7 +79,7 @@ public class EveManagementServiceImpl implements EveManagementService {
 
     @Override
     public void createCharacter(Long characterID, Key<User> userKey) throws EveApiException {
-        Key<ApiKey> apiKeyKey = apiKeyDao.getWithCharacterID(characterID, userKey);
+        Key<ApiKey> apiKeyKey = apiKeyDao.getKeyWithCharacterID(characterID, userKey);
         Character character = new Character();
         character.setApiKey(apiKeyKey);
         character.setUser(userKey);
@@ -123,5 +128,24 @@ public class EveManagementServiceImpl implements EveManagementService {
         apiKeyDao.delete(apiKeyKey, userKey);
 
         eveSynchronizationService.synchronizeDeleteApiKey(apiKeyKey, userKey);
+    }
+
+    @Override
+    public List<SkillLevel> fetchCalculationSkillLevelsForMainCharacter(User user) throws EveApiException {
+        List<SkillLevelDto> mainCharacterSkills = eveApiDataService.getMainCharacterSkills(user);
+        Map<Long, SkillLevelDto> typeIdToSkillLevelDtoMap = new HashMap<Long, SkillLevelDto>();
+        for (SkillLevelDto skillLevelDto : mainCharacterSkills) {
+            typeIdToSkillLevelDtoMap.put(skillLevelDto.getTypeID(), skillLevelDto);
+        }
+
+        List<SkillLevel> skillLevelsForCalculation = new ArrayList<SkillLevel>();
+        for (SkillForCalculation skillForCalculation : SkillForCalculation.values()) {
+            SkillLevelDto mainCharacterSkillLevelDto = typeIdToSkillLevelDtoMap.get(skillForCalculation.getTypeID());
+            SkillLevel skillLevel = new SkillLevel();
+            skillLevel.setTypeID(skillForCalculation.getTypeID());
+            skillLevel.setLevel(mainCharacterSkillLevelDto == null ? 0 : mainCharacterSkillLevelDto.getLevel());
+            skillLevelsForCalculation.add(skillLevel);
+        }
+        return skillLevelsForCalculation;
     }
 }

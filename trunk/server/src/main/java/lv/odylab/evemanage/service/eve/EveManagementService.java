@@ -6,6 +6,7 @@ import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.eve.Character;
+import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 
 import java.util.List;
@@ -29,5 +30,7 @@ public interface EveManagementService {
     void createApiKey(String apiKeyString, Long apiKeyUserID, Key<User> userKey) throws EveApiException, ApiKeyShouldBeRemovedException;
 
     void deleteApiKey(Long apiKeyID, Key<User> userKey);
+
+    List<SkillLevel> fetchCalculationSkillLevelsForMainCharacter(User user) throws EveApiException;
 
 }
