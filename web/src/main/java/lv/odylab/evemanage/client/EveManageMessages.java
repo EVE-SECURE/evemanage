@@ -355,6 +355,30 @@ public interface EveManageMessages extends Messages {
     @DefaultMessage("Apply")
     String apply();
 
+    @DefaultMessage("Skills for calculation")
+    String skillsForCalculation();
+
+    @DefaultMessage("Fetch for current character")
+    String fetchForMainCharacter();
+
+    @DefaultMessage("Price fetch configuration")
+    String priceFetchConfiguration();
+
+    @DefaultMessage("Preferred region")
+    String preferredRegion();
+
+    @DefaultMessage("Preferred price")
+    String preferredPrice();
+
+    @DefaultMessage("Average buy/sell")
+    String averageBuySell();
+
+    @DefaultMessage("Average buy")
+    String averageBuy();
+
+    @DefaultMessage("Average sell")
+    String averageSell();
+
     @DefaultMessage("Use all blueprints")
     String useAllBlueprints();
 

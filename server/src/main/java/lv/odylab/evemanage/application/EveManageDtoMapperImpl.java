@@ -2,6 +2,7 @@ package lv.odylab.evemanage.application;
 
 import lv.odylab.eveapi.parser.method.account.character.ApiAccountCharacterRow;
 import lv.odylab.eveapi.parser.method.character.sheet.ApiCharacterGenericRow;
+import lv.odylab.eveapi.parser.method.character.sheet.ApiCharacterGenericRowset;
 import lv.odylab.eveapi.parser.method.character.sheet.ApiCharacterSheetResult;
 import lv.odylab.eveapi.parser.method.common.accbalance.ApiAccountBalanceRow;
 import lv.odylab.eveapi.parser.method.common.industryjob.ApiIndustryJobRow;
@@ -24,9 +25,12 @@ import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterInfoDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
+import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
+import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
 import lv.odylab.evemanage.domain.calculation.Calculation;
@@ -34,9 +38,13 @@ import lv.odylab.evemanage.domain.calculation.CalculationItem;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.eve.ApiKeyCharacterInfo;
 import lv.odylab.evemanage.domain.eve.Character;
+import lv.odylab.evemanage.domain.eve.Region;
+import lv.odylab.evemanage.domain.eve.SkillForCalculation;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
+import lv.odylab.evemanage.domain.user.PriceFetchOption;
+import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.eveapi.dto.AccountBalanceDto;
 import lv.odylab.evemanage.integration.eveapi.dto.AccountCharacterDto;
@@ -70,6 +78,39 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
             userDto.setMainCharacter(mainCharacter);
         }
         return userDto;
+    }
+
+    @Override
+    public SkillLevelDto map(SkillLevel skillLevel, Class<SkillLevelDto> skillLevelDtoClass) {
+        SkillLevelDto skillLevelDto = new SkillLevelDto();
+        skillLevelDto.setTypeID(skillLevel.getTypeID());
+        SkillForCalculation skillForCalculation = SkillForCalculation.getByTypeID(skillLevel.getTypeID());
+        skillLevelDto.setName(skillForCalculation.getName());
+        skillLevelDto.setLevel(skillLevel.getLevel());
+        return skillLevelDto;
+    }
+
+    @Override
+    public SkillLevel map(SkillLevelDto skillLevelDto, Class<SkillLevel> skillLevelClass) {
+        SkillLevel skillLevel = new SkillLevel();
+        skillLevel.setTypeID(skillLevelDto.getTypeID());
+        skillLevel.setLevel(skillLevelDto.getLevel());
+        return skillLevel;
+    }
+
+    @Override
+    public RegionDto map(Region region, Class<RegionDto> regionDtoClass) {
+        RegionDto regionDto = new RegionDto();
+        regionDto.setRegionID(region.getRegionID());
+        regionDto.setRegionName(region.getName());
+        return regionDto;
+    }
+
+    @Override
+    public PriceFetchOptionDto map(PriceFetchOption priceFetchOption, Class<PriceFetchOptionDto> priceFetchOptionDtoClass) {
+        PriceFetchOptionDto priceFetchOptionDto = new PriceFetchOptionDto();
+        priceFetchOptionDto.setName(priceFetchOption.toString());
+        return priceFetchOptionDto;
     }
 
     @Override
@@ -444,6 +485,8 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         blueprintTypeDto.setProductivityModifier(invBlueprintTypeDto.getProductivityModifier());
         blueprintTypeDto.setWasteFactor(invBlueprintTypeDto.getWasteFactor());
         blueprintTypeDto.setMaxProductionLimit(invBlueprintTypeDto.getMaxProductionLimit());
+        blueprintTypeDto.setProductVolume(invBlueprintTypeDto.getProductVolume());
+        blueprintTypeDto.setProductPortionSize(invBlueprintTypeDto.getProductPortionSize());
         return blueprintTypeDto;
     }
 
@@ -473,6 +516,19 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
             }
         }
         characterSheetDto.setCorporationTitles(corporationTitles);
+        List<ApiCharacterGenericRowset> apiCharacterSheetResultRowsets = apiCharacterSheetResult.getRowsets();
+
+        List<ApiCharacterGenericRow> skillRows = apiCharacterSheetResult.getSkills();
+        List<lv.odylab.evemanage.integration.eveapi.dto.SkillLevelDto> skillLevelDtos = new ArrayList<lv.odylab.evemanage.integration.eveapi.dto.SkillLevelDto>();
+        if (skillRows != null) {
+            for (ApiCharacterGenericRow skillRow : skillRows) {
+                lv.odylab.evemanage.integration.eveapi.dto.SkillLevelDto skillLevelDto = new lv.odylab.evemanage.integration.eveapi.dto.SkillLevelDto();
+                skillLevelDto.setTypeID(skillRow.getTypeID());
+                skillLevelDto.setLevel(skillRow.getLevel());
+                skillLevelDtos.add(skillLevelDto);
+            }
+        }
+        characterSheetDto.setSkillLevels(skillLevelDtos);
         return characterSheetDto;
     }
 
@@ -553,6 +609,9 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         calculationDto.setProductivityLevel(calculation.getProductivityLevel());
         calculationDto.setMaterialLevel(calculation.getMaterialLevel());
         calculationDto.setWasteFactor(calculation.getWasteFactor());
+        calculationDto.setMaxProductionLimit(calculation.getMaxProductionLimit());
+        calculationDto.setProductVolume(new BigDecimal(calculation.getProductVolume()));
+        calculationDto.setProductPortionSize(calculation.getProductPortionSize());
         List<CalculationItemDto> calculationItemDtos = new ArrayList<CalculationItemDto>();
         for (CalculationItem calculationItem : calculation.getItems()) {
             calculationItemDtos.add(map(calculationItem, CalculationItemDto.class));

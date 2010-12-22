@@ -8,16 +8,23 @@ import lv.odylab.appengine.GoogleAppEngineServices;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
 import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.eve.CharacterDao;
+import lv.odylab.evemanage.domain.eve.Region;
+import lv.odylab.evemanage.domain.eve.SkillForCalculation;
 import lv.odylab.evemanage.domain.system.SystemProperty;
 import lv.odylab.evemanage.domain.system.SystemPropertyDao;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
+import lv.odylab.evemanage.domain.user.PriceFetchOption;
+import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.UserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class UserManagementServiceImpl implements UserManagementService {
@@ -103,6 +110,58 @@ public class UserManagementServiceImpl implements UserManagementService {
                 return;
             }
         }
+    }
+
+    @Override
+    public List<SkillLevel> getSkillsForCalculation(lv.odylab.evemanage.domain.user.User user) {
+        List<SkillLevel> skillLevels = new ArrayList<SkillLevel>();
+        Map<Long, SkillLevel> skillLevelMap = new HashMap<Long, SkillLevel>();
+        for (SkillForCalculation skillForCalculation : SkillForCalculation.values()) {
+            Long typeID = skillForCalculation.getTypeID();
+            SkillLevel skillLevel = new SkillLevel(typeID, 5);
+            skillLevels.add(skillLevel);
+            skillLevelMap.put(typeID, skillLevel);
+        }
+
+        List<SkillLevel> userSkillLevels = user.getSkillLevelsForCalculation();
+        for (SkillLevel userSkillLevel : userSkillLevels) {
+            SkillLevel skillLevel = skillLevelMap.get(userSkillLevel.getTypeID());
+            skillLevel.setLevel(userSkillLevel.getLevel());
+        }
+        return skillLevels;
+    }
+
+    @Override
+    public void saveSkillLevelsForCalculation(List<SkillLevel> skillLevelsForCalculation, lv.odylab.evemanage.domain.user.User user) {
+        user.setSkillLevelsForCalculation(skillLevelsForCalculation);
+        userDao.put(user);
+    }
+
+    @Override
+    public Region getPreferredRegion(lv.odylab.evemanage.domain.user.User user) {
+        Long preferredRegionID = user.getPreferredRegionID();
+        if (preferredRegionID == null) {
+            return Region.THE_FORGE;
+        } else {
+            return Region.getByRegionID(preferredRegionID);
+        }
+    }
+
+    @Override
+    public PriceFetchOption getPreferredPriceFetchOption(lv.odylab.evemanage.domain.user.User user) {
+        String preferredPriceFetchOption = user.getPreferredPriceFetchOption();
+        if (preferredPriceFetchOption == null) {
+            return PriceFetchOption.BUY_SELL_AVG;
+        } else {
+            return PriceFetchOption.valueOf(preferredPriceFetchOption);
+        }
+    }
+
+    @Override
+    public void savePriceFetchConfiguration(Long preferredRegionID, PriceFetchOption preferredPriceFetchOption, lv.odylab.evemanage.domain.user.User user) {
+        user.setPreferredRegionID(preferredRegionID);
+        user.setPreferredPriceFetchOption(preferredPriceFetchOption.toString());
+        userDao.put(user);
     }
 
     private lv.odylab.evemanage.domain.user.User ensureUserExists(User googleUser) {

@@ -69,6 +69,9 @@ public class CalculationServiceImpl implements CalculationService {
         calculation.setMaterialLevel(0);
         calculation.setProductivityLevel(0);
         calculation.setWasteFactor(blueprintTypeDto.getWasteFactor());
+        calculation.setMaxProductionLimit(blueprintTypeDto.getMaxProductionLimit());
+        calculation.setProductVolume(blueprintTypeDto.getProductVolume());
+        calculation.setProductPortionSize(blueprintTypeDto.getProductPortionSize());
         calculation.setPrice("0.00");
 
         List<TypeMaterialDto> materialDtos = blueprintDetailsDto.getMaterialDtos();

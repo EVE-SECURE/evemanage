@@ -1,5 +1,7 @@
 package lv.odylab.evemanage.client.presenter.tab;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -26,12 +28,19 @@ import lv.odylab.evemanage.client.event.preferences.PreferencesCharacterAddedEve
 import lv.odylab.evemanage.client.event.preferences.PreferencesCharacterAddedEventHandler;
 import lv.odylab.evemanage.client.event.preferences.PreferencesCharacterDeletedEvent;
 import lv.odylab.evemanage.client.event.preferences.PreferencesCharacterDeletedEventHandler;
+import lv.odylab.evemanage.client.event.preferences.PreferencesFetchedCalculationSkillLevelsEvent;
+import lv.odylab.evemanage.client.event.preferences.PreferencesFetchedCalculationSkillLevelsEventHandler;
 import lv.odylab.evemanage.client.event.preferences.PreferencesMainCharacterSetEvent;
 import lv.odylab.evemanage.client.event.preferences.PreferencesMainCharacterSetEventHandler;
+import lv.odylab.evemanage.client.event.preferences.PreferencesSavedPriceFetchConfigurationEvent;
+import lv.odylab.evemanage.client.event.preferences.PreferencesSavedPriceFetchConfigurationEventHandler;
+import lv.odylab.evemanage.client.event.preferences.PreferencesSavedSkillLevelsForCalculationEvent;
+import lv.odylab.evemanage.client.event.preferences.PreferencesSavedSkillLevelsForCalculationEventHandler;
 import lv.odylab.evemanage.client.event.preferences.PreferencesTabFirstLoadEvent;
 import lv.odylab.evemanage.client.event.preferences.PreferencesTabFirstLoadEventHandler;
 import lv.odylab.evemanage.client.presenter.AttachableDisplay;
 import lv.odylab.evemanage.client.presenter.Presenter;
+import lv.odylab.evemanage.client.presenter.tab.preferences.EditablePreferenceSkillLevel;
 import lv.odylab.evemanage.client.rpc.EveManageRemoteServiceAsync;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesAddApiKeyAction;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesAddApiKeyActionResponse;
@@ -41,6 +50,12 @@ import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesDeleteApiKey
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesDeleteApiKeyActionResponse;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesDeleteCharacterAction;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesDeleteCharacterActionResponse;
+import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesFetchCalculationSkillLevelsAction;
+import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesFetchCalculationSkillLevelsActionResponse;
+import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesSavePriceFetchConfigurationAction;
+import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesSavePriceFetchConfigurationActionResponse;
+import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesSaveSkillLevelsForCalculationAction;
+import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesSaveSkillLevelsForCalculationActionResponse;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesSetMainCharacterAction;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesSetMainCharacterActionResponse;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesTabFirstLoadAction;
@@ -48,22 +63,34 @@ import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesTabFirstLoad
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
+import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
+import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
 import lv.odylab.evemanage.client.widget.OnlyDigitsChangeHandler;
+import lv.odylab.evemanage.client.widget.PriceFetchOptionListBox;
+import lv.odylab.evemanage.client.widget.RegionListBox;
+import lv.odylab.evemanage.client.widget.SkillBookImage;
+import lv.odylab.evemanage.client.widget.SkillLevelImage;
+import lv.odylab.evemanage.client.widget.SkillLevelListBox;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEventHandler, PreferencesTabFirstLoadEventHandler, PreferencesCharacterAddedEventHandler, PreferencesCharacterDeletedEventHandler, PreferencesMainCharacterSetEventHandler, PreferencesApiKeyAddedEventHandler, PreferencesApiKeyDeletedEventHandler {
+public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEventHandler, PreferencesTabFirstLoadEventHandler, PreferencesCharacterAddedEventHandler, PreferencesCharacterDeletedEventHandler, PreferencesMainCharacterSetEventHandler, PreferencesApiKeyAddedEventHandler, PreferencesApiKeyDeletedEventHandler, PreferencesSavedSkillLevelsForCalculationEventHandler, PreferencesFetchedCalculationSkillLevelsEventHandler, PreferencesSavedPriceFetchConfigurationEventHandler {
 
-    public interface Display extends AttachableDisplay {
+    public interface Display extends AttachableDisplay, CharactersSectionDisplay, ApiKeysSectionDisplay, SkillsForCalculationSectionDisplay, PriceFetchingSectionDisplay {
 
         Widget getSpinnerImage();
 
         Widget getErrorContainer();
 
         HasText getErrorMessageLabel();
+
+    }
+
+    public interface CharactersSectionDisplay extends AttachableDisplay {
 
         void setCharacters(List<CharacterDto> characters);
 
@@ -81,6 +108,10 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
 
         Button getAddNewCharacterButton();
 
+    }
+
+    public interface ApiKeysSectionDisplay extends AttachableDisplay {
+
         void setApiKeys(List<ApiKeyDto> apiKeys);
 
         Map<ApiKeyDto, Button> getApiKeyDeleteButtonMap();
@@ -90,6 +121,44 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
         TextBox getNewApiKeyStringTextBox();
 
         Button getAddNewApiKeyButton();
+
+    }
+
+    public interface SkillsForCalculationSectionDisplay extends AttachableDisplay {
+
+        Widget getSkillsForCalculationSectionSpinnerImage();
+
+        void setSkillLevelsForCalculation(List<SkillLevelDto> skillLevelsForCalculation);
+
+        void updateSkillLevelsForCalculation(List<SkillLevelDto> skillLevelsForCalculation);
+
+        List<SkillLevelDto> getSkillLevelsForCalculationThatNotEqualTo5();
+
+        Button getSaveSkillLevelsButton();
+
+        Button getFetchSkillLevelsForCurrentCharacterButton();
+
+        Map<Long, EditablePreferenceSkillLevel> getTypeIdToEditablePreferenceSkillLevelMap();
+
+    }
+
+    public interface PriceFetchingSectionDisplay extends AttachableDisplay {
+
+        Widget getPriceFetchingSectionSpinnerImage();
+
+        void setRegions(List<RegionDto> regions);
+
+        void setPreferredRegion(RegionDto preferredRegion);
+
+        RegionListBox getPreferredRegionListBox();
+
+        void setPriceFetchOptions(List<PriceFetchOptionDto> priceFetchOptions);
+
+        void setPreferredPriceFetchOption(PriceFetchOptionDto preferredPriceFetchOption);
+
+        PriceFetchOptionListBox getPreferredPriceFetchOption();
+
+        Button getSavePriceFetchConfigurationButton();
 
     }
 
@@ -123,6 +192,9 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
         eventBus.addHandler(PreferencesMainCharacterSetEvent.TYPE, this);
         eventBus.addHandler(PreferencesApiKeyAddedEvent.TYPE, this);
         eventBus.addHandler(PreferencesApiKeyDeletedEvent.TYPE, this);
+        eventBus.addHandler(PreferencesSavedSkillLevelsForCalculationEvent.TYPE, this);
+        eventBus.addHandler(PreferencesFetchedCalculationSkillLevelsEvent.TYPE, this);
+        eventBus.addHandler(PreferencesSavedPriceFetchConfigurationEvent.TYPE, this);
     }
 
     @Override
@@ -156,6 +228,12 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
         display.setMainCharacter(event.getMainCharacter());
         setNewCharacterNames(event.getNewCharacterNames());
         display.setApiKeys(event.getApiKeys());
+        display.setSkillLevelsForCalculation(event.getSkillLevelsForCalculation());
+        display.setRegions(event.getRegions());
+        display.setPreferredRegion(event.getPreferredRegion());
+        display.setPriceFetchOptions(event.getPriceFetchOptions());
+        display.setPreferredPriceFetchOption(event.getPreferredPriceFetchOption());
+        display.getFetchSkillLevelsForCurrentCharacterButton().setEnabled(event.getCharacters().size() > 0);
         bindDynamic();
         hideSpinner();
     }
@@ -165,6 +243,7 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
         display.setCharacters(event.getCharacters());
         display.setMainCharacter(event.getMainCharacter());
         setNewCharacterNames(event.getNewCharacterNames());
+        display.getFetchSkillLevelsForCurrentCharacterButton().setEnabled(event.getCharacters().size() > 0);
         rebindDynamic();
         hideSpinner();
     }
@@ -174,6 +253,7 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
         display.setCharacters(event.getCharacters());
         display.setMainCharacter(event.getMainCharacter());
         setNewCharacterNames(event.getNewCharacterNames());
+        display.getFetchSkillLevelsForCurrentCharacterButton().setEnabled(event.getCharacters().size() > 0);
         rebindDynamic();
         hideSpinner();
     }
@@ -204,6 +284,22 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
         setNewCharacterNames(event.getNewCharacterNames());
         rebindDynamic();
         hideSpinner();
+    }
+
+    @Override
+    public void onFetchedCalculationSkillLevels(PreferencesFetchedCalculationSkillLevelsEvent event) {
+        display.updateSkillLevelsForCalculation(event.getSkillLevelsForCalculation());
+        hideSkillsForCalculationSectionSpinner();
+    }
+
+    @Override
+    public void onSavedSkillLevelsForCalculation(PreferencesSavedSkillLevelsForCalculationEvent event) {
+        hideSkillsForCalculationSectionSpinner();
+    }
+
+    @Override
+    public void onSavedPriceFetchConfiguration(PreferencesSavedPriceFetchConfigurationEvent event) {
+        hidePriceFetchingSectionSpinner();
     }
 
     private void doPreferencesTabFirstLoad() {
@@ -277,6 +373,75 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
         }));
         final TextBox newApiKeyUserIdTextBox = display.getNewApiKeyUserIdTextBox();
         staticHandlerRegistrations.add(newApiKeyUserIdTextBox.addChangeHandler(new OnlyDigitsChangeHandler(newApiKeyUserIdTextBox, 15)));
+        final Button saveSkillsButton = display.getSaveSkillLevelsButton();
+        staticHandlerRegistrations.add(saveSkillsButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                saveSkillsButton.setEnabled(false);
+                PreferencesSaveSkillLevelsForCalculationAction action = new PreferencesSaveSkillLevelsForCalculationAction();
+                action.setSkillLevelsForCalculation(display.getSkillLevelsForCalculationThatNotEqualTo5());
+                showSkillsForCalculationSectionSpinner();
+                rpcService.execute(action, new PreferencesTabActionCallback<PreferencesSaveSkillLevelsForCalculationActionResponse>(eventBus, trackingManager, constants) {
+                    @Override
+                    public void onSuccess(PreferencesSaveSkillLevelsForCalculationActionResponse response) {
+                        eventBus.fireEvent(new PreferencesSavedSkillLevelsForCalculationEvent(trackingManager, constants, response, getExecutionDuration()));
+                        saveSkillsButton.setEnabled(true);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        saveSkillsButton.setEnabled(true);
+                        super.onFailure(throwable);
+                    }
+                });
+            }
+        }));
+        final Button fetchSkillsForCurrentCharacterButton = display.getFetchSkillLevelsForCurrentCharacterButton();
+        staticHandlerRegistrations.add(fetchSkillsForCurrentCharacterButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                fetchSkillsForCurrentCharacterButton.setEnabled(false);
+                PreferencesFetchCalculationSkillLevelsAction action = new PreferencesFetchCalculationSkillLevelsAction();
+                showSkillsForCalculationSectionSpinner();
+                rpcService.execute(action, new PreferencesTabActionCallback<PreferencesFetchCalculationSkillLevelsActionResponse>(eventBus, trackingManager, constants) {
+                    @Override
+                    public void onSuccess(PreferencesFetchCalculationSkillLevelsActionResponse response) {
+                        eventBus.fireEvent(new PreferencesFetchedCalculationSkillLevelsEvent(trackingManager, constants, response, getExecutionDuration()));
+                        fetchSkillsForCurrentCharacterButton.setEnabled(true);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        fetchSkillsForCurrentCharacterButton.setEnabled(true);
+                        super.onFailure(throwable);
+                    }
+                });
+            }
+        }));
+        final Button savePriceFetchConfigurationButton = display.getSavePriceFetchConfigurationButton();
+        staticHandlerRegistrations.add(savePriceFetchConfigurationButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                savePriceFetchConfigurationButton.setEnabled(false);
+                PreferencesSavePriceFetchConfigurationAction action = new PreferencesSavePriceFetchConfigurationAction();
+                action.setPreferredRegionID(display.getPreferredRegionListBox().getRegionID());
+                action.setPreferredPriceFetchOption(display.getPreferredPriceFetchOption().getPriceFetchOption());
+                showPriceFetchingSectionSpinner();
+                rpcService.execute(action, new PreferencesTabActionCallback<PreferencesSavePriceFetchConfigurationActionResponse>(eventBus, trackingManager, constants) {
+                    @Override
+                    public void onSuccess(PreferencesSavePriceFetchConfigurationActionResponse response) {
+                        eventBus.fireEvent(new PreferencesSavedPriceFetchConfigurationEvent(trackingManager, constants, response, getExecutionDuration()));
+                        savePriceFetchConfigurationButton.setEnabled(true);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        savePriceFetchConfigurationButton.setEnabled(true);
+                        super.onFailure(throwable);
+                    }
+                });
+            }
+        }));
     }
 
     private void bindDynamic() {
@@ -336,6 +501,22 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
                 }
             }));
         }
+        bindSkillLevelListBoxes();
+    }
+
+    private void bindSkillLevelListBoxes() {
+        for (EditablePreferenceSkillLevel editablePreferenceSkillLevel : display.getTypeIdToEditablePreferenceSkillLevelMap().values()) {
+            final SkillLevelListBox skillLevelListBox = editablePreferenceSkillLevel.getSkillLevelListBox();
+            final SkillBookImage skillBookImage = editablePreferenceSkillLevel.getSkillBookImage();
+            final SkillLevelImage skillLevelImage = editablePreferenceSkillLevel.getSkillLevelImage();
+            staticHandlerRegistrations.add(skillLevelListBox.addChangeHandler(new ChangeHandler() {
+                @Override
+                public void onChange(ChangeEvent event) {
+                    skillBookImage.setLevel(skillLevelListBox.getSelectedLevel());
+                    skillLevelImage.setLevel(skillLevelListBox.getSelectedLevel());
+                }
+            }));
+        }
     }
 
     private void unbindDynamic() {
@@ -360,9 +541,33 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
         display.getSpinnerImage().setVisible(false);
     }
 
+    private void showSkillsForCalculationSectionSpinner() {
+        display.getErrorContainer().setVisible(false);
+        display.getErrorMessageLabel().setText("");
+        display.getSkillsForCalculationSectionSpinnerImage().setVisible(true);
+    }
+
+    private void hideSkillsForCalculationSectionSpinner() {
+        display.getSkillsForCalculationSectionSpinnerImage().setVisible(false);
+    }
+
+    private void showPriceFetchingSectionSpinner() {
+        display.getErrorContainer().setVisible(false);
+        display.getErrorMessageLabel().setText("");
+        display.getPriceFetchingSectionSpinnerImage().setVisible(true);
+    }
+
+    private void hidePriceFetchingSectionSpinner() {
+        display.getPriceFetchingSectionSpinnerImage().setVisible(false);
+    }
+
     private void enableButtons() {
         display.getNewApiKeyUserIdTextBox().setEnabled(true);
         display.getNewApiKeyStringTextBox().setEnabled(true);
         display.getAddNewApiKeyButton().setEnabled(true);
+        display.getSaveSkillLevelsButton().setEnabled(true);
+        display.getPreferredRegionListBox().setEnabled(true);
+        display.getPreferredPriceFetchOption().setEnabled(true);
+        display.getSavePriceFetchConfigurationButton().setEnabled(true);
     }
 }

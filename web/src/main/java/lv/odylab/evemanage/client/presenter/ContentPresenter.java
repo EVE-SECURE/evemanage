@@ -52,12 +52,12 @@ public class ContentPresenter implements Presenter, ValueChangeHandler<String>, 
     private EveManageConstants constants;
     private Display display;
 
-    private DashboardTabPresenter dashboardTabPresenter;
-    private BlueprintsTabPresenterAsync blueprintsTabPresenter;
-    private PriceSetTabPresenterAsync priceSetTabPresenter;
-    private QuickCalculatorTabPresenterAsync quickCalculatorTabPresenter;
-    private PreferencesTabPresenterAsync preferencesTabPresenter;
-    private AboutTabPresenter aboutTabPresenter;
+    private Presenter dashboardTabPresenter;
+    private Presenter blueprintsTabPresenter;
+    private Presenter priceSetTabPresenter;
+    private Presenter quickCalculatorTabPresenter;
+    private Presenter preferencesTabPresenter;
+    private Presenter aboutTabPresenter;
 
     private List<String> currentTabNames;
     private HasWidgets container;

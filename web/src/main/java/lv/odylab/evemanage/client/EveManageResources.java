@@ -68,6 +68,30 @@ public interface EveManageResources extends ClientBundle {
     @Source("images/blueprint.png")
     ImageResource blueprintIcon16();
 
+    @Source("images/skill.png")
+    ImageResource skill();
+
+    @Source("images/skillnotmaxed.png")
+    ImageResource skillNotMaxed();
+
+    @Source("images/level0.png")
+    ImageResource level0();
+
+    @Source("images/level1.png")
+    ImageResource level1();
+
+    @Source("images/level2.png")
+    ImageResource level2();
+
+    @Source("images/level3.png")
+    ImageResource level3();
+
+    @Source("images/level4.png")
+    ImageResource level4();
+
+    @Source("images/level5.png")
+    ImageResource level5();
+
     @Source("images/dashboard/crystallineCarbonideArmorPlate.png")
     ImageResource dashboardCrystallineCarbonideArmorPlateImage();
 

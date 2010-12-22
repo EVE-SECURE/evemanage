@@ -30,6 +30,9 @@ public class Calculation implements Serializable {
     private Integer productivityLevel;
     private Integer materialLevel;
     private Integer wasteFactor;
+    private Integer maxProductionLimit;
+    private String productVolume;
+    private Integer productPortionSize;
     @Embedded
     private CharacterInfo attachedCharacterInfo;
     @Indexed
@@ -143,6 +146,30 @@ public class Calculation implements Serializable {
 
     public void setWasteFactor(Integer wasteFactor) {
         this.wasteFactor = wasteFactor;
+    }
+
+    public Integer getMaxProductionLimit() {
+        return maxProductionLimit;
+    }
+
+    public void setMaxProductionLimit(Integer maxProductionLimit) {
+        this.maxProductionLimit = maxProductionLimit;
+    }
+
+    public String getProductVolume() {
+        return productVolume;
+    }
+
+    public void setProductVolume(String productVolume) {
+        this.productVolume = productVolume;
+    }
+
+    public Integer getProductPortionSize() {
+        return productPortionSize;
+    }
+
+    public void setProductPortionSize(Integer productPortionSize) {
+        this.productPortionSize = productPortionSize;
     }
 
     public CharacterInfo getAttachedCharacterInfo() {

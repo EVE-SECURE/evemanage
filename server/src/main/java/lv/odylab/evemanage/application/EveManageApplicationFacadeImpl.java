@@ -17,8 +17,11 @@ import lv.odylab.evemanage.domain.SharingLevel;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
 import lv.odylab.evemanage.domain.calculation.Calculation;
 import lv.odylab.evemanage.domain.eve.ApiKey;
+import lv.odylab.evemanage.domain.eve.Region;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
+import lv.odylab.evemanage.domain.user.PriceFetchOption;
+import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.EveDbGateway;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
@@ -87,6 +90,46 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     @Override
     public List<ApiKey> getFullApiKeys() {
         return eveManagementService.getFullApiKeys(getCurrentUserKey());
+    }
+
+    @Override
+    public List<SkillLevel> getSkillLevelsForCalculation() {
+        return userManagementService.getSkillsForCalculation(getCurrentUser());
+    }
+
+    @Override
+    public void saveSkillLevelsForCalculation(List<SkillLevel> skillLevelsForCalculation) {
+        userManagementService.saveSkillLevelsForCalculation(skillLevelsForCalculation, getCurrentUser());
+    }
+
+    @Override
+    public List<SkillLevel> fetchCalculationSkillLevelsForMainCharacter() throws EveApiException {
+        return eveManagementService.fetchCalculationSkillLevelsForMainCharacter(getCurrentUser());
+    }
+
+    @Override
+    public List<Region> getRegions() {
+        return Arrays.asList(Region.values());
+    }
+
+    @Override
+    public Region getPreferredRegion() {
+        return userManagementService.getPreferredRegion(getCurrentUser());
+    }
+
+    @Override
+    public List<PriceFetchOption> getPriceFetchOptions() {
+        return Arrays.asList(PriceFetchOption.values());
+    }
+
+    @Override
+    public PriceFetchOption getPreferredPriceFetchOption() {
+        return userManagementService.getPreferredPriceFetchOption(getCurrentUser());
+    }
+
+    @Override
+    public void savePriceFetchConfiguration(Long preferredRegionID, PriceFetchOption preferredPriceFetchOption) {
+        userManagementService.savePriceFetchConfiguration(preferredRegionID, preferredPriceFetchOption, getCurrentUser());
     }
 
     @Override

@@ -17,23 +17,32 @@ import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.RegionDtoComparator;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
+import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
+import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
+import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDtoComparator;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
 import lv.odylab.evemanage.domain.calculation.Calculation;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.eve.Character;
+import lv.odylab.evemanage.domain.eve.Region;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
+import lv.odylab.evemanage.domain.user.PriceFetchOption;
+import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +95,74 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
             fullApiKeyDtos.add(mapper.map(fullApiKey, ApiKeyDto.class));
         }
         return fullApiKeyDtos;
+    }
+
+    @Override
+    public List<SkillLevelDto> getSkillLevelsForCalculation() {
+        List<SkillLevel> skillLevelsForCalculation = applicationFacade.getSkillLevelsForCalculation();
+        List<SkillLevelDto> skillLevelDtosForCalculation = new ArrayList<SkillLevelDto>();
+        for (SkillLevel skillLevel : skillLevelsForCalculation) {
+            skillLevelDtosForCalculation.add(mapper.map(skillLevel, SkillLevelDto.class));
+        }
+        Collections.sort(skillLevelDtosForCalculation, new SkillLevelDtoComparator());
+        return skillLevelDtosForCalculation;
+    }
+
+    @Override
+    public void saveSkillLevelsForCalculation(List<SkillLevelDto> skillLevelDtosForCalculation) {
+        List<SkillLevel> skillLevelsForCalculation = new ArrayList<SkillLevel>();
+        for (SkillLevelDto skillLevelDto : skillLevelDtosForCalculation) {
+            skillLevelsForCalculation.add(mapper.map(skillLevelDto, SkillLevel.class));
+        }
+        applicationFacade.saveSkillLevelsForCalculation(skillLevelsForCalculation);
+    }
+
+    @Override
+    public List<SkillLevelDto> fetchCalculationSkillLevelsForMainCharacter() throws EveApiException {
+        List<SkillLevel> skillLevelsForCalculation = applicationFacade.fetchCalculationSkillLevelsForMainCharacter();
+        List<SkillLevelDto> skillLevelDtosForCalculation = new ArrayList<SkillLevelDto>();
+        for (SkillLevel skillLevel : skillLevelsForCalculation) {
+            skillLevelDtosForCalculation.add(mapper.map(skillLevel, SkillLevelDto.class));
+        }
+        return skillLevelDtosForCalculation;
+    }
+
+    @Override
+    public List<RegionDto> getRegions() {
+        List<Region> regions = applicationFacade.getRegions();
+        List<RegionDto> regionDtos = new ArrayList<RegionDto>();
+        for (Region region : regions) {
+            regionDtos.add(mapper.map(region, RegionDto.class));
+        }
+        Collections.sort(regionDtos, new RegionDtoComparator());
+        return regionDtos;
+    }
+
+    @Override
+    public RegionDto getPreferredRegion() {
+        Region preferredRegion = applicationFacade.getPreferredRegion();
+        return mapper.map(preferredRegion, RegionDto.class);
+    }
+
+    @Override
+    public List<PriceFetchOptionDto> getPriceFetchOptions() {
+        List<PriceFetchOption> priceFetchOptions = applicationFacade.getPriceFetchOptions();
+        List<PriceFetchOptionDto> priceFetchOptionDtos = new ArrayList<PriceFetchOptionDto>();
+        for (PriceFetchOption priceFetchOption : priceFetchOptions) {
+            priceFetchOptionDtos.add(mapper.map(priceFetchOption, PriceFetchOptionDto.class));
+        }
+        return priceFetchOptionDtos;
+    }
+
+    @Override
+    public PriceFetchOptionDto getPreferredPriceFetchOption() {
+        PriceFetchOption preferredPriceFetchOption = applicationFacade.getPreferredPriceFetchOption();
+        return mapper.map(preferredPriceFetchOption, PriceFetchOptionDto.class);
+    }
+
+    @Override
+    public void savePriceFetchConfiguration(Long preferredRegionID, String preferredPriceFetchOption) {
+        applicationFacade.savePriceFetchConfiguration(preferredRegionID, PriceFetchOption.valueOf(preferredPriceFetchOption));
     }
 
     @Override

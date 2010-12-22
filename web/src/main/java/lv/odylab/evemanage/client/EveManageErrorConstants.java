@@ -2,6 +2,7 @@ package lv.odylab.evemanage.client;
 
 import com.google.gwt.i18n.client.ConstantsWithLookup;
 
+// TODO this approach needs revamp
 public interface EveManageErrorConstants extends ConstantsWithLookup {
 
     @DefaultStringValue("Error on server")
