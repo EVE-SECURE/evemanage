@@ -11,15 +11,19 @@ import lv.odylab.evecentralapi.parser.method.marketstat.MarketStatType;
 import lv.odylab.evedb.rpc.dto.InvBlueprintTypeDto;
 import lv.odylab.evedb.rpc.dto.InvTypeBasicInfoDto;
 import lv.odylab.evedb.rpc.dto.InvTypeMaterialDto;
+import lv.odylab.evedb.rpc.dto.PlanetSchematicDto;
 import lv.odylab.evedb.rpc.dto.RamTypeRequirementDto;
 import lv.odylab.evemanage.application.exception.validation.InvalidPriceException;
 import lv.odylab.evemanage.client.rpc.PathExpression;
+import lv.odylab.evemanage.client.rpc.RationalNumberProductExpression;
 import lv.odylab.evemanage.client.rpc.dto.ItemTypeDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.MaterialDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.RequirementDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyCharacterInfoDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
@@ -54,9 +58,12 @@ import lv.odylab.evemanage.integration.eveapi.dto.IndustryJobDto;
 import lv.odylab.evemanage.integration.evecentralapi.dto.MarketStatDto;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintTypeDto;
+import lv.odylab.evemanage.integration.evedb.dto.SchematicItemDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
 import lv.odylab.evemanage.integration.evemetricsapi.dto.ItemPriceDto;
+import lv.odylab.evemanage.service.calculation.UsedBlueprint;
+import lv.odylab.evemanage.service.calculation.UsedSchematic;
 import lv.odylab.evemanage.service.priceset.PriceSetItemDtoComparator;
 import lv.odylab.evemetricsapi.parser.method.itemprice.ItemPriceType;
 
@@ -66,6 +73,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// TODO this needs revamp
 public class EveManageDtoMapperImpl implements EveManageDtoMapper {
 
     @Override
@@ -577,9 +585,9 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
     public MarketStatDto map(MarketStatType marketStatType, Class<MarketStatDto> marketStatDtoClass) {
         MarketStatDto marketStatDto = new MarketStatDto();
         marketStatDto.setTypeID(marketStatType.getTypeID());
-        marketStatDto.setMedian(marketStatType.getAll().getMedian());
-        marketStatDto.setBuyMedian(marketStatType.getBuy().getMedian());
-        marketStatDto.setSellMedian(marketStatType.getSell().getMedian());
+        marketStatDto.setMedianBuySell(marketStatType.getAll().getMedian());
+        marketStatDto.setMedianBuy(marketStatType.getBuy().getMedian());
+        marketStatDto.setMedianSell(marketStatType.getSell().getMedian());
         return marketStatDto;
     }
 
@@ -587,10 +595,12 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
     public ItemPriceDto map(ItemPriceType itemPriceType, Class<ItemPriceDto> itemPriceDtoClass) {
         ItemPriceDto itemPriceDto = new ItemPriceDto();
         itemPriceDto.setTypeID(itemPriceType.getId());
-        BigDecimal medianBuyPrice = itemPriceType.getTypeGlobalData().getBuyPrices().getMedian();
-        BigDecimal medianSellPrice = itemPriceType.getTypeGlobalData().getSellPrices().getMedian();
-        BigDecimal medianPrice = medianBuyPrice.add(medianSellPrice).divide(new BigDecimal(2)).setScale(2, RoundingMode.HALF_UP);
-        itemPriceDto.setMedian(medianPrice);
+        BigDecimal medianBuy = itemPriceType.getRegionsTypeData().get(0).getBuyPrices().getMedian();
+        BigDecimal medianSell = itemPriceType.getRegionsTypeData().get(0).getSellPrices().getMedian();
+        BigDecimal medianBuySell = medianBuy.add(medianSell).divide(new BigDecimal(2)).setScale(2, RoundingMode.HALF_UP);
+        itemPriceDto.setMedianBuySell(medianBuySell);
+        itemPriceDto.setMedianBuy(medianBuy);
+        itemPriceDto.setMedianSell(medianSell);
         return itemPriceDto;
     }
 
@@ -613,22 +623,67 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         calculationDto.setProductVolume(new BigDecimal(calculation.getProductVolume()));
         calculationDto.setProductPortionSize(calculation.getProductPortionSize());
         List<CalculationItemDto> calculationItemDtos = new ArrayList<CalculationItemDto>();
-        for (CalculationItem calculationItem : calculation.getItems()) {
+        for (CalculationItem calculationItem : calculation.getCalculationItems()) {
             calculationItemDtos.add(map(calculationItem, CalculationItemDto.class));
         }
-        calculationDto.setItems(calculationItemDtos);
+        calculationDto.setCalculationItems(calculationItemDtos);
         return calculationDto;
+    }
+
+    @Override
+    public SchematicItemDto map(PlanetSchematicDto planetSchematicDto, Class<SchematicItemDto> schematicItemDtoClass) {
+        SchematicItemDto schematicItemDto = new SchematicItemDto();
+        schematicItemDto.setRequiredTypeID(planetSchematicDto.getRequiredTypeID());
+        schematicItemDto.setRequiredTypeName(planetSchematicDto.getRequiredTypeName());
+        schematicItemDto.setRequiredGroupID(planetSchematicDto.getRequiredGroupID());
+        schematicItemDto.setRequiredGroupName(planetSchematicDto.getRequiredGroupName());
+        schematicItemDto.setRequiredIcon(planetSchematicDto.getRequiredIcon());
+        schematicItemDto.setRequiredQuantity(planetSchematicDto.getRequiredQuantity());
+        schematicItemDto.setSchematicQuantity(planetSchematicDto.getSchematicQuantity());
+        return schematicItemDto;
+    }
+
+    @Override
+    public UsedBlueprintDto map(UsedBlueprint usedBlueprint, Class<UsedBlueprintDto> usedBlueprintDtoClass) {
+        UsedBlueprintDto usedBlueprintDto = new UsedBlueprintDto();
+        usedBlueprintDto.setMaterialLevel(usedBlueprint.getMaterialLevel());
+        usedBlueprintDto.setProductivityLevel(usedBlueprint.getProductivityLevel());
+        List<CalculationItemDto> calculationItemDtos = new ArrayList<CalculationItemDto>();
+        for (CalculationItem calculationItem : usedBlueprint.getCalculationItems()) {
+            calculationItemDtos.add(map(calculationItem, CalculationItemDto.class));
+        }
+        usedBlueprintDto.setCalculationItems(calculationItemDtos);
+        return usedBlueprintDto;
+    }
+
+    @Override
+    public UsedSchematicDto map(UsedSchematic usedSchematic, Class<UsedSchematicDto> usedSchematicDtoClass) {
+        UsedSchematicDto usedSchematicDto = new UsedSchematicDto();
+        List<CalculationItemDto> calculationItemDtos = new ArrayList<CalculationItemDto>();
+        for (CalculationItem calculationItem : usedSchematic.getCalculationItems()) {
+            calculationItemDtos.add(map(calculationItem, CalculationItemDto.class));
+        }
+        usedSchematicDto.setCalculationItems(calculationItemDtos);
+        return usedSchematicDto;
     }
 
     private CalculationItemDto map(CalculationItem calculationItem, Class<CalculationItemDto> calculationItemDtoClass) {
         CalculationItemDto calculationItemDto = new CalculationItemDto();
-        calculationItemDto.setPathExpression(PathExpression.parsePath(calculationItem.getPath()));
+        calculationItemDto.setPathExpression(PathExpression.parseExpression(calculationItem.getPath()));
         calculationItemDto.setItemTypeID(calculationItem.getItemTypeID());
         calculationItemDto.setItemCategoryID(calculationItem.getItemCategoryID());
         calculationItemDto.setItemTypeName(calculationItem.getItemTypeName());
         calculationItemDto.setItemTypeIcon(calculationItem.getItemTypeIcon());
         calculationItemDto.setQuantity(calculationItem.getQuantity());
+        String quantityMultiplier = calculationItem.getQuantityMultiplier();
+        if (quantityMultiplier != null) {
+            calculationItemDto.setQuantityMultiplier(RationalNumberProductExpression.parseExpression(quantityMultiplier));
+        }
         calculationItemDto.setParentQuantity(calculationItem.getParentQuantity());
+        String parentQuantityMultiplier = calculationItem.getParentQuantityMultiplier();
+        if (parentQuantityMultiplier != null) {
+            calculationItemDto.setParentQuantityMultiplier(RationalNumberProductExpression.parseExpression(parentQuantityMultiplier));
+        }
         calculationItemDto.setPerfectQuantity(calculationItem.getPerfectQuantity());
         calculationItemDto.setWasteFactor(calculationItem.getWasteFactor());
         calculationItemDto.setDamagePerJob(new BigDecimal(calculationItem.getDamagePerJob()));

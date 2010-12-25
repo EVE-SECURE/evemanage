@@ -1,5 +1,6 @@
-package lv.odylab.evemanage.client.presenter.tab.calculator;
+package lv.odylab.evemanage.client.presenter.tab.quickcalculator;
 
+import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNodeSummary;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 import lv.odylab.evemanage.client.widget.PriceLabel;
 import lv.odylab.evemanage.client.widget.QuantityLabel;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class ComputableCalculationItem {
     private List<CalculationItemDto> calculationItems = new ArrayList<CalculationItemDto>();
-    private CalculationTreeNodeSummary calculationTreeNodeSummary;
+    private CalculationItemTreeNodeSummary calculationItemTreeNodeSummary;
     private QuantityLabel quantityLabel;
     private QuantityLabel quantityForParentLabel;
     private PriceLabel priceLabel;
@@ -22,12 +23,12 @@ public class ComputableCalculationItem {
         this.calculationItems = calculationItems;
     }
 
-    public CalculationTreeNodeSummary getCalculationTreeNodeSummary() {
-        return calculationTreeNodeSummary;
+    public CalculationItemTreeNodeSummary getCalculationItemTreeNodeSummary() {
+        return calculationItemTreeNodeSummary;
     }
 
-    public void setCalculationTreeNodeSummary(CalculationTreeNodeSummary calculationTreeNodeSummary) {
-        this.calculationTreeNodeSummary = calculationTreeNodeSummary;
+    public void setCalculationItemTreeNodeSummary(CalculationItemTreeNodeSummary calculationItemTreeNodeSummary) {
+        this.calculationItemTreeNodeSummary = calculationItemTreeNodeSummary;
     }
 
     public void setQuantityLabel(QuantityLabel quantityLabel) {

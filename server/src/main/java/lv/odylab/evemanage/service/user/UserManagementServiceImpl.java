@@ -139,27 +139,25 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @Override
     public Region getPreferredRegion(lv.odylab.evemanage.domain.user.User user) {
-        Long preferredRegionID = user.getPreferredRegionID();
-        if (preferredRegionID == null) {
+        if (user == null || user.getPreferredRegion() == null) {
             return Region.THE_FORGE;
         } else {
-            return Region.getByRegionID(preferredRegionID);
+            return Region.valueOf(user.getPreferredRegion());
         }
     }
 
     @Override
     public PriceFetchOption getPreferredPriceFetchOption(lv.odylab.evemanage.domain.user.User user) {
-        String preferredPriceFetchOption = user.getPreferredPriceFetchOption();
-        if (preferredPriceFetchOption == null) {
-            return PriceFetchOption.BUY_SELL_AVG;
+        if (user == null || user.getPreferredPriceFetchOption() == null) {
+            return PriceFetchOption.MEDIAN_BUY_SELL;
         } else {
-            return PriceFetchOption.valueOf(preferredPriceFetchOption);
+            return PriceFetchOption.valueOf(user.getPreferredPriceFetchOption());
         }
     }
 
     @Override
-    public void savePriceFetchConfiguration(Long preferredRegionID, PriceFetchOption preferredPriceFetchOption, lv.odylab.evemanage.domain.user.User user) {
-        user.setPreferredRegionID(preferredRegionID);
+    public void savePriceFetchConfiguration(Region preferredRegion, PriceFetchOption preferredPriceFetchOption, lv.odylab.evemanage.domain.user.User user) {
+        user.setPreferredRegion(preferredRegion.toString());
         user.setPreferredPriceFetchOption(preferredPriceFetchOption.toString());
         userDao.put(user);
     }

@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CalculationTreeNode {
+public class CalculationItemTreeNode {
     private List<CalculationItemDto> calculationItems = new ArrayList<CalculationItemDto>();
-    private Map<Long, CalculationTreeNode> nodeMap = new TreeMap<Long, CalculationTreeNode>();
+    private Map<Long, CalculationItemTreeNode> nodeMap = new TreeMap<Long, CalculationItemTreeNode>();
     private Boolean excludeChildNodesFromCalculation = false;
 
-    public CalculationTreeNode() {
+    public CalculationItemTreeNode() {
     }
 
     public List<CalculationItemDto> getCalculationItems() {
@@ -25,8 +25,8 @@ public class CalculationTreeNode {
         calculationItems.add(calculationItem);
     }
 
-    public CalculationTreeNodeSummary getSummary() {
-        CalculationTreeNodeSummary summary = new CalculationTreeNodeSummary();
+    public CalculationItemTreeNodeSummary getSummary() {
+        CalculationItemTreeNodeSummary summary = new CalculationItemTreeNodeSummary();
         CalculationItemDto firstCalculationItemDto = calculationItems.get(0);
         PathExpression pathExpression = firstCalculationItemDto.getPathExpression();
         summary.setPathNodesString(pathExpression.getPathNodesString());
@@ -35,7 +35,9 @@ public class CalculationTreeNode {
         summary.setItemCategoryID(firstCalculationItemDto.getItemCategoryID());
         summary.setItemTypeName(firstCalculationItemDto.getItemTypeName());
         summary.setItemTypeIcon(firstCalculationItemDto.getItemTypeIcon());
+        summary.setQuantityMultiplier(firstCalculationItemDto.getQuantityMultiplier());
         summary.setParentQuantity(firstCalculationItemDto.getParentQuantity());
+        summary.setParentQuantityMultiplier(firstCalculationItemDto.getParentQuantityMultiplier());
         summary.setDamagePerJob(firstCalculationItemDto.getDamagePerJob());
         summary.setPrice(firstCalculationItemDto.getPrice());
         if (calculationItems.size() > 1) {
@@ -58,7 +60,7 @@ public class CalculationTreeNode {
         return summary;
     }
 
-    public Map<Long, CalculationTreeNode> getNodeMap() {
+    public Map<Long, CalculationItemTreeNode> getNodeMap() {
         return nodeMap;
     }
 
@@ -73,16 +75,16 @@ public class CalculationTreeNode {
     public void changeMePe(Integer meLevel, Integer peLevel) {
         for (CalculationItemDto calculationItem : calculationItems) {
             PathExpression pathExpression = calculationItem.getPathExpression();
-            if (pathExpression.isMaterial()) {
+            if (pathExpression.hasMeFactoring()) {
                 pathExpression.setMeLevel(meLevel);
                 pathExpression.setPeLevel(peLevel);
             }
-            for (Map.Entry<Long, CalculationTreeNode> mapEntry : nodeMap.entrySet()) {
-                CalculationTreeNode node = mapEntry.getValue();
+            for (Map.Entry<Long, CalculationItemTreeNode> mapEntry : nodeMap.entrySet()) {
+                CalculationItemTreeNode node = mapEntry.getValue();
                 List<CalculationItemDto> nodeCalculationItems = node.getCalculationItems();
                 for (CalculationItemDto nodeCalculationItem : nodeCalculationItems) {
                     PathExpression nodePathExpression = nodeCalculationItem.getPathExpression();
-                    if (nodePathExpression.isMaterial()) {
+                    if (nodePathExpression.hasMeFactoring()) {
                         nodePathExpression.setMeLevel(meLevel);
                         nodePathExpression.setPeLevel(peLevel);
                     }

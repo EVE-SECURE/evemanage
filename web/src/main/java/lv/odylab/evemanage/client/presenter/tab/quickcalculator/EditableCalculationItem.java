@@ -1,14 +1,16 @@
-package lv.odylab.evemanage.client.presenter.tab.calculator;
+package lv.odylab.evemanage.client.presenter.tab.quickcalculator;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import lv.odylab.evemanage.client.widget.OpaqueLoadableBlueprintImage;
+import lv.odylab.evemanage.client.widget.OpaqueLoadableSchematicImage;
 
 public class EditableCalculationItem {
     private Integer index;
     private OpaqueLoadableBlueprintImage blueprintImage;
+    private OpaqueLoadableSchematicImage schematicImage;
     private Label meLabel;
     private Label peLabel;
     private TextBox meTextBox;
@@ -31,6 +33,14 @@ public class EditableCalculationItem {
 
     public void setBlueprintImage(OpaqueLoadableBlueprintImage blueprintImage) {
         this.blueprintImage = blueprintImage;
+    }
+
+    public OpaqueLoadableSchematicImage getSchematicImage() {
+        return schematicImage;
+    }
+
+    public void setSchematicImage(OpaqueLoadableSchematicImage schematicImage) {
+        this.schematicImage = schematicImage;
     }
 
     public Label getMeLabel() {

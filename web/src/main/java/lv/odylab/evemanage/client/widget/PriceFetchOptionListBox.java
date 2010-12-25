@@ -21,12 +21,12 @@ public class PriceFetchOptionListBox extends ListBox {
 
     @Override
     public void addItem(String item) {
-        if (item.equals("BUY_SELL_AVG")) {
-            super.addItem(messages.averageBuySell(), item);
-        } else if (item.equals("BUY_AVG")) {
-            super.addItem(messages.averageBuy(), item);
-        } else if (item.equals("SELL_AVG")) {
-            super.addItem(messages.averageSell(), item);
+        if (item.equals("MEDIAN_BUY_SELL")) {
+            super.addItem(messages.medianBuySell(), item);
+        } else if (item.equals("MEDIAN_BUY")) {
+            super.addItem(messages.medianBuy(), item);
+        } else if (item.equals("MEDIAN_SELL")) {
+            super.addItem(messages.medianSell(), item);
         } else {
             super.addItem("UNKNOWN");
         }
@@ -35,7 +35,7 @@ public class PriceFetchOptionListBox extends ListBox {
     public void selectFetchOptions(PriceFetchOptionDto preferredPriceFetchOption) {
         int itemCount = getItemCount();
         for (int i = 0; i < itemCount; i++) {
-            if (getItemText(i).equals(preferredPriceFetchOption.getName())) {
+            if (getValue(i).equals(preferredPriceFetchOption.getName())) {
                 setSelectedIndex(i);
                 return;
             }

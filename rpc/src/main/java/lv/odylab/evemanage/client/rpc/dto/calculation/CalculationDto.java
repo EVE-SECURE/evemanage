@@ -20,7 +20,8 @@ public class CalculationDto implements Serializable {
     private Integer maxProductionLimit;
     private BigDecimal productVolume;
     private Integer productPortionSize;
-    private List<CalculationItemDto> items;
+    private List<CalculationItemDto> calculationItems;
+    private List<BlueprintItemDto> blueprintItems;
 
     public Long getId() {
         return id;
@@ -142,11 +143,19 @@ public class CalculationDto implements Serializable {
         this.productPortionSize = productPortionSize;
     }
 
-    public List<CalculationItemDto> getItems() {
-        return items;
+    public List<CalculationItemDto> getCalculationItems() {
+        return calculationItems;
     }
 
-    public void setItems(List<CalculationItemDto> items) {
-        this.items = items;
+    public void setCalculationItems(List<CalculationItemDto> calculationItems) {
+        this.calculationItems = calculationItems;
+    }
+
+    public List<BlueprintItemDto> getBlueprintItems() {
+        return blueprintItems;
+    }
+
+    public void setBlueprintItems(List<BlueprintItemDto> blueprintItems) {
+        this.blueprintItems = blueprintItems;
     }
 }

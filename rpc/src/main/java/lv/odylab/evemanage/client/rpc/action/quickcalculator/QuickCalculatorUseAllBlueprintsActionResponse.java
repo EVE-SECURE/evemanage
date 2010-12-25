@@ -1,18 +1,18 @@
 package lv.odylab.evemanage.client.rpc.action.quickcalculator;
 
 import lv.odylab.evemanage.client.rpc.action.Response;
-import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 
 import java.util.Map;
 
 public class QuickCalculatorUseAllBlueprintsActionResponse implements Response {
-    private Map<Long[], CalculationDto> pathNodesToCalculationMap;
+    private Map<Long[], UsedBlueprintDto> pathNodesToUsedBlueprintMap;
 
-    public Map<Long[], CalculationDto> getPathNodesToCalculationMap() {
-        return pathNodesToCalculationMap;
+    public Map<Long[], UsedBlueprintDto> getPathNodesToUsedBlueprintMap() {
+        return pathNodesToUsedBlueprintMap;
     }
 
-    public void setPathNodesToCalculationMap(Map<Long[], CalculationDto> pathNodesToCalculationMap) {
-        this.pathNodesToCalculationMap = pathNodesToCalculationMap;
+    public void setPathNodesToUsedBlueprintMap(Map<Long[], UsedBlueprintDto> pathNodesToUsedBlueprintMap) {
+        this.pathNodesToUsedBlueprintMap = pathNodesToUsedBlueprintMap;
     }
 }

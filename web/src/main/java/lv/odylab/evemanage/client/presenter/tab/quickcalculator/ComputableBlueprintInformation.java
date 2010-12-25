@@ -1,11 +1,11 @@
-package lv.odylab.evemanage.client.presenter.tab.calculator;
+package lv.odylab.evemanage.client.presenter.tab.quickcalculator;
 
 import lv.odylab.evemanage.client.rpc.EveCalculator;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.widget.PriceLabel;
 import lv.odylab.evemanage.client.widget.WasteLabel;
 
-public class ComputableCalculation {
+public class ComputableBlueprintInformation {
     private CalculationDto calculation;
     private PriceLabel totalPriceLabel;
     private WasteLabel wasteLabel;

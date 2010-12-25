@@ -60,13 +60,22 @@ public interface EveManageResources extends ClientBundle {
     ImageResource sharing();
 
     @Source("images/evecentral.png")
-    ImageResource eveCentralIcon16();
+    ImageResource eveCentralIcon();
 
     @Source("images/evemetrics.png")
-    ImageResource eveMetricsIcon16();
+    ImageResource eveMetricsIcon();
 
     @Source("images/blueprint.png")
-    ImageResource blueprintIcon16();
+    ImageResource blueprintIcon();
+
+    @Source("images/blueprintnotused.png")
+    ImageResource blueprintNotUsedIcon();
+
+    @Source("images/schematic.png")
+    ImageResource schematicIcon();
+
+    @Source("images/schematicnotused.png")
+    ImageResource schematicNotUsedIcon();
 
     @Source("images/skill.png")
     ImageResource skill();

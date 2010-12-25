@@ -29,6 +29,6 @@ public interface UserManagementService {
 
     PriceFetchOption getPreferredPriceFetchOption(User user);
 
-    void savePriceFetchConfiguration(Long preferredRegionID, PriceFetchOption preferredPriceFetchOption, User user);
+    void savePriceFetchConfiguration(Region preferredRegion, PriceFetchOption preferredPriceFetchOption, User user);
 
 }

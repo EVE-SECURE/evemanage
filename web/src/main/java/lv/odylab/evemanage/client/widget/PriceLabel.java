@@ -5,7 +5,6 @@ import com.google.gwt.user.client.ui.Label;
 import java.math.BigDecimal;
 
 public class PriceLabel extends Label {
-
     public PriceLabel(BigDecimal price) {
         setPrice(price);
     }

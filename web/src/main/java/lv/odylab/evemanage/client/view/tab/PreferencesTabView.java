@@ -16,6 +16,8 @@ import lv.odylab.evemanage.client.EveManageMessages;
 import lv.odylab.evemanage.client.EveManageResources;
 import lv.odylab.evemanage.client.presenter.tab.PreferencesTabPresenter;
 import lv.odylab.evemanage.client.presenter.tab.preferences.EditablePreferenceSkillLevel;
+import lv.odylab.evemanage.client.presenter.tab.preferences.EditablePreferencesApiKey;
+import lv.odylab.evemanage.client.presenter.tab.preferences.EditablePreferencesCharacter;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
@@ -33,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 
 public class PreferencesTabView implements PreferencesTabPresenter.Display {
-
     private HorizontalPanel headerPanel;
     private Label headerLabel;
     private Image spinnerImage;
@@ -120,13 +121,8 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
     }
 
     @Override
-    public Map<String, Image> getCharacterImageMap() {
-        return charactersSection.getCharacterImageMap();
-    }
-
-    @Override
-    public Map<CharacterDto, Button> getCharacterDeleteButtonMap() {
-        return charactersSection.getCharacterDeleteButtonMap();
+    public Map<CharacterDto, EditablePreferencesCharacter> getCharacterToEditablePreferencesCharacterMap() {
+        return charactersSection.getCharacterToEditablePreferencesCharacterMap();
     }
 
     @Override
@@ -155,8 +151,8 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
     }
 
     @Override
-    public Map<ApiKeyDto, Button> getApiKeyDeleteButtonMap() {
-        return apiKeysSection.getApiKeyDeleteButtonMap();
+    public Map<ApiKeyDto, EditablePreferencesApiKey> getApiKeyToEditablePreferencesApiKeyMap() {
+        return apiKeysSection.getApiKeyToEditablePreferencesApiKeyMap();
     }
 
     @Override

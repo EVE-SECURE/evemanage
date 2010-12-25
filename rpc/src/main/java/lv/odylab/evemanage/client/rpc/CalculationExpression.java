@@ -69,38 +69,6 @@ public class CalculationExpression implements Serializable {
         this.valid = valid;
     }
 
-    public static CalculationExpression parseExpression(String calculationExpressionString) {
-        CalculationExpression calculationExpression = new CalculationExpression();
-        String[] calculationExpressionTokens = calculationExpressionString.split("\\|");
-        if (calculationExpressionTokens.length > 1) {
-            calculationExpression.setValid(Boolean.TRUE);
-            calculationExpression.setBlueprintTypeName(calculationExpressionTokens[1]);
-            for (int i = 2; i < calculationExpressionTokens.length; i++) {
-                String[] tokens = calculationExpressionTokens[i].split(":");
-                String tokenName = tokens[0];
-                String tokenFirstValue = tokens[1];
-                if ("ME".equalsIgnoreCase(tokenName)) {
-                    calculationExpression.setMeLevel(Integer.valueOf(tokenFirstValue));
-                } else if ("PE".equalsIgnoreCase(tokenName)) {
-                    calculationExpression.setPeLevel(Integer.valueOf(tokenFirstValue));
-                } else if ("Q".equalsIgnoreCase(tokenName)) {
-                    calculationExpression.setQuantity(Long.valueOf(tokenFirstValue));
-                } else if ("B".equalsIgnoreCase(tokenName)) {
-                    Integer blueprintMeLevel = Integer.valueOf(tokens[2]);
-                    Integer blueprintPeLevel = Integer.valueOf(tokens[3]);
-                    calculationExpression.getBlueprintPathToMeLevelMap().put(tokenFirstValue, blueprintMeLevel);
-                    calculationExpression.getBlueprintPathToPeLevelMap().put(tokenFirstValue, blueprintPeLevel);
-                } else if ("P".equalsIgnoreCase(tokenName)) {
-                    Long priceItemTypeID = Long.valueOf(tokenFirstValue);
-                    calculationExpression.getPriceSetItemTypeIdToPriceMap().put(priceItemTypeID, tokens[2]);
-                }
-            }
-        } else {
-            calculationExpression.setValid(Boolean.FALSE);
-        }
-        return calculationExpression;
-    }
-
     public String getExpression() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("|").append(blueprintTypeName.replace(' ', '+'));
@@ -133,5 +101,37 @@ public class CalculationExpression implements Serializable {
         }
 
         return stringBuilder.toString();
+    }
+
+    public static CalculationExpression parseExpression(String expressionString) {
+        CalculationExpression calculationExpression = new CalculationExpression();
+        String[] calculationExpressionTokens = expressionString.split("\\|");
+        if (calculationExpressionTokens.length > 1) {
+            calculationExpression.setValid(Boolean.TRUE);
+            calculationExpression.setBlueprintTypeName(calculationExpressionTokens[1]);
+            for (int i = 2; i < calculationExpressionTokens.length; i++) {
+                String[] tokens = calculationExpressionTokens[i].split(":");
+                String tokenName = tokens[0];
+                String tokenFirstValue = tokens[1];
+                if ("ME".equalsIgnoreCase(tokenName)) {
+                    calculationExpression.setMeLevel(Integer.valueOf(tokenFirstValue));
+                } else if ("PE".equalsIgnoreCase(tokenName)) {
+                    calculationExpression.setPeLevel(Integer.valueOf(tokenFirstValue));
+                } else if ("Q".equalsIgnoreCase(tokenName)) {
+                    calculationExpression.setQuantity(Long.valueOf(tokenFirstValue));
+                } else if ("B".equalsIgnoreCase(tokenName)) {
+                    Integer blueprintMeLevel = Integer.valueOf(tokens[2]);
+                    Integer blueprintPeLevel = Integer.valueOf(tokens[3]);
+                    calculationExpression.getBlueprintPathToMeLevelMap().put(tokenFirstValue, blueprintMeLevel);
+                    calculationExpression.getBlueprintPathToPeLevelMap().put(tokenFirstValue, blueprintPeLevel);
+                } else if ("P".equalsIgnoreCase(tokenName)) {
+                    Long priceItemTypeID = Long.valueOf(tokenFirstValue);
+                    calculationExpression.getPriceSetItemTypeIdToPriceMap().put(priceItemTypeID, tokens[2]);
+                }
+            }
+        } else {
+            calculationExpression.setValid(Boolean.FALSE);
+        }
+        return calculationExpression;
     }
 }

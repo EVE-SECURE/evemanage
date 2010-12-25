@@ -148,7 +148,7 @@ public class ContentPresenter implements Presenter, ValueChangeHandler<String>, 
             tabNames.add(constants.blueprintsToken());
             tabNames.add(constants.priceSetToken());
             if (loginDto.isAdmin()) {
-                // nothing for now
+                // TODO nothing for now
             }
             tabNames.add(constants.preferencesToken());
         }

@@ -1,4 +1,4 @@
-package lv.odylab.evemanage.client.presenter.tab.calculator;
+package lv.odylab.evemanage.client.presenter.tab.quickcalculator;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import lv.odylab.evemanage.client.widget.OpaqueLoadableBlueprintImage;
 import lv.odylab.evemanage.client.widget.QuantityLabel;
 
-public class EditableCalculation {
+public class EditableBlueprintInformation {
     private OpaqueLoadableBlueprintImage useAllBlueprintsImage;
     private Label meLabel;
     private Label peLabel;

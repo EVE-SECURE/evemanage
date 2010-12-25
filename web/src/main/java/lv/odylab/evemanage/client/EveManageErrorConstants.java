@@ -77,4 +77,7 @@ public interface EveManageErrorConstants extends ConstantsWithLookup {
     @DefaultStringValue("Character is already in use")
     String domainCharacterAlreadyExists();
 
+    @DefaultStringValue("Sorry, direct links are temporary disabled")
+    String directLinksTemporaryDisabled();
+
 }

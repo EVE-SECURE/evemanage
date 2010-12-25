@@ -11,6 +11,7 @@ public class SharingLevelLabel extends Label {
     }
 
     public void setSharingLevel(String sharingLevel) {
+        // TODO remove string constant usage
         if (sharingLevel.equals("PERSONAL")) {
             setText(messages.personal());
         } else if (sharingLevel.equals("CORPORATION")) {

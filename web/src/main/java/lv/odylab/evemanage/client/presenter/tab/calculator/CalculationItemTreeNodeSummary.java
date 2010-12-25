@@ -1,8 +1,10 @@
 package lv.odylab.evemanage.client.presenter.tab.calculator;
 
+import lv.odylab.evemanage.client.rpc.RationalNumberProductExpression;
+
 import java.math.BigDecimal;
 
-public class CalculationTreeNodeSummary {
+public class CalculationItemTreeNodeSummary {
     private String pathNodesString;
     private Long[] pathNodes;
     private Long itemTypeID;
@@ -10,7 +12,9 @@ public class CalculationTreeNodeSummary {
     private String itemTypeName;
     private String itemTypeIcon;
     private Long quantity;
+    private RationalNumberProductExpression quantityMultiplier;
     private Long parentQuantity;
+    private RationalNumberProductExpression parentQuantityMultiplier;
     private BigDecimal damagePerJob;
     private BigDecimal price;
     private BigDecimal totalPrice;
@@ -72,12 +76,28 @@ public class CalculationTreeNodeSummary {
         this.quantity = quantity;
     }
 
+    public RationalNumberProductExpression getQuantityMultiplier() {
+        return quantityMultiplier;
+    }
+
+    public void setQuantityMultiplier(RationalNumberProductExpression quantityMultiplier) {
+        this.quantityMultiplier = quantityMultiplier;
+    }
+
     public Long getParentQuantity() {
         return parentQuantity;
     }
 
     public void setParentQuantity(Long parentQuantity) {
         this.parentQuantity = parentQuantity;
+    }
+
+    public RationalNumberProductExpression getParentQuantityMultiplier() {
+        return parentQuantityMultiplier;
+    }
+
+    public void setParentQuantityMultiplier(RationalNumberProductExpression parentQuantityMultiplier) {
+        this.parentQuantityMultiplier = parentQuantityMultiplier;
     }
 
     public BigDecimal getDamagePerJob() {

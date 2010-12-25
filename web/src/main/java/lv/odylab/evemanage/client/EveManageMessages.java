@@ -355,6 +355,9 @@ public interface EveManageMessages extends Messages {
     @DefaultMessage("Apply")
     String apply();
 
+    @DefaultMessage("Skills")
+    String skills();
+
     @DefaultMessage("Skills for calculation")
     String skillsForCalculation();
 
@@ -370,14 +373,14 @@ public interface EveManageMessages extends Messages {
     @DefaultMessage("Preferred price")
     String preferredPrice();
 
-    @DefaultMessage("Average buy/sell")
-    String averageBuySell();
+    @DefaultMessage("Median buy/sell")
+    String medianBuySell();
 
-    @DefaultMessage("Average buy")
-    String averageBuy();
+    @DefaultMessage("Median buy")
+    String medianBuy();
 
-    @DefaultMessage("Average sell")
-    String averageSell();
+    @DefaultMessage("Median sell")
+    String medianSell();
 
     @DefaultMessage("Use all blueprints")
     String useAllBlueprints();
@@ -391,6 +394,12 @@ public interface EveManageMessages extends Messages {
     @DefaultMessage("Stop using blueprint")
     String stopUsingBlueprint();
 
+    @DefaultMessage("Use schematic")
+    String useSchematic();
+
+    @DefaultMessage("Stop using schematic")
+    String stopUsingSchematic();
+
     @DefaultMessage("Quantity")
     String quantity();
 
@@ -399,6 +408,9 @@ public interface EveManageMessages extends Messages {
 
     @DefaultMessage("Note: quick calculator is intended for quick calculations: it does not allow to save calculation result, use library blueprints and existing price sets")
     String noteQuickCalculatorIsIntended();
+
+    @DefaultMessage("Direct links")
+    String directLinks();
 
     @DefaultMessage("Create direct link")
     String createDirectLink();
@@ -495,6 +507,9 @@ public interface EveManageMessages extends Messages {
 
     @DefaultMessage("You can use quick calculator which is open for public, or you can log in and proceed to other application tabs. Also, you might want to see <a target=\"_blank\" href=\"http://code.google.com/p/evemanage/wiki/Screenshots\">screenshots</a>, visit <a target=\"_blank\" href=\"http://code.google.com/p/evemanage/\">homepage</a> or read <a target=\"_blank\" href=\"http://code.google.com/p/evemanage/wiki/News\">news</a>")
     String whatNowCalculator();
+
+    @DefaultMessage("Sorry, temporary disabled")
+    String sorryTemporaryDisabled();
 
     @DefaultMessage("&copy; 2010 by {0} | All {1} materials are property of {2} | Powered by {3}")
     String footerText(String authorHtml, String eveOnlineHtml, String ccpGamesHtml, String appEngineHtml);

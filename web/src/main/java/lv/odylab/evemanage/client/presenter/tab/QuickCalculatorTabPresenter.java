@@ -1,5 +1,7 @@
 package lv.odylab.evemanage.client.presenter.tab;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -29,29 +31,37 @@ import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorReusedAll
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorReusedAllBlueprintsEventHandler;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorReusedBlueprintEvent;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorReusedBlueprintEventHandler;
+import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorReusedSchematicEvent;
+import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorReusedSchematicEventHandler;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorSetEvent;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorSetEventHandler;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorStoppedUsingAllBlueprintsEvent;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorStoppedUsingAllBlueprintsEventHandler;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorStoppedUsingBlueprintEvent;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorStoppedUsingBlueprintEventHandler;
+import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorStoppedUsingSchematicEvent;
+import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorStoppedUsingSchematicEventHandler;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorTabFirstLoadEvent;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorTabFirstLoadEventHandler;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorUsedAllBlueprintsEvent;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorUsedAllBlueprintsEventHandler;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorUsedBlueprintEvent;
 import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorUsedBlueprintEventHandler;
+import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorUsedSchematicEvent;
+import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorUsedSchematicEventHandler;
 import lv.odylab.evemanage.client.presenter.AttachableDisplay;
 import lv.odylab.evemanage.client.presenter.Presenter;
-import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationTreeNodeSummary;
-import lv.odylab.evemanage.client.presenter.tab.calculator.ComputableCalculationItem;
-import lv.odylab.evemanage.client.presenter.tab.calculator.EditableCalculation;
-import lv.odylab.evemanage.client.presenter.tab.calculator.EditableCalculationItem;
-import lv.odylab.evemanage.client.presenter.tab.calculator.EditableCalculationPriceSetItem;
+import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTree;
+import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTree;
+import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNodeSummary;
+import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableBlueprintInformation;
+import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableCalculationItem;
+import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableCalculationPriceSetItem;
+import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableBlueprintInformation;
+import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationItem;
+import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationPriceSetItem;
 import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.EveManageRemoteServiceAsync;
-import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorDirectSetAction;
-import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorDirectSetActionResponse;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorFetchPricesFromEveCentralAction;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorFetchPricesFromEveCentralActionResponse;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorFetchPricesFromEveMetricsAction;
@@ -64,20 +74,31 @@ import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseA
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseAllBlueprintsActionResponse;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseBlueprintAction;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseBlueprintActionResponse;
+import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseSchematicAction;
+import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseSchematicActionResponse;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceSetItemDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceItemDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
+import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
 import lv.odylab.evemanage.client.widget.OnlyDigitsAndMinusChangeHandler;
 import lv.odylab.evemanage.client.widget.OnlyDigitsChangeHandler;
 import lv.odylab.evemanage.client.widget.OpaqueLoadableBlueprintImage;
+import lv.odylab.evemanage.client.widget.OpaqueLoadableSchematicImage;
+import lv.odylab.evemanage.client.widget.PriceFetchOptionListBox;
+import lv.odylab.evemanage.client.widget.PriceTextBox;
+import lv.odylab.evemanage.client.widget.RegionListBox;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandler<String>, QuickCalculatorTabErrorEventHandler, QuickCalculatorTabFirstLoadEventHandler, QuickCalculatorSetEventHandler, QuickCalculatorDirectSetEventHandler, QuickCalculatorUsedBlueprintEventHandler, QuickCalculatorReusedBlueprintEventHandler, QuickCalculatorStoppedUsingBlueprintEventHandler, QuickCalculatorUsedAllBlueprintsEventHandler, QuickCalculatorStoppedUsingAllBlueprintsEventHandler, QuickCalculatorReusedAllBlueprintsEventHandler, QuickCalculatorFetchedPricesFromEveCentralEventHandler, QuickCalculatorFetchedPricesFromEveMetricsEventHandler {
+public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandler<String>, QuickCalculatorTabErrorEventHandler, QuickCalculatorTabFirstLoadEventHandler, QuickCalculatorSetEventHandler, QuickCalculatorDirectSetEventHandler, QuickCalculatorUsedBlueprintEventHandler, QuickCalculatorReusedBlueprintEventHandler, QuickCalculatorStoppedUsingBlueprintEventHandler, QuickCalculatorUsedAllBlueprintsEventHandler, QuickCalculatorStoppedUsingAllBlueprintsEventHandler, QuickCalculatorReusedAllBlueprintsEventHandler, QuickCalculatorUsedSchematicEventHandler, QuickCalculatorReusedSchematicEventHandler, QuickCalculatorStoppedUsingSchematicEventHandler, QuickCalculatorFetchedPricesFromEveCentralEventHandler, QuickCalculatorFetchedPricesFromEveMetricsEventHandler {
 
     public interface Display extends AttachableDisplay {
 
@@ -87,61 +108,152 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
 
         HasText getErrorMessageLabel();
 
-        SuggestBox getBlueprintSuggestBox();
-
-        Button getSetButton();
-
-        Button getApplyButton();
-
-        Button getFetchEveCentralPricesButton();
-
-        Button getFetchEveMetricsPricesButton();
-
-        Button getCreateDirectLinkButton();
-
-        void createDirectLink();
-
-        void showBlueprintDetails(EditableCalculationItem editableCalculationItem);
-
-        void hideBlueprintDetails(EditableCalculationItem editableCalculationItem);
-
-        void hideDetailsTable(EditableCalculationItem editableCalculationItem);
-
-        EditableCalculation getEditableCalculation();
-
-        Map<String, EditableCalculationItem> getPathNodesStringToEditableCalculationItemMap();
-
-        Map<String, ComputableCalculationItem> getPathNodesStringToComputableCalculationItemMap();
-
-        Map<String, CalculationDto> getPathNodesStringToUsedCalculationMap();
-
-        Map<Long, EditableCalculationPriceSetItem> getTypeIdToEditableCalculationPriceSetItemMap();
-
-        Map<Long, CalculationPriceSetItemDto> getExistingTypeIdToCalculationPriceSetItemMap();
-
         void setNewCalculation(CalculationDto calculation);
 
-        List<String> addCalculationTreeNode(Long[] pathNodes, CalculationDto calculation);
+        List<String> useBlueprint(Long[] pathNodes, UsedBlueprintDto calculation);
 
-        List<String> addCalculationTreeNodes(Map<Long[], CalculationDto> pathNodesToCalculationMap);
+        void stopUsingBlueprint(String pathNodesString);
 
-        void excludeCalculationTreeNodeFromCalculation(Long[] pathNodes);
+        void reuseBlueprint(String pathNodesString);
 
-        void excludeCalculationTreeNodesFromCalculation(List<Long[]> pathNodesList);
+        List<String> useAllBlueprints(Map<Long[], UsedBlueprintDto> pathNodesToUsedBlueprintMap);
 
-        void includeCalculationTreeNodeInCalculation(Long[] pathNodes);
+        void stopUsingAllBlueprints();
 
-        void includeCalculationTreeNodesInCalculation(List<Long[]> pathNodesList);
+        void reuseAllBlueprints();
 
-        void changeMePeQuantity(Integer meLevel, Integer peLevel, Long quantity);
+        List<String> useSchematic(Long[] pathNodes, UsedSchematicDto schematic);
 
-        void changeMePe(Long[] pathNodes, Integer meLevel, Integer peLevel);
+        void stopUsingSchematics(String pathNodesString);
+
+        void reuseSchematics(String pathNodesString);
 
         void updatePrices();
 
         void updatePrices(Map<Long, BigDecimal> typeIdToPriceMap);
 
-        List<HandlerRegistration> getHandlerRegistrations();
+        void changeBlueprintMePeQuantity(Integer meLevel, Integer peLevel, Long quantity);
+
+        void changeCalculationItemMePe(Long[] pathNodes, Integer meLevel, Integer peLevel);
+
+        BlueprintInformationSectionDisplay getBlueprintInformationSectionDisplay();
+
+        CalculationItemTreeSectionDisplay getCalculationTreeSectionDisplay();
+
+        BlueprintItemTreeSectionDisplay getBlueprintUsageSectionDisplay();
+
+        PricesSectionDisplay getPricesSectionDisplay();
+
+        SkillsForCalculationSectionDisplay getSkillsForCalculationSectionDisplay();
+
+        DirectLinkSectionDisplay getDirectLinkSectionDisplay();
+
+    }
+
+    public interface BlueprintInformationSectionDisplay extends AttachableDisplay {
+
+        SuggestBox getBlueprintSuggestBox();
+
+        Button getSetButton();
+
+        void drawBlueprintInformation(CalculationDto calculation);
+
+        void cleanBlueprintInformation();
+
+        EditableBlueprintInformation getEditableBlueprintInformation();
+
+        ComputableBlueprintInformation getComputableBlueprintInformation();
+
+        List<HandlerRegistration> getBlueprintInformationSectionRegistrationHandlers();
+
+    }
+
+    public interface CalculationItemTreeSectionDisplay extends AttachableDisplay {
+
+        CalculationItemTree getCalculationItemTree();
+
+        void drawCalculationItemTree(CalculationItemTree calculationItemTree);
+
+        void cleanCalculationItemTree();
+
+        void showCalculationItemDetails(EditableCalculationItem editableCalculationItem);
+
+        void hideCalculationItemDetails(EditableCalculationItem editableCalculationItem);
+
+        void hideDetailsTable(EditableCalculationItem editableCalculationItem);
+
+        Map<String, EditableCalculationItem> getPathNodesStringToEditableCalculationItemMap();
+
+        Map<String, ComputableCalculationItem> getPathNodesStringToComputableCalculationItemMap();
+
+        List<String> getPathNodeStringsWithUsedBlueprint();
+
+        List<String> getPathNodeStringsWithUsedSchematic();
+
+        List<String> addCalculationItemTreeNodes(Map<Long[], UsedBlueprintDto> pathNodesToUsedBlueprintMap);
+
+        List<String> addCalculationItemTreeNodesForSchematic(Map<Long[], UsedSchematicDto> pathNodesToUsedSchematicMap);
+
+        void excludeCalculationItemTreeNodesFromCalculation(List<Long[]> pathNodesList);
+
+        void includeCalculationItemTreeNodesInCalculation(List<Long[]> pathNodesList);
+
+        List<HandlerRegistration> getCalculationItemTreeSectionRegistrationHandlers();
+
+    }
+
+    public interface BlueprintItemTreeSectionDisplay extends AttachableDisplay {
+
+        BlueprintItemTree getBlueprintItemTree();
+
+        void drawBlueprintItemTree(BlueprintItemTree blueprintItemTree);
+
+        void cleanBlueprintItemTree();
+
+    }
+
+    public interface PricesSectionDisplay extends AttachableDisplay {
+
+        Widget getPricesSectionSpinnerImage();
+
+        Button getFetchEveCentralPricesButton();
+
+        Button getFetchEveMetricsPricesButton();
+
+        void drawCalculationPriceSetItems(Collection<CalculationPriceItemDto> calculationPriceItems);
+
+        void cleanPrices();
+
+        void setRegions(List<RegionDto> regions);
+
+        void setPreferredRegion(RegionDto preferredRegion);
+
+        RegionListBox getPreferredRegionListBox();
+
+        void setPriceFetchOptions(List<PriceFetchOptionDto> priceFetchOptions);
+
+        void setPreferredPriceFetchOption(PriceFetchOptionDto preferredPriceFetchOption);
+
+        PriceFetchOptionListBox getPreferredPriceFetchOption();
+
+        Map<Long, BigDecimal> createTypeIdToPriceMap();
+
+        Map<Long, EditableCalculationPriceSetItem> getTypeIdToEditableCalculationPriceSetItemMap();
+
+        Map<Long, ComputableCalculationPriceSetItem> getTypeIdToComputableCalculationPriceSetItemMap();
+
+    }
+
+    public interface SkillsForCalculationSectionDisplay extends AttachableDisplay {
+
+    }
+
+    public interface DirectLinkSectionDisplay extends AttachableDisplay {
+
+        Button getCreateDirectLinkButton();
+
+        void createDirectLink();
+
     }
 
     private EventBus eventBus;
@@ -150,6 +262,12 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
     private EveManageConstants constants;
     private EveManageErrorConstants errorConstants;
     private Display display;
+    private BlueprintInformationSectionDisplay blueprintInformationSectionDisplay;
+    private CalculationItemTreeSectionDisplay calculationItemTreeSectionDisplay;
+    private BlueprintItemTreeSectionDisplay blueprintItemTreeSectionDisplay;
+    private PricesSectionDisplay pricesSectionDisplay;
+    private SkillsForCalculationSectionDisplay skillsForCalculationSectionDisplay;
+    private DirectLinkSectionDisplay directLinkSectionDisplay;
 
     private HasWidgets displayContainer;
     private List<HandlerRegistration> staticHandlerRegistrations;
@@ -163,6 +281,12 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
         this.constants = constants;
         this.errorConstants = errorConstants;
         this.display = display;
+        this.blueprintInformationSectionDisplay = display.getBlueprintInformationSectionDisplay();
+        this.calculationItemTreeSectionDisplay = display.getCalculationTreeSectionDisplay();
+        this.blueprintItemTreeSectionDisplay = display.getBlueprintUsageSectionDisplay();
+        this.pricesSectionDisplay = display.getPricesSectionDisplay();
+        this.skillsForCalculationSectionDisplay = display.getSkillsForCalculationSectionDisplay();
+        this.directLinkSectionDisplay = display.getDirectLinkSectionDisplay();
 
         this.staticHandlerRegistrations = new ArrayList<HandlerRegistration>();
         this.dynamicHandlerRegistrations = new ArrayList<HandlerRegistration>();
@@ -178,6 +302,9 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
         eventBus.addHandler(QuickCalculatorUsedAllBlueprintsEvent.TYPE, this);
         eventBus.addHandler(QuickCalculatorStoppedUsingAllBlueprintsEvent.TYPE, this);
         eventBus.addHandler(QuickCalculatorReusedAllBlueprintsEvent.TYPE, this);
+        eventBus.addHandler(QuickCalculatorUsedSchematicEvent.TYPE, this);
+        eventBus.addHandler(QuickCalculatorReusedSchematicEvent.TYPE, this);
+        eventBus.addHandler(QuickCalculatorStoppedUsingSchematicEvent.TYPE, this);
         eventBus.addHandler(QuickCalculatorFetchedPricesFromEveCentralEvent.TYPE, this);
         eventBus.addHandler(QuickCalculatorFetchedPricesFromEveMetricsEvent.TYPE, this);
     }
@@ -209,22 +336,31 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
         }
         display.getErrorMessageLabel().setText(errorText);
         hideSpinner();
+        hidePricesSectionSpinner();
     }
 
     @Override
     public void onQuickCalculatorTabFirstLoad(QuickCalculatorTabFirstLoadEvent event) {
+        pricesSectionDisplay.setRegions(event.getRegions());
+        pricesSectionDisplay.setPreferredRegion(event.getPreferredRegion());
+        pricesSectionDisplay.setPriceFetchOptions(event.getPriceFetchOptions());
+        pricesSectionDisplay.setPreferredPriceFetchOption(event.getPreferredPriceFetchOption());
         hideSpinner();
         enableButtons();
 
         processHistoryToken();
     }
 
+    // TODO this needs revamp
     private void processHistoryToken() {
         String historyToken = History.getToken();
         CalculationExpression calculationExpression = CalculationExpression.parseExpression(historyToken);
         if (historyToken.startsWith(constants.quickCalculatorToken()) && calculationExpression.isValid()) {
-            display.getBlueprintSuggestBox().getTextBox().setText(calculationExpression.getBlueprintTypeName().replace('+', ' '));
-            display.getSetButton().setEnabled(false);
+            eventBus.fireEvent(new QuickCalculatorTabErrorEvent(trackingManager, constants, "directLinksTemporaryDisabled"));
+            /*SuggestBox blueprintSuggestBox = blueprintInformationSectionDisplay.getBlueprintSuggestBox();
+            final Button setButton = blueprintInformationSectionDisplay.getSetButton();
+            blueprintSuggestBox.getTextBox().setText(calculationExpression.getBlueprintTypeName().replace('+', ' '));
+            setButton.setEnabled(false);
             QuickCalculatorDirectSetAction action = new QuickCalculatorDirectSetAction();
             action.setCalculationExpression(calculationExpression);
             action.setHistoryToken(historyToken);
@@ -232,17 +368,16 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
             rpcService.execute(action, new QuickCalculatorTabActionCallback<QuickCalculatorDirectSetActionResponse>(eventBus, trackingManager, constants) {
                 @Override
                 public void onSuccess(QuickCalculatorDirectSetActionResponse response) {
-                    display.getSetButton().setEnabled(true);
+                    setButton.setEnabled(true);
                     eventBus.fireEvent(new QuickCalculatorDirectSetEvent(trackingManager, constants, response, getExecutionDuration()));
                 }
 
                 @Override
                 public void onFailure(Throwable throwable) {
-                    display.getSetButton().setEnabled(true);
+                    setButton.setEnabled(true);
                     super.onFailure(throwable);
                 }
-            });
-
+            });*/
         }
     }
 
@@ -250,39 +385,39 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
     public void onQuickCalculatorSet(QuickCalculatorSetEvent event) {
         unbindDynamic();
         display.setNewCalculation(event.getCalculation());
-        display.getApplyButton().setEnabled(true);
-        display.getFetchEveCentralPricesButton().setEnabled(true);
-        display.getFetchEveMetricsPricesButton().setEnabled(true);
-        display.getCreateDirectLinkButton().setEnabled(true);
+        pricesSectionDisplay.getFetchEveCentralPricesButton().setEnabled(true);
+        pricesSectionDisplay.getFetchEveMetricsPricesButton().setEnabled(true);
+        pricesSectionDisplay.getPreferredRegionListBox().setEnabled(true);
+        pricesSectionDisplay.getPreferredPriceFetchOption().setEnabled(true);
         bindDynamic();
         hideSpinner();
     }
 
     @Override
     public void onQuickCalculatorDirectSet(QuickCalculatorDirectSetEvent event) {
-        unbindDynamic();
-        CalculationDto calculation = event.getCalculation();
+        /*unbindDynamic();
+        CalculationDto calculation = event.useBlueprint();
         CalculationExpression calculationExpression = event.getCalculationExpression();
         display.getExistingTypeIdToCalculationPriceSetItemMap().clear();
         display.getTypeIdToEditableCalculationPriceSetItemMap().clear();
         display.setNewCalculation(calculation);
 
-        List<String> pathNodeStringsWithBlueprint = display.addCalculationTreeNodes(event.getPathNodesToCalculationMap());
+        List<String> pathNodeStringsWithBlueprint = display.addCalculationItemTreeNodes(event.getPathNodesToUsedBlueprintMap());
         for (String pathNodesString : pathNodeStringsWithBlueprint) {
             EditableCalculationItem editableCalculationItem = display.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
             ComputableCalculationItem computableCalculationItem = display.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-            bindUseBlueprintImage(computableCalculationItem.getCalculationTreeNodeSummary(), editableCalculationItem.getBlueprintImage());
+            bindUseBlueprintImage(computableCalculationItem.getCalculationItemTreeNodeSummary(), editableCalculationItem.getBlueprintImage());
             bindApplyButton(editableCalculationItem, computableCalculationItem);
         }
         for (Map.Entry<String, EditableCalculationItem> mapEntry : display.getPathNodesStringToEditableCalculationItemMap().entrySet()) {
             EditableCalculationItem editableCalculationItem = mapEntry.getValue();
             OpaqueLoadableBlueprintImage blueprintImage = editableCalculationItem.getBlueprintImage();
-            if (blueprintImage != null && display.getPathNodesStringToUsedCalculationMap().containsKey(mapEntry.getKey())) {
+            if (blueprintImage != null && display.getPathNodeStringsWithUsedBlueprint().containsKey(mapEntry.getKey())) {
                 blueprintImage.removeOpacity();
             }
         }
 
-        display.changeMePeQuantity(calculation.getMaterialLevel(), calculation.getProductivityLevel(), calculationExpression.getQuantity());
+        display.changeBlueprintMePeQuantity(calculation.getMaterialLevel(), calculation.getProductivityLevel(), calculationExpression.getQuantity());
         Map<Long, String> priceSetItemTypeIdToPriceMap = calculationExpression.getPriceSetItemTypeIdToPriceMap();
         for (Map.Entry<Long, EditableCalculationPriceSetItem> entry : display.getTypeIdToEditableCalculationPriceSetItemMap().entrySet()) {
             Long typeID = entry.getKey();
@@ -299,97 +434,89 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
         display.getFetchEveMetricsPricesButton().setEnabled(true);
         display.getCreateDirectLinkButton().setEnabled(true);
         bindDynamic();
-        hideSpinner();
+        hideSpinner();*/
     }
 
     @Override
     public void onUsedBlueprint(QuickCalculatorUsedBlueprintEvent event) {
-        List<String> pathNodeStringsWithBlueprint = display.addCalculationTreeNode(event.getPathNodes(), event.getCalculation());
-        for (String pathNodesString : pathNodeStringsWithBlueprint) {
-            EditableCalculationItem editableCalculationItem = display.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
-            ComputableCalculationItem computableCalculationItem = display.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-            bindUseBlueprintImage(computableCalculationItem.getCalculationTreeNodeSummary(), editableCalculationItem.getBlueprintImage());
-            bindApplyButton(editableCalculationItem, computableCalculationItem);
+        List<String> pathNodesStringsWithBlueprintOrSchematic = display.useBlueprint(event.getPathNodes(), event.getUsedBlueprint());
+        for (String pathNodesString : pathNodesStringsWithBlueprintOrSchematic) {
+            EditableCalculationItem editableCalculationItem = calculationItemTreeSectionDisplay.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
+            ComputableCalculationItem computableCalculationItem = calculationItemTreeSectionDisplay.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
+            if (editableCalculationItem.getBlueprintImage() != null) {
+                bindUseBlueprintImage(computableCalculationItem.getCalculationItemTreeNodeSummary(), editableCalculationItem.getBlueprintImage());
+                bindApplyButton(editableCalculationItem, computableCalculationItem);
+            } else if (editableCalculationItem.getSchematicImage() != null) {
+                bindUseSchematicImage(computableCalculationItem.getCalculationItemTreeNodeSummary(), editableCalculationItem.getSchematicImage());
+            }
         }
     }
 
     @Override
     public void onStoppedUsingBlueprint(QuickCalculatorStoppedUsingBlueprintEvent event) {
-        EditableCalculationItem editableCalculationItem = display.getPathNodesStringToEditableCalculationItemMap().get(event.getPathNodesString());
-        display.hideBlueprintDetails(editableCalculationItem);
-        display.hideDetailsTable(editableCalculationItem);
-        display.excludeCalculationTreeNodeFromCalculation(event.getPathNodes());
+        display.stopUsingBlueprint(event.getPathNodesString());
     }
 
     @Override
     public void onReusedBlueprint(QuickCalculatorReusedBlueprintEvent event) {
-        String pathNodesString = event.getPathNodesString();
-        EditableCalculationItem editableCalculationItem = display.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
-        display.showBlueprintDetails(editableCalculationItem);
-        display.includeCalculationTreeNodeInCalculation(event.getPathNodes());
+        display.reuseBlueprint(event.getPathNodesString());
     }
 
     @Override
     public void onUsedAllBlueprints(QuickCalculatorUsedAllBlueprintsEvent event) {
-        for (Map.Entry<String, EditableCalculationItem> mapEntry : display.getPathNodesStringToEditableCalculationItemMap().entrySet()) {
-            OpaqueLoadableBlueprintImage blueprintImage = mapEntry.getValue().getBlueprintImage();
-            if (blueprintImage != null && !display.getPathNodesStringToUsedCalculationMap().containsKey(mapEntry.getKey())) {
-                blueprintImage.stopLoading();
-                blueprintImage.removeOpacity();
+        List<String> pathNodesStringsWithBlueprintOrSchematic = display.useAllBlueprints(event.getPathNodesToUsedBlueprintMap());
+        for (String pathNodesString : pathNodesStringsWithBlueprintOrSchematic) {
+            EditableCalculationItem editableCalculationItem = calculationItemTreeSectionDisplay.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
+            ComputableCalculationItem computableCalculationItem = calculationItemTreeSectionDisplay.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
+            if (editableCalculationItem.getBlueprintImage() != null) {
+                bindUseBlueprintImage(computableCalculationItem.getCalculationItemTreeNodeSummary(), editableCalculationItem.getBlueprintImage());
+                bindApplyButton(editableCalculationItem, computableCalculationItem);
+            } else if (editableCalculationItem.getSchematicImage() != null) {
+                bindUseSchematicImage(computableCalculationItem.getCalculationItemTreeNodeSummary(), editableCalculationItem.getSchematicImage());
             }
-        }
-        List<String> pathNodeStringsWithBlueprint = display.addCalculationTreeNodes(event.getPathNodesToCalculationMap());
-        for (String pathNodesString : pathNodeStringsWithBlueprint) {
-            EditableCalculationItem editableCalculationItem = display.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
-            ComputableCalculationItem computableCalculationItem = display.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-            bindUseBlueprintImage(computableCalculationItem.getCalculationTreeNodeSummary(), editableCalculationItem.getBlueprintImage());
-            bindApplyButton(editableCalculationItem, computableCalculationItem);
         }
     }
 
     @Override
     public void onStoppedUsingAllBlueprints(QuickCalculatorStoppedUsingAllBlueprintsEvent event) {
-        List<Long[]> pathNodesList = new ArrayList<Long[]>();
-        for (Map.Entry<String, EditableCalculationItem> mapEntry : display.getPathNodesStringToEditableCalculationItemMap().entrySet()) {
-            EditableCalculationItem editableCalculationItem = mapEntry.getValue();
-            ComputableCalculationItem computableCalculationItem = display.getPathNodesStringToComputableCalculationItemMap().get(mapEntry.getKey());
-            OpaqueLoadableBlueprintImage blueprintImage = editableCalculationItem.getBlueprintImage();
-            if (blueprintImage != null && !blueprintImage.hasOpacity()) {
-                blueprintImage.setOpacity();
-                display.hideBlueprintDetails(editableCalculationItem);
-                display.hideDetailsTable(editableCalculationItem);
-                pathNodesList.add(computableCalculationItem.getCalculationTreeNodeSummary().getPathNodes());
-            }
-        }
-        display.excludeCalculationTreeNodesFromCalculation(pathNodesList);
+        display.stopUsingAllBlueprints();
     }
 
     @Override
     public void onReusedAllBlueprints(QuickCalculatorReusedAllBlueprintsEvent event) {
-        List<Long[]> pathNodesList = new ArrayList<Long[]>();
-        for (Map.Entry<String, EditableCalculationItem> mapEntry : display.getPathNodesStringToEditableCalculationItemMap().entrySet()) {
-            EditableCalculationItem editableCalculationItem = mapEntry.getValue();
-            ComputableCalculationItem computableCalculationItem = display.getPathNodesStringToComputableCalculationItemMap().get(mapEntry.getKey());
-            OpaqueLoadableBlueprintImage blueprintImage = editableCalculationItem.getBlueprintImage();
-            if (blueprintImage != null && blueprintImage.hasOpacity()) {
-                blueprintImage.removeOpacity();
-                display.showBlueprintDetails(editableCalculationItem);
-                pathNodesList.add(computableCalculationItem.getCalculationTreeNodeSummary().getPathNodes());
-            }
+        display.reuseAllBlueprints();
+    }
+
+    @Override
+    public void onUsedSchematic(QuickCalculatorUsedSchematicEvent event) {
+        List<String> pathNodesStringsWithSchematic = display.useSchematic(event.getPathNodes(), event.getUsedSchematic());
+        for (String pathNodesString : pathNodesStringsWithSchematic) {
+            EditableCalculationItem editableCalculationItem = calculationItemTreeSectionDisplay.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
+            ComputableCalculationItem computableCalculationItem = calculationItemTreeSectionDisplay.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
+            bindUseSchematicImage(computableCalculationItem.getCalculationItemTreeNodeSummary(), editableCalculationItem.getSchematicImage());
         }
-        display.includeCalculationTreeNodesInCalculation(pathNodesList);
+    }
+
+    @Override
+    public void onReusedSchematic(QuickCalculatorReusedSchematicEvent event) {
+        display.reuseSchematics(event.getPathNodesString());
+    }
+
+    @Override
+    public void onStoppedUsingSchematic(QuickCalculatorStoppedUsingSchematicEvent event) {
+        display.stopUsingSchematics(event.getPathNodesString());
     }
 
     @Override
     public void onFetchedPricesFromEveCentral(QuickCalculatorFetchedPricesFromEveCentralEvent event) {
         display.updatePrices(event.getTypeIdToPriceMap());
-        hideSpinner();
+        hidePricesSectionSpinner();
     }
 
     @Override
     public void onFetchedPricesFromEveMetrics(QuickCalculatorFetchedPricesFromEveMetricsEvent event) {
         display.updatePrices(event.getTypeIdToPriceMap());
-        hideSpinner();
+        hidePricesSectionSpinner();
     }
 
     private void doQuickCalculatorTabTabFirstLoad() {
@@ -403,13 +530,13 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
     }
 
     private void bindStatic() {
-        final Button setButton = display.getSetButton();
+        final Button setButton = blueprintInformationSectionDisplay.getSetButton();
         staticHandlerRegistrations.add(setButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 setButton.setEnabled(false);
                 QuickCalculatorSetAction action = new QuickCalculatorSetAction();
-                action.setBlueprintName(display.getBlueprintSuggestBox().getText());
+                action.setBlueprintName(blueprintInformationSectionDisplay.getBlueprintSuggestBox().getText());
                 showSpinner();
                 rpcService.execute(action, new QuickCalculatorTabActionCallback<QuickCalculatorSetActionResponse>(eventBus, trackingManager, constants) {
                     @Override
@@ -426,20 +553,16 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
                 });
             }
         }));
-        staticHandlerRegistrations.add(display.getApplyButton().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                display.updatePrices();
-            }
-        }));
-        final Button fetchEveCentralPricesButton = display.getFetchEveCentralPricesButton();
+        final Button fetchEveCentralPricesButton = pricesSectionDisplay.getFetchEveCentralPricesButton();
         staticHandlerRegistrations.add(fetchEveCentralPricesButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 fetchEveCentralPricesButton.setEnabled(false);
                 QuickCalculatorFetchPricesFromEveCentralAction action = new QuickCalculatorFetchPricesFromEveCentralAction();
-                action.setTypeIDs(new ArrayList<Long>(display.getTypeIdToEditableCalculationPriceSetItemMap().keySet()));
-                showSpinner();
+                action.setTypeIDs(new ArrayList<Long>(pricesSectionDisplay.createTypeIdToPriceMap().keySet()));
+                action.setPreferredRegionID(pricesSectionDisplay.getPreferredRegionListBox().getRegionID());
+                action.setPreferredPriceFetchOption(pricesSectionDisplay.getPreferredPriceFetchOption().getPriceFetchOption());
+                showPricesSectionSpinner();
                 rpcService.execute(action, new QuickCalculatorTabActionCallback<QuickCalculatorFetchPricesFromEveCentralActionResponse>(eventBus, trackingManager, constants) {
                     @Override
                     public void onSuccess(QuickCalculatorFetchPricesFromEveCentralActionResponse response) {
@@ -455,14 +578,16 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
                 });
             }
         }));
-        final Button fetchEveMetricsPricesButton = display.getFetchEveMetricsPricesButton();
+        final Button fetchEveMetricsPricesButton = pricesSectionDisplay.getFetchEveMetricsPricesButton();
         staticHandlerRegistrations.add(fetchEveMetricsPricesButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 fetchEveMetricsPricesButton.setEnabled(false);
                 QuickCalculatorFetchPricesFromEveMetricsAction action = new QuickCalculatorFetchPricesFromEveMetricsAction();
-                action.setTypeIDs(new ArrayList<Long>(display.getTypeIdToEditableCalculationPriceSetItemMap().keySet()));
-                showSpinner();
+                action.setTypeIDs(new ArrayList<Long>(pricesSectionDisplay.createTypeIdToPriceMap().keySet()));
+                action.setPreferredRegionID(pricesSectionDisplay.getPreferredRegionListBox().getRegionID());
+                action.setPreferredPriceFetchOption(pricesSectionDisplay.getPreferredPriceFetchOption().getPriceFetchOption());
+                showPricesSectionSpinner();
                 rpcService.execute(action, new QuickCalculatorTabActionCallback<QuickCalculatorFetchPricesFromEveMetricsActionResponse>(eventBus, trackingManager, constants) {
                     @Override
                     public void onSuccess(QuickCalculatorFetchPricesFromEveMetricsActionResponse response) {
@@ -478,39 +603,50 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
                 });
             }
         }));
-        staticHandlerRegistrations.add(display.getCreateDirectLinkButton().addClickHandler(new ClickHandler() {
+        staticHandlerRegistrations.add(directLinkSectionDisplay.getCreateDirectLinkButton().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                display.createDirectLink();
+                directLinkSectionDisplay.createDirectLink();
             }
         }));
     }
 
     private void bindDynamic() {
-        bindApplyButton(display.getEditableCalculation());
-        bindUseAllBlueprintsImage(display.getEditableCalculation().getUseAllBlueprintsImage());
-        for (Map.Entry<String, EditableCalculationItem> mapEntry : display.getPathNodesStringToEditableCalculationItemMap().entrySet()) {
+        bindApplyButton(blueprintInformationSectionDisplay.getEditableBlueprintInformation());
+        bindUseAllBlueprintsImage(blueprintInformationSectionDisplay.getEditableBlueprintInformation().getUseAllBlueprintsImage());
+        for (Map.Entry<String, EditableCalculationItem> mapEntry : calculationItemTreeSectionDisplay.getPathNodesStringToEditableCalculationItemMap().entrySet()) {
             String pathNodesString = mapEntry.getKey();
             EditableCalculationItem editableCalculationItem = mapEntry.getValue();
+            ComputableCalculationItem computableCalculationItem = calculationItemTreeSectionDisplay.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
             if (editableCalculationItem.getBlueprintImage() != null) {
-                ComputableCalculationItem computableCalculationItem = display.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-                bindUseBlueprintImage(computableCalculationItem.getCalculationTreeNodeSummary(), editableCalculationItem.getBlueprintImage());
+                bindUseBlueprintImage(computableCalculationItem.getCalculationItemTreeNodeSummary(), editableCalculationItem.getBlueprintImage());
                 bindApplyButton(editableCalculationItem, computableCalculationItem);
+            } else if (editableCalculationItem.getSchematicImage() != null) {
+                bindUseSchematicImage(computableCalculationItem.getCalculationItemTreeNodeSummary(), editableCalculationItem.getSchematicImage());
             }
         }
-        for (EditableCalculationPriceSetItem editableCalculationPriceSetItem : display.getTypeIdToEditableCalculationPriceSetItemMap().values()) {
-            dynamicHandlerRegistrations.addAll(editableCalculationPriceSetItem.getPriceTextBox().getHandlerRegistrations());
+        for (EditableCalculationPriceSetItem editableCalculationPriceSetItem : pricesSectionDisplay.getTypeIdToEditableCalculationPriceSetItemMap().values()) {
+            final PriceTextBox priceTextBox = editableCalculationPriceSetItem.getPriceTextBox();
+            ChangeHandler priceChangeHandler = new ChangeHandler() {
+                @Override
+                public void onChange(ChangeEvent event) {
+                    priceTextBox.setPrice(priceTextBox.getText());
+                    display.updatePrices();
+                }
+            };
+            dynamicHandlerRegistrations.add(priceTextBox.addChangeHandler(priceChangeHandler));
+            dynamicHandlerRegistrations.addAll(priceTextBox.getHandlerRegistrations());
         }
     }
 
-    private void bindApplyButton(final EditableCalculation editableCalculation) {
-        final TextBox meTextBox = editableCalculation.getMeTextBox();
-        final TextBox peTextBox = editableCalculation.getPeTextBox();
-        final TextBox quantityTextBox = editableCalculation.getQuantityTextBox();
-        dynamicHandlerRegistrations.add(editableCalculation.getApplyButton().addClickHandler(new ClickHandler() {
+    private void bindApplyButton(final EditableBlueprintInformation editableBlueprintInformation) {
+        final TextBox meTextBox = editableBlueprintInformation.getMeTextBox();
+        final TextBox peTextBox = editableBlueprintInformation.getPeTextBox();
+        final TextBox quantityTextBox = editableBlueprintInformation.getQuantityTextBox();
+        dynamicHandlerRegistrations.add(editableBlueprintInformation.getApplyButton().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                display.changeMePeQuantity(Integer.valueOf(meTextBox.getText()), Integer.valueOf(peTextBox.getText()), Long.valueOf(quantityTextBox.getText()));
+                display.changeBlueprintMePeQuantity(Integer.valueOf(meTextBox.getText()), Integer.valueOf(peTextBox.getText()), Long.valueOf(quantityTextBox.getText()));
             }
         }));
         dynamicHandlerRegistrations.add(meTextBox.addChangeHandler(new OnlyDigitsAndMinusChangeHandler(meTextBox, 3)));
@@ -526,7 +662,7 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
             public void onClick(ClickEvent event) {
                 editableCalculationItem.getMeLabel().setText(meTextBox.getText());
                 editableCalculationItem.getPeLabel().setText(peTextBox.getText());
-                display.changeMePe(computableCalculationItem.getCalculationTreeNodeSummary().getPathNodes(), Integer.valueOf(meTextBox.getText()), Integer.valueOf(peTextBox.getText()));
+                display.changeCalculationItemMePe(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes(), Integer.valueOf(meTextBox.getText()), Integer.valueOf(peTextBox.getText()));
             }
         }));
         dynamicHandlerRegistrations.add(meTextBox.addChangeHandler(new OnlyDigitsAndMinusChangeHandler(meTextBox, 3)));
@@ -539,13 +675,13 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
             public void onClick(ClickEvent event) {
                 if (useAllBlueprintsImage.hasOpacity()) {
                     Map<Long[], String> pathNodesToBlueprintNameMap = new HashMap<Long[], String>();
-                    for (Map.Entry<String, ComputableCalculationItem> mapEntry : display.getPathNodesStringToComputableCalculationItemMap().entrySet()) {
+                    for (Map.Entry<String, ComputableCalculationItem> mapEntry : calculationItemTreeSectionDisplay.getPathNodesStringToComputableCalculationItemMap().entrySet()) {
                         String pathNodesString = mapEntry.getKey();
-                        EditableCalculationItem editableCalculationItem = display.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
+                        EditableCalculationItem editableCalculationItem = calculationItemTreeSectionDisplay.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
                         OpaqueLoadableBlueprintImage blueprintImage = editableCalculationItem.getBlueprintImage();
-                        if (blueprintImage != null && !display.getPathNodesStringToUsedCalculationMap().containsKey(pathNodesString)) {
-                            CalculationTreeNodeSummary calculationTreeNodeSummary = mapEntry.getValue().getCalculationTreeNodeSummary();
-                            pathNodesToBlueprintNameMap.put(calculationTreeNodeSummary.getPathNodes(), calculationTreeNodeSummary.getItemTypeName() + " Blueprint");
+                        if (blueprintImage != null && !calculationItemTreeSectionDisplay.getPathNodeStringsWithUsedBlueprint().contains(pathNodesString)) {
+                            CalculationItemTreeNodeSummary calculationItemTreeNodeSummary = mapEntry.getValue().getCalculationItemTreeNodeSummary();
+                            pathNodesToBlueprintNameMap.put(calculationItemTreeNodeSummary.getPathNodes(), calculationItemTreeNodeSummary.getItemTypeName() + " Blueprint");
                             blueprintImage.removeOpacity();
                             blueprintImage.startLoading();
                         }
@@ -592,13 +728,13 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
         }));
     }
 
-    private void bindUseBlueprintImage(final CalculationTreeNodeSummary calculationTreeNodeSummary, final OpaqueLoadableBlueprintImage useBlueprintImage) {
+    private void bindUseBlueprintImage(final CalculationItemTreeNodeSummary calculationItemTreeNodeSummary, final OpaqueLoadableBlueprintImage useBlueprintImage) {
         dynamicHandlerRegistrations.add(useBlueprintImage.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 if (useBlueprintImage.hasOpacity()) {
-                    String pathNodesString = calculationTreeNodeSummary.getPathNodesString();
-                    if (display.getPathNodesStringToUsedCalculationMap().containsKey(pathNodesString)) {
+                    String pathNodesString = calculationItemTreeNodeSummary.getPathNodesString();
+                    if (calculationItemTreeSectionDisplay.getPathNodeStringsWithUsedBlueprint().contains(pathNodesString)) {
                         reuseBlueprint();
                     } else {
                         useBlueprintFirstTime();
@@ -610,8 +746,8 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
 
             private void useBlueprintFirstTime() {
                 QuickCalculatorUseBlueprintAction action = new QuickCalculatorUseBlueprintAction();
-                action.setPathNodes(calculationTreeNodeSummary.getPathNodes());
-                action.setBlueprintName(calculationTreeNodeSummary.getItemTypeName() + " Blueprint");
+                action.setPathNodes(calculationItemTreeNodeSummary.getPathNodes());
+                action.setBlueprintName(calculationItemTreeNodeSummary.getItemTypeName() + " Blueprint");
                 useBlueprintImage.removeOpacity();
                 useBlueprintImage.startLoading();
                 rpcService.execute(action, new QuickCalculatorTabActionCallback<QuickCalculatorUseBlueprintActionResponse>(eventBus, trackingManager, constants) {
@@ -631,12 +767,61 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
 
             private void stopUsingBlueprint() {
                 useBlueprintImage.setOpacity();
-                eventBus.fireEvent(new QuickCalculatorStoppedUsingBlueprintEvent(trackingManager, constants, calculationTreeNodeSummary.getPathNodes(), calculationTreeNodeSummary.getPathNodesString()));
+                eventBus.fireEvent(new QuickCalculatorStoppedUsingBlueprintEvent(trackingManager, constants, calculationItemTreeNodeSummary.getPathNodes(), calculationItemTreeNodeSummary.getPathNodesString()));
             }
 
             private void reuseBlueprint() {
                 useBlueprintImage.removeOpacity();
-                eventBus.fireEvent(new QuickCalculatorReusedBlueprintEvent(trackingManager, constants, calculationTreeNodeSummary.getPathNodes(), calculationTreeNodeSummary.getPathNodesString()));
+                eventBus.fireEvent(new QuickCalculatorReusedBlueprintEvent(trackingManager, constants, calculationItemTreeNodeSummary.getPathNodes(), calculationItemTreeNodeSummary.getPathNodesString()));
+            }
+        }));
+    }
+
+    private void bindUseSchematicImage(final CalculationItemTreeNodeSummary calculationItemTreeNodeSummary, final OpaqueLoadableSchematicImage useSchematicImage) {
+        dynamicHandlerRegistrations.add(useSchematicImage.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (useSchematicImage.hasOpacity()) {
+                    String pathNodesString = calculationItemTreeNodeSummary.getPathNodesString();
+                    if (calculationItemTreeSectionDisplay.getPathNodeStringsWithUsedSchematic().contains(pathNodesString)) {
+                        reuseSchematic();
+                    } else {
+                        useSchematicFirstTime();
+                    }
+                } else {
+                    stopUsingSchematic();
+                }
+            }
+
+            private void useSchematicFirstTime() {
+                QuickCalculatorUseSchematicAction action = new QuickCalculatorUseSchematicAction();
+                action.setPathNodes(calculationItemTreeNodeSummary.getPathNodes());
+                action.setSchematicName(calculationItemTreeNodeSummary.getItemTypeName());
+                useSchematicImage.removeOpacity();
+                useSchematicImage.startLoading();
+                rpcService.execute(action, new QuickCalculatorTabActionCallback<QuickCalculatorUseSchematicActionResponse>(eventBus, trackingManager, constants) {
+                    @Override
+                    public void onSuccess(QuickCalculatorUseSchematicActionResponse response) {
+                        useSchematicImage.stopLoading();
+                        eventBus.fireEvent(new QuickCalculatorUsedSchematicEvent(trackingManager, constants, response, getExecutionDuration()));
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        useSchematicImage.stopLoading();
+                        super.onFailure(throwable);
+                    }
+                });
+            }
+
+            private void stopUsingSchematic() {
+                useSchematicImage.setOpacity();
+                eventBus.fireEvent(new QuickCalculatorStoppedUsingSchematicEvent(trackingManager, constants, calculationItemTreeNodeSummary.getPathNodes(), calculationItemTreeNodeSummary.getPathNodesString()));
+            }
+
+            private void reuseSchematic() {
+                useSchematicImage.removeOpacity();
+                eventBus.fireEvent(new QuickCalculatorReusedSchematicEvent(trackingManager, constants, calculationItemTreeNodeSummary.getPathNodes(), calculationItemTreeNodeSummary.getPathNodesString()));
             }
         }));
     }
@@ -647,11 +832,11 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
         }
         dynamicHandlerRegistrations.clear();
 
-        List<HandlerRegistration> displayHandlerRegistrations = display.getHandlerRegistrations();
-        for (HandlerRegistration handlerRegistration : displayHandlerRegistrations) {
+        List<HandlerRegistration> calculationItemTreeSectionRegistrationHandlers = calculationItemTreeSectionDisplay.getCalculationItemTreeSectionRegistrationHandlers();
+        for (HandlerRegistration handlerRegistration : calculationItemTreeSectionRegistrationHandlers) {
             handlerRegistration.removeHandler();
         }
-        displayHandlerRegistrations.clear();
+        calculationItemTreeSectionRegistrationHandlers.clear();
     }
 
     private void showSpinner() {
@@ -664,8 +849,18 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
         display.getSpinnerImage().setVisible(false);
     }
 
+    private void showPricesSectionSpinner() {
+        display.getErrorContainer().setVisible(false);
+        display.getErrorMessageLabel().setText("");
+        pricesSectionDisplay.getPricesSectionSpinnerImage().setVisible(true);
+    }
+
+    private void hidePricesSectionSpinner() {
+        pricesSectionDisplay.getPricesSectionSpinnerImage().setVisible(false);
+    }
+
     private void enableButtons() {
-        display.getSetButton().setEnabled(true);
-        display.getBlueprintSuggestBox().getTextBox().setEnabled(true);
+        blueprintInformationSectionDisplay.getSetButton().setEnabled(true);
+        blueprintInformationSectionDisplay.getBlueprintSuggestBox().getTextBox().setEnabled(true);
     }
 }

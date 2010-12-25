@@ -14,7 +14,7 @@ public class QuickCalculatorSetActionRunnerImpl implements QuickCalculatorSetAct
 
     @Override
     public QuickCalculatorSetActionResponse execute(QuickCalculatorSetAction action) throws Exception {
-        CalculationDto calculationDto = clientFacade.getQuickCalculation(action.getBlueprintName());
+        CalculationDto calculationDto = clientFacade.getNewCalculation(action.getBlueprintName());
         QuickCalculatorSetActionResponse response = new QuickCalculatorSetActionResponse();
         response.setCalculation(calculationDto);
         return response;

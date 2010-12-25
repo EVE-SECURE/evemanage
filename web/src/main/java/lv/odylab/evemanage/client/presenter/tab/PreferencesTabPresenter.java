@@ -4,7 +4,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Button;
@@ -41,6 +40,8 @@ import lv.odylab.evemanage.client.event.preferences.PreferencesTabFirstLoadEvent
 import lv.odylab.evemanage.client.presenter.AttachableDisplay;
 import lv.odylab.evemanage.client.presenter.Presenter;
 import lv.odylab.evemanage.client.presenter.tab.preferences.EditablePreferenceSkillLevel;
+import lv.odylab.evemanage.client.presenter.tab.preferences.EditablePreferencesApiKey;
+import lv.odylab.evemanage.client.presenter.tab.preferences.EditablePreferencesCharacter;
 import lv.odylab.evemanage.client.rpc.EveManageRemoteServiceAsync;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesAddApiKeyAction;
 import lv.odylab.evemanage.client.rpc.action.preferences.PreferencesAddApiKeyActionResponse;
@@ -96,9 +97,7 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
 
         void setMainCharacter(CharacterDto mainCharacter);
 
-        Map<String, Image> getCharacterImageMap();
-
-        Map<CharacterDto, Button> getCharacterDeleteButtonMap();
+        Map<CharacterDto, EditablePreferencesCharacter> getCharacterToEditablePreferencesCharacterMap();
 
         Long getSelectedNewCharacterID();
 
@@ -114,7 +113,7 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
 
         void setApiKeys(List<ApiKeyDto> apiKeys);
 
-        Map<ApiKeyDto, Button> getApiKeyDeleteButtonMap();
+        Map<ApiKeyDto, EditablePreferencesApiKey> getApiKeyToEditablePreferencesApiKeyMap();
 
         TextBox getNewApiKeyUserIdTextBox();
 
@@ -445,9 +444,12 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
     }
 
     private void bindDynamic() {
-        Map<String, Image> characterImageMap = display.getCharacterImageMap();
-        for (final String characterName : characterImageMap.keySet()) {
-            HasClickHandlers characterImage = characterImageMap.get(characterName);
+        Map<CharacterDto, EditablePreferencesCharacter> characterToEditablePreferencesCharacterMap = display.getCharacterToEditablePreferencesCharacterMap();
+        for (Map.Entry<CharacterDto, EditablePreferencesCharacter> mapEntry : characterToEditablePreferencesCharacterMap.entrySet()) {
+            CharacterDto character = mapEntry.getKey();
+            EditablePreferencesCharacter editablePreferencesCharacter = mapEntry.getValue();
+            final String characterName = character.getName();
+            Image characterImage = editablePreferencesCharacter.getCharacterImage();
             dynamicHandlerRegistrations.add(characterImage.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent clickEvent) {
@@ -462,10 +464,29 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
                     });
                 }
             }));
+            final Long characterID = character.getId();
+            final Button deleteButton = editablePreferencesCharacter.getDeleteButton();
+            dynamicHandlerRegistrations.add(deleteButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent clickEvent) {
+                    deleteButton.setEnabled(false);
+                    PreferencesDeleteCharacterAction action = new PreferencesDeleteCharacterAction();
+                    action.setCharacterID(characterID);
+                    showSpinner();
+                    rpcService.execute(action, new PreferencesTabActionCallback<PreferencesDeleteCharacterActionResponse>(eventBus, trackingManager, constants) {
+                        @Override
+                        public void onSuccess(PreferencesDeleteCharacterActionResponse response) {
+                            eventBus.fireEvent(new PreferencesCharacterDeletedEvent(trackingManager, constants, response, getExecutionDuration()));
+                        }
+                    });
+                }
+            }));
         }
-        Map<ApiKeyDto, Button> apiKeyRemoveButtonMap = display.getApiKeyDeleteButtonMap();
-        for (final ApiKeyDto apiKey : apiKeyRemoveButtonMap.keySet()) {
-            final Button deleteButton = apiKeyRemoveButtonMap.get(apiKey);
+        Map<ApiKeyDto, EditablePreferencesApiKey> apiKeyDtoEditablePreferencesApiKeyMap = display.getApiKeyToEditablePreferencesApiKeyMap();
+        for (Map.Entry<ApiKeyDto, EditablePreferencesApiKey> mapEntry : apiKeyDtoEditablePreferencesApiKeyMap.entrySet()) {
+            final ApiKeyDto apiKey = mapEntry.getKey();
+            EditablePreferencesApiKey editablePreferencesApiKey = mapEntry.getValue();
+            final Button deleteButton = editablePreferencesApiKey.getDeleteButton();
             dynamicHandlerRegistrations.add(deleteButton.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent clickEvent) {
@@ -477,25 +498,6 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
                         @Override
                         public void onSuccess(PreferencesDeleteApiKeyActionResponse response) {
                             eventBus.fireEvent(new PreferencesApiKeyDeletedEvent(trackingManager, constants, response, getExecutionDuration()));
-                        }
-                    });
-                }
-            }));
-        }
-        Map<CharacterDto, Button> characterDeleteButtonMap = display.getCharacterDeleteButtonMap();
-        for (final CharacterDto character : characterDeleteButtonMap.keySet()) {
-            final Button deleteButton = characterDeleteButtonMap.get(character);
-            dynamicHandlerRegistrations.add(deleteButton.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent clickEvent) {
-                    deleteButton.setEnabled(false);
-                    PreferencesDeleteCharacterAction action = new PreferencesDeleteCharacterAction();
-                    action.setCharacterID(character.getId());
-                    showSpinner();
-                    rpcService.execute(action, new PreferencesTabActionCallback<PreferencesDeleteCharacterActionResponse>(eventBus, trackingManager, constants) {
-                        @Override
-                        public void onSuccess(PreferencesDeleteCharacterActionResponse response) {
-                            eventBus.fireEvent(new PreferencesCharacterDeletedEvent(trackingManager, constants, response, getExecutionDuration()));
                         }
                     });
                 }

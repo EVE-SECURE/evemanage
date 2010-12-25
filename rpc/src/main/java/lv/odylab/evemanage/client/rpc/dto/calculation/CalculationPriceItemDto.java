@@ -3,7 +3,7 @@ package lv.odylab.evemanage.client.rpc.dto.calculation;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class CalculationPriceSetItemDto implements Serializable {
+public class CalculationPriceItemDto implements Serializable {
     private Long itemTypeID;
     private Long itemCategoryID;
     private String itemTypeName;

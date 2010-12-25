@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import lv.odylab.evemanage.application.EveManageClientFacade;
 import lv.odylab.evemanage.application.exception.validation.NoItemsException;
 import lv.odylab.evemanage.client.rpc.ErrorCode;
+import lv.odylab.evemanage.domain.user.PriceFetchOption;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,7 +24,9 @@ public class QuickCalculatorFetchPricesFromEveMetricsActionRunnerImpl implements
         if (typeIDs.size() == 0) {
             throw new NoItemsException(ErrorCode.NO_ITEMS);
         }
-        Map<Long, BigDecimal> typeIdToPriceMap = clientFacade.fetchPricesFromEveMetricsForTypeIDs(typeIDs);
+        Long regionID = action.getPreferredRegionID();
+        PriceFetchOption priceFetchOption = PriceFetchOption.valueOf(action.getPreferredPriceFetchOption());
+        Map<Long, BigDecimal> typeIdToPriceMap = clientFacade.fetchPricesFromEveMetricsForTypeIDs(typeIDs, regionID, priceFetchOption);
 
         QuickCalculatorFetchPricesFromEveMetricsActionResponse response = new QuickCalculatorFetchPricesFromEveMetricsActionResponse();
         response.setTypeIdToPriceMap(typeIdToPriceMap);

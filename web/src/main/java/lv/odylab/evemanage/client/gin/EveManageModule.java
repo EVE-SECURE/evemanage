@@ -22,7 +22,7 @@ import lv.odylab.evemanage.client.presenter.tab.PreferencesTabPresenter;
 import lv.odylab.evemanage.client.presenter.tab.PriceSetTabPresenter;
 import lv.odylab.evemanage.client.presenter.tab.QuickCalculatorTabPresenter;
 import lv.odylab.evemanage.client.presenter.tab.blueprint.BlueprintDetailsPresenter;
-import lv.odylab.evemanage.client.presenter.tab.calculator.PricingProcessor;
+import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationProcessor;
 import lv.odylab.evemanage.client.rpc.EveCalculator;
 import lv.odylab.evemanage.client.rpc.EveManageRemoteServiceAsync;
 import lv.odylab.evemanage.client.tracking.GoogleAnalyticsTrackingManagerImpl;
@@ -54,7 +54,7 @@ public class EveManageModule extends AbstractGinModule {
         bind(CcpJsMessages.class).in(Singleton.class);
         bind(EveImageUrlProvider.class).in(Singleton.class);
         bind(EveCalculator.class).in(Singleton.class);
-        bind(PricingProcessor.class).in(Singleton.class);
+        bind(CalculationProcessor.class).in(Singleton.class);
 
         bind(LoginPresenter.Display.class).to(LoginView.class);
         bind(ContentPresenter.Display.class).to(ContentView.class);
