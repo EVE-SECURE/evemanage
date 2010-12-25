@@ -12,7 +12,9 @@ public class CalculationItem implements Serializable {
     private String itemTypeName;
     private String itemTypeIcon;
     private Long quantity;
+    private String quantityMultiplier;
     private Long parentQuantity;
+    private String parentQuantityMultiplier;
     private Long perfectQuantity;
     private Integer wasteFactor;
     private String damagePerJob;
@@ -68,12 +70,28 @@ public class CalculationItem implements Serializable {
         this.quantity = quantity;
     }
 
+    public String getQuantityMultiplier() {
+        return quantityMultiplier;
+    }
+
+    public void setQuantityMultiplier(String quantityMultiplier) {
+        this.quantityMultiplier = quantityMultiplier;
+    }
+
     public Long getParentQuantity() {
         return parentQuantity;
     }
 
     public void setParentQuantity(Long parentQuantity) {
         this.parentQuantity = parentQuantity;
+    }
+
+    public String getParentQuantityMultiplier() {
+        return parentQuantityMultiplier;
+    }
+
+    public void setParentQuantityMultiplier(String parentQuantityMultiplier) {
+        this.parentQuantityMultiplier = parentQuantityMultiplier;
     }
 
     public Long getPerfectQuantity() {

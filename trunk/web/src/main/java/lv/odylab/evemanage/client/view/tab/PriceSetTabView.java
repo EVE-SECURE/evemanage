@@ -507,11 +507,11 @@ public class PriceSetTabView implements PriceSetTabPresenter.Display {
         priceSetItemsTable.setWidget(index, 2, priceTextBox);
         Button deleteButton = new Button(messages.delete());
         currentPriceSetItemDeleteButtons.put(priceSetItem, deleteButton);
-        Image eveCentralImage = new Image(resources.eveCentralIcon16());
+        Image eveCentralImage = new Image(resources.eveCentralIcon());
         priceSetItemsTable.setWidget(index, 3, deleteButton);
         eveCentralImage.setTitle(messages.eveCentralQuicklook());
         priceSetItemsTable.setWidget(index, 4, new EveCentralQuicklookLink(constants, urlMessages, eveCentralImage, itemTypeID));
-        Image eveMetricsImage = new Image(resources.eveMetricsIcon16());
+        Image eveMetricsImage = new Image(resources.eveMetricsIcon());
         eveMetricsImage.setTitle(messages.eveMetricsItemPrice());
         priceSetItemsTable.setWidget(index, 5, new EveMetricsItemPriceLink(constants, urlMessages, eveMetricsImage, itemCategoryID, itemTypeID));
 

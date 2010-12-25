@@ -1,11 +1,11 @@
 package lv.odylab.evemanage.client.rpc.action.quickcalculator;
 
 import lv.odylab.evemanage.client.rpc.action.Response;
-import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 
 public class QuickCalculatorUseBlueprintActionResponse implements Response {
     private Long[] pathNodes;
-    private CalculationDto calculation;
+    private UsedBlueprintDto usedBlueprint;
 
     public Long[] getPathNodes() {
         return pathNodes;
@@ -15,11 +15,11 @@ public class QuickCalculatorUseBlueprintActionResponse implements Response {
         this.pathNodes = pathNodes;
     }
 
-    public CalculationDto getCalculation() {
-        return calculation;
+    public UsedBlueprintDto getUsedBlueprint() {
+        return usedBlueprint;
     }
 
-    public void setCalculation(CalculationDto calculation) {
-        this.calculation = calculation;
+    public void setUsedBlueprint(UsedBlueprintDto usedBlueprint) {
+        this.usedBlueprint = usedBlueprint;
     }
 }

@@ -1,4 +1,4 @@
-package lv.odylab.evemanage.client.presenter.tab.calculator;
+package lv.odylab.evemanage.client.presenter.tab.quickcalculator;
 
 import lv.odylab.evemanage.client.widget.PriceTextBox;
 

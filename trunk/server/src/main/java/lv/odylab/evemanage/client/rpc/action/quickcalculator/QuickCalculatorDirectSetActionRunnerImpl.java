@@ -2,13 +2,8 @@ package lv.odylab.evemanage.client.rpc.action.quickcalculator;
 
 import com.google.inject.Inject;
 import lv.odylab.evemanage.application.EveManageClientFacade;
-import lv.odylab.evemanage.client.rpc.CalculationExpression;
-import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
+@Deprecated
 public class QuickCalculatorDirectSetActionRunnerImpl implements QuickCalculatorDirectSetActionRunner {
     private final EveManageClientFacade clientFacade;
 
@@ -19,7 +14,7 @@ public class QuickCalculatorDirectSetActionRunnerImpl implements QuickCalculator
 
     @Override
     public QuickCalculatorDirectSetActionResponse execute(QuickCalculatorDirectSetAction action) throws Exception {
-        CalculationExpression calculationExpression = action.getCalculationExpression();
+        /*CalculationExpression calculationExpression = action.getCalculationExpression();
         CalculationDto calculationDto = clientFacade.getQuickCalculationForExpression(calculationExpression);
 
         Map<Long[], CalculationDto> pathNodesToCalculationDtoMap = new TreeMap<Long[], CalculationDto>(new LongArrayComparator());
@@ -34,7 +29,7 @@ public class QuickCalculatorDirectSetActionRunnerImpl implements QuickCalculator
                 String pathNodeAsString = pathNodesAsStringArray[i];
                 pathNodes[i + 1] = Long.valueOf(pathNodeAsString);
             }
-            CalculationDto calculationDtoForNode = clientFacade.getQuickCalculation(pathNodes, pathNodes[pathNodes.length - 1]);
+            CalculationDto calculationDtoForNode = clientFacade.useBlueprint(pathNodes, pathNodes[pathNodes.length - 1]);
             calculationDtoForNode.setMaterialLevel(meLevel);
             calculationDtoForNode.setProductivityLevel(peLevel);
             pathNodesToCalculationDtoMap.put(pathNodes, calculationDtoForNode);
@@ -42,8 +37,9 @@ public class QuickCalculatorDirectSetActionRunnerImpl implements QuickCalculator
 
         QuickCalculatorDirectSetActionResponse response = new QuickCalculatorDirectSetActionResponse();
         response.setCalculationExpression(calculationExpression);
-        response.setCalculation(calculationDto);
-        response.setPathNodesToCalculationMap(new LinkedHashMap<Long[], CalculationDto>(pathNodesToCalculationDtoMap));
-        return response;
+        response.setUsedBlueprint(calculationDto);
+        response.setPathNodesToUsedBlueprintMap(new LinkedHashMap<Long[], CalculationDto>(pathNodesToCalculationDtoMap));
+        return response;*/
+        return null;
     }
 }

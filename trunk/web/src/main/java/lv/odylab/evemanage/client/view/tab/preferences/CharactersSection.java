@@ -18,6 +18,7 @@ import lv.odylab.evemanage.client.EveManageMessages;
 import lv.odylab.evemanage.client.EveManageResources;
 import lv.odylab.evemanage.client.EveManageUrlMessages;
 import lv.odylab.evemanage.client.presenter.tab.PreferencesTabPresenter;
+import lv.odylab.evemanage.client.presenter.tab.preferences.EditablePreferencesCharacter;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.widget.EveAllianceInfoLink;
@@ -43,8 +44,7 @@ public class CharactersSection implements PreferencesTabPresenter.CharactersSect
     private Button addNewCharacterButton;
     private Label hintCharactersAreNeededLabel;
     private Label hintSameSharingLevelLabel;
-    private Map<CharacterDto, Button> characterDeleteButtonMap;
-    private Map<String, Image> characterImageMap;
+    private Map<CharacterDto, EditablePreferencesCharacter> characterToEditablePreferencesCharacterMap;
 
     @Inject
     public CharactersSection(EveManageConstants constants, EveManageResources resources, EveManageMessages messages, EveManageUrlMessages urlMessages, CcpJsMessages ccpJsMessages) {
@@ -69,8 +69,7 @@ public class CharactersSection implements PreferencesTabPresenter.CharactersSect
         hintSameSharingLevelLabel = new Label(messages.hintSameSharingLevel() + ".");
         hintSameSharingLevelLabel.addStyleName(resources.css().hintLabel());
 
-        characterDeleteButtonMap = new HashMap<CharacterDto, Button>();
-        characterImageMap = new HashMap<String, Image>();
+        characterToEditablePreferencesCharacterMap = new HashMap<CharacterDto, EditablePreferencesCharacter>();
     }
 
     @Override
@@ -78,7 +77,6 @@ public class CharactersSection implements PreferencesTabPresenter.CharactersSect
         container.add(charactersHeadingLabel);
         charactersFlexTable = new FlexTable();
         container.add(charactersFlexTable);
-
         newCharacterFlexTable.setWidget(0, 0, addCharacterLabel);
         newCharacterFlexTable.setWidget(0, 1, newCharacterListBox);
         newCharacterFlexTable.setWidget(0, 2, addNewCharacterButton);
@@ -89,7 +87,7 @@ public class CharactersSection implements PreferencesTabPresenter.CharactersSect
 
     @Override
     public void setCharacters(List<CharacterDto> characters) {
-        characterImageMap.clear();
+        characterToEditablePreferencesCharacterMap.clear();
         charactersFlexTable.removeAllRows();
         for (CharacterDto character : characters) {
             drawCharacter(character);
@@ -98,9 +96,11 @@ public class CharactersSection implements PreferencesTabPresenter.CharactersSect
 
     @Override
     public void setMainCharacter(CharacterDto mainCharacter) {
-        for (Map.Entry<String, Image> characterImageEntry : characterImageMap.entrySet()) {
-            String characterName = characterImageEntry.getKey();
-            Image characterImage = characterImageEntry.getValue();
+        for (Map.Entry<CharacterDto, EditablePreferencesCharacter> mapEntry : characterToEditablePreferencesCharacterMap.entrySet()) {
+            CharacterDto character = mapEntry.getKey();
+            EditablePreferencesCharacter editablePreferencesCharacter = mapEntry.getValue();
+            String characterName = character.getName();
+            Image characterImage = editablePreferencesCharacter.getCharacterImage();
             if (!mainCharacter.getName().equals(characterName)) {
                 characterImage.addStyleName(resources.css().imageOpacity05());
                 characterImage.addStyleName(resources.css().cursorHand());
@@ -114,13 +114,8 @@ public class CharactersSection implements PreferencesTabPresenter.CharactersSect
     }
 
     @Override
-    public Map<String, Image> getCharacterImageMap() {
-        return characterImageMap;
-    }
-
-    @Override
-    public Map<CharacterDto, Button> getCharacterDeleteButtonMap() {
-        return characterDeleteButtonMap;
+    public Map<CharacterDto, EditablePreferencesCharacter> getCharacterToEditablePreferencesCharacterMap() {
+        return characterToEditablePreferencesCharacterMap;
     }
 
     @Override
@@ -199,8 +194,11 @@ public class CharactersSection implements PreferencesTabPresenter.CharactersSect
         }
         charactersFlexTable.setWidget(index, 4, corpTitlesPanel);
         Button deleteButton = new Button(messages.delete());
-        characterDeleteButtonMap.put(character, deleteButton);
-        characterImageMap.put(character.getName(), characterImage);
         charactersFlexTable.setWidget(index, 5, deleteButton);
+
+        EditablePreferencesCharacter editablePreferencesCharacter = new EditablePreferencesCharacter();
+        editablePreferencesCharacter.setCharacterImage(characterImage);
+        editablePreferencesCharacter.setDeleteButton(deleteButton);
+        characterToEditablePreferencesCharacterMap.put(character, editablePreferencesCharacter);
     }
 }

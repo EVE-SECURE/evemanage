@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 public class PathExpression implements Serializable {
     private Long[] pathNodes;
-    private Boolean isMaterial = true;
     private Integer meLevel;
     private Integer peLevel;
 
@@ -15,12 +14,10 @@ public class PathExpression implements Serializable {
         this.pathNodes = pathNodes;
         this.meLevel = meLevel;
         this.peLevel = peLevel;
-        this.isMaterial = true;
     }
 
     public PathExpression(Long[] pathNodes) {
         this.pathNodes = pathNodes;
-        this.isMaterial = false;
     }
 
     public PathExpression(Long[] pathNodes, Integer meLevel, Integer peLevel, Long itemTypeID) {
@@ -29,26 +26,22 @@ public class PathExpression implements Serializable {
         this.pathNodes[pathNodes.length] = itemTypeID;
         this.meLevel = meLevel;
         this.peLevel = peLevel;
-        this.isMaterial = true;
     }
 
     public PathExpression(Long[] pathNodes, Long itemTypeID) {
         this.pathNodes = new Long[pathNodes.length + 1];
         System.arraycopy(pathNodes, 0, this.pathNodes, 0, pathNodes.length);
         this.pathNodes[pathNodes.length] = itemTypeID;
-        this.isMaterial = false;
     }
 
     public PathExpression(Long rootItemTypeID, Integer meLevel, Integer peLevel, Long itemTypeID) {
         this.pathNodes = new Long[]{rootItemTypeID, itemTypeID};
         this.meLevel = meLevel;
         this.peLevel = peLevel;
-        this.isMaterial = true;
     }
 
     public PathExpression(Long rootItemTypeID, Long itemTypeID) {
         this.pathNodes = new Long[]{rootItemTypeID, itemTypeID};
-        this.isMaterial = false;
     }
 
     public PathExpression(PathExpression rootPathExpression, Integer meLevel, Integer peLevel, Long itemTypeID) {
@@ -58,7 +51,6 @@ public class PathExpression implements Serializable {
         this.pathNodes[rootPathNodes.length] = itemTypeID;
         this.meLevel = meLevel;
         this.peLevel = peLevel;
-        this.isMaterial = true;
     }
 
     public PathExpression(PathExpression rootPathExpression, Long itemTypeID) {
@@ -66,7 +58,6 @@ public class PathExpression implements Serializable {
         this.pathNodes = new Long[rootPathNodes.length + 1];
         System.arraycopy(rootPathNodes, 0, this.pathNodes, 0, rootPathNodes.length);
         this.pathNodes[rootPathNodes.length] = itemTypeID;
-        this.isMaterial = false;
     }
 
     public Integer getMeLevel() {
@@ -85,8 +76,8 @@ public class PathExpression implements Serializable {
         this.peLevel = peLevel;
     }
 
-    public Boolean isMaterial() {
-        return isMaterial;
+    public Boolean hasMeFactoring() {
+        return meLevel != null;
     }
 
     public Boolean isRootNode() {
@@ -117,41 +108,39 @@ public class PathExpression implements Serializable {
         return stringBuilder.toString();
     }
 
-    public String getPath() {
+    public String getExpression() {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < pathNodes.length - 1; i++) {
             stringBuilder.append("/").append(pathNodes[i]);
         }
-        if (isMaterial) {
+        if (hasMeFactoring()) {
             stringBuilder.append(":").append(meLevel).append(":").append(peLevel);
-        } else {
-            stringBuilder.append("::");
         }
         stringBuilder.append("/").append(pathNodes[pathNodes.length - 1]);
         return stringBuilder.toString();
     }
 
-    public static PathExpression parsePath(String path) {
-        String[] stringNodes = path.split("/");
+    public static PathExpression parseExpression(String expressionString) {
+        String[] stringNodes = expressionString.split("/");
         Long[] pathNodes = new Long[stringNodes.length - 1];
-        boolean isMaterial = true;
+        Boolean hasMeFactoring = true;
         Integer meLevel = null;
         Integer peLevel = null;
         for (int i = 0; i < stringNodes.length - 1; i++) {
             String stringNode = stringNodes[i + 1];
             if (i == stringNodes.length - 3) {
-                if (stringNode.contains("::")) {
-                    isMaterial = false;
+                if (!stringNode.contains(":")) {
+                    hasMeFactoring = false;
                 } else {
-                    isMaterial = true;
+                    hasMeFactoring = true;
                     meLevel = Integer.valueOf(stringNode.substring(stringNode.indexOf(":") + 1, stringNode.lastIndexOf(":")));
                     peLevel = Integer.valueOf(stringNode.substring(stringNode.lastIndexOf(":") + 1));
+                    stringNode = stringNode.substring(0, stringNode.indexOf(":"));
                 }
-                stringNode = stringNode.substring(0, stringNode.indexOf(":"));
             }
             pathNodes[i] = Long.valueOf(stringNode);
         }
-        if (isMaterial) {
+        if (hasMeFactoring) {
             return new PathExpression(pathNodes, meLevel, peLevel);
         } else {
             return new PathExpression(pathNodes);

@@ -36,7 +36,7 @@ public class User implements Serializable {
     private Set<String> roles = new HashSet<String>();
     @Embedded
     private List<SkillLevel> skillLevelsForCalculation = new ArrayList<SkillLevel>();
-    private Long preferredRegionID;
+    private String preferredRegion;
     private String preferredPriceFetchOption;
 
     public Long getId() {
@@ -135,12 +135,12 @@ public class User implements Serializable {
         this.skillLevelsForCalculation = skillLevelsForCalculation;
     }
 
-    public Long getPreferredRegionID() {
-        return preferredRegionID;
+    public String getPreferredRegion() {
+        return preferredRegion;
     }
 
-    public void setPreferredRegionID(Long preferredRegionID) {
-        this.preferredRegionID = preferredRegionID;
+    public void setPreferredRegion(String preferredRegion) {
+        this.preferredRegion = preferredRegion;
     }
 
     public String getPreferredPriceFetchOption() {

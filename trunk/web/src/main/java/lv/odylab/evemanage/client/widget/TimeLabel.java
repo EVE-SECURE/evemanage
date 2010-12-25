@@ -3,7 +3,6 @@ package lv.odylab.evemanage.client.widget;
 import com.google.gwt.user.client.ui.Label;
 
 public class TimeLabel extends Label {
-
     public TimeLabel() {
     }
 
@@ -16,6 +15,7 @@ public class TimeLabel extends Label {
     }
 
     private static String formatTime(Integer timeInSeconds) {
+        // TODO use localized constants
         Integer secondsReminder = timeInSeconds % 60;
         Integer minutes = timeInSeconds / 60;
         Integer minutesReminder = minutes % 60;

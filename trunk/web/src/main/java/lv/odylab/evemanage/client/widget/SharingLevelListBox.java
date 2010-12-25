@@ -12,6 +12,7 @@ public class SharingLevelListBox extends ListBox {
 
     @Override
     public void addItem(String item) {
+        // TODO remove string constant usage
         if (item.equals("PERSONAL")) {
             super.addItem(messages.personal(), item);
         } else if (item.equals("CORPORATION")) {
@@ -26,7 +27,7 @@ public class SharingLevelListBox extends ListBox {
     public void setSharingLevel(String sharingLevel) {
         int itemCount = getItemCount();
         for (int i = 0; i < itemCount; i++) {
-            if (getItemText(i).equals(sharingLevel)) {
+            if (getValue(i).equals(sharingLevel)) {
                 setSelectedIndex(i);
                 return;
             }

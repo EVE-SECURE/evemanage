@@ -12,6 +12,7 @@ import lv.odylab.evedb.client.HttpRequestSenderWithRetryImpl;
 import lv.odylab.evedb.rpc.dto.InvBlueprintTypeDto;
 import lv.odylab.evedb.rpc.dto.InvTypeBasicInfoDto;
 import lv.odylab.evedb.rpc.dto.InvTypeMaterialDto;
+import lv.odylab.evedb.rpc.dto.PlanetSchematicDto;
 import lv.odylab.evedb.rpc.dto.RamTypeRequirementDto;
 import lv.odylab.evemanage.application.EveManageDtoMapper;
 import lv.odylab.evemanage.application.exception.EveDbException;
@@ -21,6 +22,7 @@ import lv.odylab.evemanage.client.rpc.ErrorCode;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintTypeDto;
 import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
+import lv.odylab.evemanage.integration.evedb.dto.SchematicItemDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
 import org.slf4j.Logger;
@@ -169,6 +171,25 @@ public class EveDbGatewayImpl implements EveDbGateway {
             return itemTypeDtos;
         } catch (Exception e) {
             logger.error("Caught Exception", e);
+            throw new EveDbException(e);
+        }
+    }
+
+    @Override
+    @Caching
+    public List<SchematicItemDto> getPlanetSchematicForTypeName(String typeName) throws EveDbException, InvalidItemTypeException {
+        try {
+            List<PlanetSchematicDto> planetSchematicDtos = client.getPlanetarySchematicForTypeName(typeName);
+            List<SchematicItemDto> schematicItemDtos = new ArrayList<SchematicItemDto>();
+            for (PlanetSchematicDto planetSchematicDto : planetSchematicDtos) {
+                schematicItemDtos.add(mapper.map(planetSchematicDto, SchematicItemDto.class));
+            }
+            return schematicItemDtos;
+        } catch (BadRequestException e) {
+            logger.error("Caught BadRequestException", e.getMessage());
+            throw new InvalidItemTypeException(e.getMessage(), ErrorCode.INVALID_ITEM_TYPE);
+        } catch (RuntimeException e) {
+            logger.error("Caught RuntimeException", e);
             throw new EveDbException(e);
         }
     }

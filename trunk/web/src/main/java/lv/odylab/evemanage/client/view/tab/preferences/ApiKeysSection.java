@@ -1,7 +1,6 @@
 package lv.odylab.evemanage.client.view.tab.preferences;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -19,10 +18,12 @@ import lv.odylab.evemanage.client.EveManageMessages;
 import lv.odylab.evemanage.client.EveManageResources;
 import lv.odylab.evemanage.client.EveManageUrlMessages;
 import lv.odylab.evemanage.client.presenter.tab.PreferencesTabPresenter;
+import lv.odylab.evemanage.client.presenter.tab.preferences.EditablePreferencesApiKey;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyCharacterInfoDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.widget.EveCharacterInfoLink;
 import lv.odylab.evemanage.client.widget.EveCorporationInfoLink;
+import lv.odylab.evemanage.client.widget.ValidOrInvalidImage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,7 @@ public class ApiKeysSection implements PreferencesTabPresenter.ApiKeysSectionDis
     private Label noteKeysAreCheckedLabel;
     private Label hintUseThisLinkLabel;
     private DateTimeFormat dateTimeFormat;
-    private Map<ApiKeyDto, Button> apiKeyDeleteButtonMap;
+    private Map<ApiKeyDto, EditablePreferencesApiKey> apiKeyToEditablePreferencesApiKeyMap;
 
     @Inject
     public ApiKeysSection(EveManageConstants constants, EveManageResources resources, EveManageMessages messages, EveManageUrlMessages urlMessages, CcpJsMessages ccpJsMessages) {
@@ -81,7 +82,7 @@ public class ApiKeysSection implements PreferencesTabPresenter.ApiKeysSectionDis
 
         dateTimeFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_FULL);
 
-        apiKeyDeleteButtonMap = new HashMap<ApiKeyDto, Button>();
+        apiKeyToEditablePreferencesApiKeyMap = new HashMap<ApiKeyDto, EditablePreferencesApiKey>();
     }
 
     @Override
@@ -109,8 +110,8 @@ public class ApiKeysSection implements PreferencesTabPresenter.ApiKeysSectionDis
     }
 
     @Override
-    public Map<ApiKeyDto, Button> getApiKeyDeleteButtonMap() {
-        return apiKeyDeleteButtonMap;
+    public Map<ApiKeyDto, EditablePreferencesApiKey> getApiKeyToEditablePreferencesApiKeyMap() {
+        return apiKeyToEditablePreferencesApiKeyMap;
     }
 
     @Override
@@ -131,6 +132,7 @@ public class ApiKeysSection implements PreferencesTabPresenter.ApiKeysSectionDis
     private void drawApiKey(ApiKeyDto apiKeyDto) {
         int index = apiKeysFlexTable.getRowCount();
         Image apiKeyImage;
+        // TODO remove string constant usage
         if ("FULL".equals(apiKeyDto.getKeyType())) {
             apiKeyImage = new Image(resources.fullKeyIcon());
             apiKeyImage.setTitle(messages.fullApiKey());
@@ -139,7 +141,7 @@ public class ApiKeysSection implements PreferencesTabPresenter.ApiKeysSectionDis
             apiKeyImage.setTitle(messages.limitedApiKey());
         }
         apiKeysFlexTable.setWidget(index, 0, apiKeyImage);
-        Image isValidIcon = new Image(getIsValidImageResources(apiKeyDto.isValid()));
+        Image isValidIcon = new ValidOrInvalidImage(resources, apiKeyDto.isValid());
         isValidIcon.setTitle(messages.lastApiCheckDate() + ": " + dateTimeFormat.format(apiKeyDto.getLastCheckDate()));
         apiKeysFlexTable.setWidget(index, 1, isValidIcon);
         Panel characterPanel = new VerticalPanel();
@@ -158,15 +160,10 @@ public class ApiKeysSection implements PreferencesTabPresenter.ApiKeysSectionDis
             apiKeysFlexTable.setWidget(index, column++, new EveCharacterInfoLink(ccpJsMessages, characterImage, apiKeyCharacterInfo.getCharacterID()));
         }
         Button deleteButton = new Button(messages.delete());
-        apiKeyDeleteButtonMap.put(apiKeyDto, deleteButton);
         apiKeysFlexTable.setWidget(index, 6, deleteButton);
-    }
 
-    private ImageResource getIsValidImageResources(Boolean isValid) {
-        if (Boolean.TRUE.equals(isValid)) {
-            return resources.okIcon();
-        } else {
-            return resources.nokIcon();
-        }
+        EditablePreferencesApiKey editablePreferencesApiKey = new EditablePreferencesApiKey();
+        editablePreferencesApiKey.setDeleteButton(deleteButton);
+        apiKeyToEditablePreferencesApiKeyMap.put(apiKeyDto, editablePreferencesApiKey);
     }
 }

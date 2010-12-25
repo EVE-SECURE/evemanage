@@ -42,7 +42,7 @@ public class Calculation implements Serializable {
     @Indexed
     private Date updatedDate;
     @Embedded
-    private List<CalculationItem> items;
+    private List<CalculationItem> calculationItems;
 
     public Long getId() {
         return id;
@@ -204,11 +204,11 @@ public class Calculation implements Serializable {
         this.updatedDate = updatedDate;
     }
 
-    public List<CalculationItem> getItems() {
-        return items;
+    public List<CalculationItem> getCalculationItems() {
+        return calculationItems;
     }
 
-    public void setItems(List<CalculationItem> items) {
-        this.items = items;
+    public void setCalculationItems(List<CalculationItem> calculationItems) {
+        this.calculationItems = calculationItems;
     }
 }

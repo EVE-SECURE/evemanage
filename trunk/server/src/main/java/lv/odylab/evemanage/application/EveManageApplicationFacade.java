@@ -7,7 +7,6 @@ import lv.odylab.evemanage.application.exception.EveDbException;
 import lv.odylab.evemanage.application.exception.EveMetricsApiException;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
-import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
@@ -22,6 +21,8 @@ import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
 import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
+import lv.odylab.evemanage.service.calculation.UsedBlueprint;
+import lv.odylab.evemanage.service.calculation.UsedSchematic;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -52,7 +53,7 @@ public interface EveManageApplicationFacade {
 
     PriceFetchOption getPreferredPriceFetchOption();
 
-    void savePriceFetchConfiguration(Long preferredRegionID, PriceFetchOption preferredPriceFetchOption);
+    void savePriceFetchConfiguration(Region preferredRegion, PriceFetchOption preferredPriceFetchOption);
 
     Blueprint createBlueprint(String blueprintTypeName, Integer meLevel, Integer peLevel) throws EveDbException, InvalidNameException;
 
@@ -96,11 +97,11 @@ public interface EveManageApplicationFacade {
 
     List<PriceSetItem> fetchPricesFromEveCentral(List<PriceSetItem> priceSetItems) throws EveCentralApiException;
 
-    Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs) throws EveCentralApiException;
+    Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveCentralApiException;
 
     List<PriceSetItem> fetchPricesFromEveMetrics(List<PriceSetItem> priceSetItems) throws EveMetricsApiException;
 
-    Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs) throws EveMetricsApiException;
+    Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveMetricsApiException;
 
     void deletePriceSet(Long priceSetID);
 
@@ -128,13 +129,13 @@ public interface EveManageApplicationFacade {
 
     List<ItemTypeDto> lookupBlueprintType(String query) throws EveDbException;
 
-    Calculation getCalculation(String blueprintName) throws EveDbException, InvalidNameException;
+    Calculation getNewCalculation(String blueprintName) throws EveDbException, InvalidNameException;
 
-    Calculation getCalculationForExpression(CalculationExpression historyToken) throws EveDbException, InvalidNameException;
+    UsedBlueprint useBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException;
 
-    Calculation getCalculation(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException;
+    UsedBlueprint useBlueprint(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException;
 
-    Calculation getCalculation(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException;
+    UsedSchematic useSchematic(Long[] pathNodes, String schematicName) throws InvalidItemTypeException, EveDbException;
 
     String getEveManageVersion();
 

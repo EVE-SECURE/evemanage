@@ -2,6 +2,7 @@ package lv.odylab.evemanage.client.rpc.action.preferences;
 
 import com.google.inject.Inject;
 import lv.odylab.evemanage.application.EveManageClientFacade;
+import lv.odylab.evemanage.domain.eve.Region;
 
 public class PreferencesSavePriceFetchConfigurationActionRunnerImpl implements PreferencesSavePriceFetchConfigurationActionRunner {
     private EveManageClientFacade clientFacade;
@@ -13,7 +14,9 @@ public class PreferencesSavePriceFetchConfigurationActionRunnerImpl implements P
 
     @Override
     public PreferencesSavePriceFetchConfigurationActionResponse execute(PreferencesSavePriceFetchConfigurationAction action) throws Exception {
-        clientFacade.savePriceFetchConfiguration(action.getPreferredRegionID(), action.getPreferredPriceFetchOption());
+        Long preferredRegionID = action.getPreferredRegionID();
+        String preferredPriceFetchOption = action.getPreferredPriceFetchOption();
+        clientFacade.savePriceFetchConfiguration(Region.getByRegionID(preferredRegionID), preferredPriceFetchOption);
         return new PreferencesSavePriceFetchConfigurationActionResponse();
     }
 }

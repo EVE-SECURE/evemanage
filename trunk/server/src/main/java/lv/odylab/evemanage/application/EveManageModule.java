@@ -113,6 +113,8 @@ import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseA
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseAllBlueprintsActionRunnerImpl;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseBlueprintActionRunner;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseBlueprintActionRunnerImpl;
+import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseSchematicActionRunner;
+import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorUseSchematicActionRunnerImpl;
 import lv.odylab.evemanage.client.rpc.action.suggest.SuggestBlueprintTypeActionRunner;
 import lv.odylab.evemanage.client.rpc.action.suggest.SuggestBlueprintTypeActionRunnerImpl;
 import lv.odylab.evemanage.client.rpc.action.suggest.SuggestTypeActionRunner;
@@ -260,6 +262,7 @@ public class EveManageModule extends AbstractModule {
         bind(QuickCalculatorSetActionRunner.class).to(QuickCalculatorSetActionRunnerImpl.class).in(Singleton.class);
         bind(QuickCalculatorDirectSetActionRunner.class).to(QuickCalculatorDirectSetActionRunnerImpl.class).in(Singleton.class);
         bind(QuickCalculatorUseBlueprintActionRunner.class).to(QuickCalculatorUseBlueprintActionRunnerImpl.class).in(Singleton.class);
+        bind(QuickCalculatorUseSchematicActionRunner.class).to(QuickCalculatorUseSchematicActionRunnerImpl.class).in(Singleton.class);
         bind(QuickCalculatorUseAllBlueprintsActionRunner.class).to(QuickCalculatorUseAllBlueprintsActionRunnerImpl.class).in(Singleton.class);
         bind(QuickCalculatorFetchPricesFromEveCentralActionRunner.class).to(QuickCalculatorFetchPricesFromEveCentralActionRunnerImpl.class).in(Singleton.class);
         bind(QuickCalculatorFetchPricesFromEveMetricsActionRunner.class).to(QuickCalculatorFetchPricesFromEveMetricsActionRunnerImpl.class).in(Singleton.class);
@@ -270,6 +273,7 @@ public class EveManageModule extends AbstractModule {
         CachingAspect cachingAspect = new CachingAspect();
         LoggingAspect loggingAspect = new LoggingAspect();
         requestInjection(cachingAspect);
+        // TODO this does not look good
         bindInterceptor(any(), annotatedWith(Caching.class), cachingAspect);
         bindInterceptor(annotatedWith(Caching.class), any().and((Matcher<? super Object>) not(annotatedWith(Caching.class))), cachingAspect);
         bindInterceptor(any(), annotatedWith(Logging.class), loggingAspect);

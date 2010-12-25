@@ -8,6 +8,8 @@ import java.util.List;
 @RunnedBy(QuickCalculatorFetchPricesFromEveCentralActionRunner.class)
 public class QuickCalculatorFetchPricesFromEveCentralAction implements Action<QuickCalculatorFetchPricesFromEveCentralActionResponse> {
     private List<Long> typeIDs;
+    private Long preferredRegionID;
+    private String preferredPriceFetchOption;
 
     public List<Long> getTypeIDs() {
         return typeIDs;
@@ -15,5 +17,21 @@ public class QuickCalculatorFetchPricesFromEveCentralAction implements Action<Qu
 
     public void setTypeIDs(List<Long> typeIDs) {
         this.typeIDs = typeIDs;
+    }
+
+    public Long getPreferredRegionID() {
+        return preferredRegionID;
+    }
+
+    public void setPreferredRegionID(Long preferredRegionID) {
+        this.preferredRegionID = preferredRegionID;
+    }
+
+    public String getPreferredPriceFetchOption() {
+        return preferredPriceFetchOption;
+    }
+
+    public void setPreferredPriceFetchOption(String preferredPriceFetchOption) {
+        this.preferredPriceFetchOption = preferredPriceFetchOption;
     }
 }

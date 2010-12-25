@@ -7,11 +7,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import lv.odylab.evemanage.client.CcpJsMessages;
-import lv.odylab.evemanage.client.EveManageConstants;
 import lv.odylab.evemanage.client.EveManageMessages;
 import lv.odylab.evemanage.client.EveManageResources;
-import lv.odylab.evemanage.client.EveManageUrlMessages;
 import lv.odylab.evemanage.client.presenter.tab.PreferencesTabPresenter;
 import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
@@ -21,43 +18,30 @@ import lv.odylab.evemanage.client.widget.RegionListBox;
 import java.util.List;
 
 public class PriceFetchingSection implements PreferencesTabPresenter.PriceFetchingSectionDisplay {
-    private EveManageConstants constants;
-    private EveManageResources resources;
-    private EveManageMessages messages;
-    private EveManageUrlMessages urlMessages;
-    private CcpJsMessages ccpJsMessages;
-
     private Image spinnerImage;
 
-    private Label priceFetchingSectionlabel;
+    private Label priceFetchingSectionLabel;
     private FlexTable priceFetchingFlexTable;
     private Label preferredRegionLabel;
     private RegionListBox preferredRegionListBox;
-    private Label preferredPriceLabel;
+    private Label preferredPriceFetchOptionLabel;
     private PriceFetchOptionListBox preferredPriceFetchOptionListBox;
-
     private FlexTable saveFlexTable;
     private Button savePriceFetchConfigurationButton;
 
     @Inject
-    public PriceFetchingSection(EveManageConstants constants, EveManageResources resources, EveManageMessages messages, EveManageUrlMessages urlMessages, CcpJsMessages ccpJsMessages) {
-        this.constants = constants;
-        this.resources = resources;
-        this.messages = messages;
-        this.urlMessages = urlMessages;
-        this.ccpJsMessages = ccpJsMessages;
-
+    public PriceFetchingSection(EveManageResources resources, EveManageMessages messages) {
         spinnerImage = new Image(resources.spinnerIcon());
         spinnerImage.setTitle(messages.loading());
         spinnerImage.setVisible(false);
 
-        priceFetchingSectionlabel = new Label(messages.priceFetchConfiguration());
-        priceFetchingSectionlabel.addStyleName(resources.css().tabHeadingText());
+        priceFetchingSectionLabel = new Label(messages.priceFetchConfiguration());
+        priceFetchingSectionLabel.addStyleName(resources.css().tabHeadingText());
         priceFetchingFlexTable = new FlexTable();
         preferredRegionLabel = new Label(messages.preferredRegion() + ":");
         preferredRegionListBox = new RegionListBox();
         preferredRegionListBox.setEnabled(false);
-        preferredPriceLabel = new Label(messages.preferredPrice() + ":");
+        preferredPriceFetchOptionLabel = new Label(messages.preferredPrice() + ":");
         preferredPriceFetchOptionListBox = new PriceFetchOptionListBox(messages);
         preferredPriceFetchOptionListBox.setEnabled(false);
 
@@ -68,14 +52,12 @@ public class PriceFetchingSection implements PreferencesTabPresenter.PriceFetchi
 
     @Override
     public void attach(HasWidgets container) {
-        container.add(priceFetchingSectionlabel);
-
+        container.add(priceFetchingSectionLabel);
         priceFetchingFlexTable.setWidget(0, 0, preferredRegionLabel);
         priceFetchingFlexTable.setWidget(0, 1, preferredRegionListBox);
-        priceFetchingFlexTable.setWidget(1, 0, preferredPriceLabel);
+        priceFetchingFlexTable.setWidget(1, 0, preferredPriceFetchOptionLabel);
         priceFetchingFlexTable.setWidget(1, 1, preferredPriceFetchOptionListBox);
         container.add(priceFetchingFlexTable);
-
         saveFlexTable.setWidget(0, 0, savePriceFetchConfigurationButton);
         saveFlexTable.setWidget(0, 1, spinnerImage);
         container.add(saveFlexTable);

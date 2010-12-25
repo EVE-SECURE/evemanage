@@ -10,7 +10,6 @@ import lv.odylab.evemanage.application.exception.EveDbException;
 import lv.odylab.evemanage.application.exception.EveMetricsApiException;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
-import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
 import lv.odylab.evemanage.domain.SharingLevel;
@@ -29,6 +28,8 @@ import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
 import lv.odylab.evemanage.security.EveManageSecurityManager;
 import lv.odylab.evemanage.service.blueprint.BlueprintManagementService;
 import lv.odylab.evemanage.service.calculation.CalculationService;
+import lv.odylab.evemanage.service.calculation.UsedBlueprint;
+import lv.odylab.evemanage.service.calculation.UsedSchematic;
 import lv.odylab.evemanage.service.eve.EveManagementService;
 import lv.odylab.evemanage.service.priceset.PriceSetManagementService;
 import lv.odylab.evemanage.service.user.UserManagementService;
@@ -79,7 +80,8 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
 
     @Override
     public User getCurrentUser() {
-        return userManagementService.getUser(getCurrentUserKey());
+        Key<User> currentUserKey = getCurrentUserKey();
+        return currentUserKey == null ? null : userManagementService.getUser(currentUserKey);
     }
 
     @Override
@@ -128,8 +130,8 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public void savePriceFetchConfiguration(Long preferredRegionID, PriceFetchOption preferredPriceFetchOption) {
-        userManagementService.savePriceFetchConfiguration(preferredRegionID, preferredPriceFetchOption, getCurrentUser());
+    public void savePriceFetchConfiguration(Region preferredRegion, PriceFetchOption preferredPriceFetchOption) {
+        userManagementService.savePriceFetchConfiguration(preferredRegion, preferredPriceFetchOption, getCurrentUser());
     }
 
     @Override
@@ -238,8 +240,8 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs) throws EveCentralApiException {
-        return priceSetManagementService.fetchPricesFromEveCentralForTypeIDs(typeIDs);
+    public Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveCentralApiException {
+        return priceSetManagementService.fetchPricesFromEveCentralForTypeIDs(typeIDs, regionID, priceFetchOption);
     }
 
     @Override
@@ -248,8 +250,8 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs) throws EveMetricsApiException {
-        return priceSetManagementService.fetchPricesFromEveMetricsForTypeIDs(typeIDs);
+    public Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveMetricsApiException {
+        return priceSetManagementService.fetchPricesFromEveMetricsForTypeIDs(typeIDs, regionID, priceFetchOption);
     }
 
     @Override
@@ -318,24 +320,23 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public Calculation getCalculation(String blueprintName) throws EveDbException, InvalidNameException {
-        return calculationService.getCalculation(blueprintName);
+    public Calculation getNewCalculation(String blueprintName) throws EveDbException, InvalidNameException {
+        return calculationService.getNewCalculation(blueprintName);
     }
 
     @Override
-    public Calculation getCalculationForExpression(CalculationExpression calculationExpression) throws EveDbException, InvalidNameException {
-        return calculationService.getCalculationForExpression(calculationExpression);
+    public UsedBlueprint useBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
+        return calculationService.useBlueprint(pathNodes, blueprintName);
     }
 
     @Override
-    public Calculation getCalculation(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
-        return calculationService.getCalculation(pathNodes, blueprintName);
+    public UsedBlueprint useBlueprint(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException {
+        return calculationService.useBlueprint(pathNodes, blueprintProductTypeID);
     }
 
     @Override
-    public Calculation getCalculation(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException {
-        String typeName = eveDbGateway.getTypeName(blueprintProductTypeID);
-        return getCalculation(pathNodes, typeName + " Blueprint");
+    public UsedSchematic useSchematic(Long[] pathNodes, String schematicName) throws InvalidItemTypeException, EveDbException {
+        return calculationService.useSchematic(pathNodes, schematicName);
     }
 
     @Override

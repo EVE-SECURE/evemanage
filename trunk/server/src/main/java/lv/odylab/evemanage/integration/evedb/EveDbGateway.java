@@ -6,6 +6,7 @@ import lv.odylab.evemanage.application.exception.validation.InvalidNameException
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintTypeDto;
 import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
+import lv.odylab.evemanage.integration.evedb.dto.SchematicItemDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
 
@@ -28,6 +29,8 @@ public interface EveDbGateway {
     List<ItemTypeDto> lookupType(String query) throws EveDbException;
 
     List<ItemTypeDto> lookupBlueprintType(String query) throws EveDbException;
+
+    List<SchematicItemDto> getPlanetSchematicForTypeName(String typeName) throws EveDbException, InvalidItemTypeException;
 
     Long getTypeID(String typeName) throws EveDbException, InvalidNameException;
 

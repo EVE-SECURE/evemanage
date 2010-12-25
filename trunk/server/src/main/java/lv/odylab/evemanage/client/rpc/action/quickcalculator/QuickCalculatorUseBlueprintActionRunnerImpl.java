@@ -2,7 +2,7 @@ package lv.odylab.evemanage.client.rpc.action.quickcalculator;
 
 import com.google.inject.Inject;
 import lv.odylab.evemanage.application.EveManageClientFacade;
-import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 
 public class QuickCalculatorUseBlueprintActionRunnerImpl implements QuickCalculatorUseBlueprintActionRunner {
     private EveManageClientFacade clientFacade;
@@ -14,11 +14,11 @@ public class QuickCalculatorUseBlueprintActionRunnerImpl implements QuickCalcula
 
     @Override
     public QuickCalculatorUseBlueprintActionResponse execute(QuickCalculatorUseBlueprintAction action) throws Exception {
-        CalculationDto calculationDto = clientFacade.getQuickCalculation(action.getPathNodes(), action.getBlueprintName());
+        UsedBlueprintDto usedBlueprintDto = clientFacade.useBlueprint(action.getPathNodes(), action.getBlueprintName());
 
         QuickCalculatorUseBlueprintActionResponse response = new QuickCalculatorUseBlueprintActionResponse();
         response.setPathNodes(action.getPathNodes());
-        response.setCalculation(calculationDto);
+        response.setUsedBlueprint(usedBlueprintDto);
         return response;
     }
 }

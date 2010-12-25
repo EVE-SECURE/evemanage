@@ -29,26 +29,21 @@ import java.util.Map;
 public class SkillsForCalculationSection implements PreferencesTabPresenter.SkillsForCalculationSectionDisplay {
     private EveManageConstants constants;
     private EveManageResources resources;
-    private EveManageMessages messages;
     private EveManageUrlMessages urlMessages;
     private CcpJsMessages ccpJsMessages;
 
     private Image spinnerImage;
-
     private Label skillsSectionLabel;
     private FlexTable skillLevelsFlexTable;
-
     private FlexTable saveAndFetchFlexTable;
     private Button saveSkillLevelsButton;
     private Button fetchSkillLevelsForCurrentCharacterButton;
-
     private Map<Long, EditablePreferenceSkillLevel> typeIdToEditablePreferenceSkillLevelMap;
 
     @Inject
     public SkillsForCalculationSection(EveManageConstants constants, EveManageResources resources, EveManageMessages messages, EveManageUrlMessages urlMessages, CcpJsMessages ccpJsMessages) {
         this.constants = constants;
         this.resources = resources;
-        this.messages = messages;
         this.urlMessages = urlMessages;
         this.ccpJsMessages = ccpJsMessages;
 
@@ -73,7 +68,6 @@ public class SkillsForCalculationSection implements PreferencesTabPresenter.Skil
     public void attach(HasWidgets container) {
         container.add(skillsSectionLabel);
         container.add(skillLevelsFlexTable);
-
         saveAndFetchFlexTable.setWidget(0, 0, saveSkillLevelsButton);
         saveAndFetchFlexTable.setWidget(0, 1, fetchSkillLevelsForCurrentCharacterButton);
         saveAndFetchFlexTable.setWidget(0, 2, spinnerImage);

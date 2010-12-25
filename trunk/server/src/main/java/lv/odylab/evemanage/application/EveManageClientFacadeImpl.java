@@ -10,10 +10,11 @@ import lv.odylab.evemanage.application.exception.EveMetricsApiException;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.application.exception.validation.InvalidPriceException;
-import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDetailsDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
@@ -39,6 +40,8 @@ import lv.odylab.evemanage.domain.user.PriceFetchOption;
 import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
+import lv.odylab.evemanage.service.calculation.UsedBlueprint;
+import lv.odylab.evemanage.service.calculation.UsedSchematic;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -161,8 +164,8 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public void savePriceFetchConfiguration(Long preferredRegionID, String preferredPriceFetchOption) {
-        applicationFacade.savePriceFetchConfiguration(preferredRegionID, PriceFetchOption.valueOf(preferredPriceFetchOption));
+    public void savePriceFetchConfiguration(Region preferredRegion, String preferredPriceFetchOption) {
+        applicationFacade.savePriceFetchConfiguration(preferredRegion, PriceFetchOption.valueOf(preferredPriceFetchOption));
     }
 
     @Override
@@ -326,8 +329,8 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs) throws EveCentralApiException {
-        return applicationFacade.fetchPricesFromEveCentralForTypeIDs(typeIDs);
+    public Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveCentralApiException {
+        return applicationFacade.fetchPricesFromEveCentralForTypeIDs(typeIDs, regionID, priceFetchOption);
     }
 
     @Override
@@ -346,8 +349,8 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs) throws EveMetricsApiException {
-        return applicationFacade.fetchPricesFromEveMetricsForTypeIDs(typeIDs);
+    public Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveMetricsApiException {
+        return applicationFacade.fetchPricesFromEveMetricsForTypeIDs(typeIDs, regionID, priceFetchOption);
     }
 
     @Override
@@ -438,27 +441,27 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public CalculationDto getQuickCalculation(String blueprintName) throws EveDbException, InvalidNameException {
-        Calculation calculation = applicationFacade.getCalculation(blueprintName);
+    public CalculationDto getNewCalculation(String blueprintName) throws EveDbException, InvalidNameException {
+        Calculation calculation = applicationFacade.getNewCalculation(blueprintName);
         return mapper.map(calculation, CalculationDto.class);
     }
 
     @Override
-    public CalculationDto getQuickCalculationForExpression(CalculationExpression calculationExpression) throws EveDbException, InvalidNameException {
-        Calculation calculation = applicationFacade.getCalculationForExpression(calculationExpression);
-        return mapper.map(calculation, CalculationDto.class);
+    public UsedBlueprintDto useBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
+        UsedBlueprint usedBlueprint = applicationFacade.useBlueprint(pathNodes, blueprintName);
+        return mapper.map(usedBlueprint, UsedBlueprintDto.class);
     }
 
     @Override
-    public CalculationDto getQuickCalculation(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
-        Calculation calculation = applicationFacade.getCalculation(pathNodes, blueprintName);
-        return mapper.map(calculation, CalculationDto.class);
+    public UsedBlueprintDto useBlueprint(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException {
+        UsedBlueprint usedBlueprint = applicationFacade.useBlueprint(pathNodes, blueprintProductTypeID);
+        return mapper.map(usedBlueprint, UsedBlueprintDto.class);
     }
 
     @Override
-    public CalculationDto getQuickCalculation(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException {
-        Calculation calculation = applicationFacade.getCalculation(pathNodes, blueprintProductTypeID);
-        return mapper.map(calculation, CalculationDto.class);
+    public UsedSchematicDto useSchematic(Long[] pathNodes, String schematicName) throws InvalidItemTypeException, EveDbException {
+        UsedSchematic usedSchematic = applicationFacade.useSchematic(pathNodes, schematicName);
+        return mapper.map(usedSchematic, UsedSchematicDto.class);
     }
 
     @Override
