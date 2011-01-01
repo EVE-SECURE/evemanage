@@ -26,7 +26,7 @@ public class ComputableCalculationPriceSetItem {
     }
 
     public void recalculate() {
-        quantityLabel.setQuantity(calculationPriceItem.getQuantity());
+        quantityLabel.setQuantity(calculationPriceItem.getQuantity(), calculationPriceItem.getQuantityMultiplier());
         totalPriceLabel.setPrice(calculationPriceItem.getTotalPrice());
     }
 }

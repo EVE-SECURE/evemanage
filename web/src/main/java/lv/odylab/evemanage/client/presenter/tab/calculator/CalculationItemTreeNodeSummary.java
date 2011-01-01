@@ -1,6 +1,6 @@
 package lv.odylab.evemanage.client.presenter.tab.calculator;
 
-import lv.odylab.evemanage.client.rpc.RationalNumberProductExpression;
+import lv.odylab.evemanage.client.rpc.RationalNumber;
 
 import java.math.BigDecimal;
 
@@ -12,9 +12,9 @@ public class CalculationItemTreeNodeSummary {
     private String itemTypeName;
     private String itemTypeIcon;
     private Long quantity;
-    private RationalNumberProductExpression quantityMultiplier;
+    private RationalNumber quantityMultiplier;
     private Long parentQuantity;
-    private RationalNumberProductExpression parentQuantityMultiplier;
+    private RationalNumber parentQuantityMultiplier;
     private BigDecimal damagePerJob;
     private BigDecimal price;
     private BigDecimal totalPrice;
@@ -76,11 +76,11 @@ public class CalculationItemTreeNodeSummary {
         this.quantity = quantity;
     }
 
-    public RationalNumberProductExpression getQuantityMultiplier() {
+    public RationalNumber getQuantityMultiplier() {
         return quantityMultiplier;
     }
 
-    public void setQuantityMultiplier(RationalNumberProductExpression quantityMultiplier) {
+    public void setQuantityMultiplier(RationalNumber quantityMultiplier) {
         this.quantityMultiplier = quantityMultiplier;
     }
 
@@ -92,11 +92,11 @@ public class CalculationItemTreeNodeSummary {
         this.parentQuantity = parentQuantity;
     }
 
-    public RationalNumberProductExpression getParentQuantityMultiplier() {
+    public RationalNumber getParentQuantityMultiplier() {
         return parentQuantityMultiplier;
     }
 
-    public void setParentQuantityMultiplier(RationalNumberProductExpression parentQuantityMultiplier) {
+    public void setParentQuantityMultiplier(RationalNumber parentQuantityMultiplier) {
         this.parentQuantityMultiplier = parentQuantityMultiplier;
     }
 

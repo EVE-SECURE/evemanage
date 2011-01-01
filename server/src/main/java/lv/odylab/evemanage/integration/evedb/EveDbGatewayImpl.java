@@ -46,6 +46,21 @@ public class EveDbGatewayImpl implements EveDbGateway {
     }
 
     @Override
+    public List<ItemTypeDto> getBaseItemsForTypeID(Long typeID) throws EveDbException {
+        try {
+            List<InvTypeBasicInfoDto> invTypeBasicInfoDtoList = client.getBaseItemsForTypeID(typeID);
+            List<ItemTypeDto> itemTypeDtos = new ArrayList<ItemTypeDto>();
+            for (InvTypeBasicInfoDto invTypeBasicInfoDto : invTypeBasicInfoDtoList) {
+                itemTypeDtos.add(mapper.map(invTypeBasicInfoDto, ItemTypeDto.class));
+            }
+            return itemTypeDtos;
+        } catch (Exception e) {
+            logger.error("Caught Exception", e);
+            throw new EveDbException(e);
+        }
+    }
+
+    @Override
     @Caching
     public BlueprintTypeDto getBlueprintTypeByTypeID(Long typeID) throws EveDbException {
         try {
@@ -179,7 +194,7 @@ public class EveDbGatewayImpl implements EveDbGateway {
     @Caching
     public List<SchematicItemDto> getPlanetSchematicForTypeName(String typeName) throws EveDbException, InvalidItemTypeException {
         try {
-            List<PlanetSchematicDto> planetSchematicDtos = client.getPlanetarySchematicForTypeName(typeName);
+            List<PlanetSchematicDto> planetSchematicDtos = client.getPlanetSchematicForTypeName(typeName);
             List<SchematicItemDto> schematicItemDtos = new ArrayList<SchematicItemDto>();
             for (PlanetSchematicDto planetSchematicDto : planetSchematicDtos) {
                 schematicItemDtos.add(mapper.map(planetSchematicDto, SchematicItemDto.class));

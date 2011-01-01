@@ -13,21 +13,27 @@ import lv.odylab.evemanage.client.EveManageMessages;
 import lv.odylab.evemanage.client.EveManageResources;
 import lv.odylab.evemanage.client.presenter.tab.QuickCalculatorTabPresenter;
 import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTree;
+import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTreeNode;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTree;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNode;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationProcessor;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationProcessorResult;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableBlueprintInformation;
+import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableBlueprintItem;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableCalculationItem;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableCalculationPriceSetItem;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableBlueprintInformation;
+import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableBlueprintItem;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationItem;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationPriceSetItem;
 import lv.odylab.evemanage.client.rpc.EveCalculator;
+import lv.odylab.evemanage.client.rpc.dto.ItemTypeDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceItemDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.InventedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
+import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.view.tab.quickcalculator.BlueprintInformationSection;
 import lv.odylab.evemanage.client.view.tab.quickcalculator.BlueprintItemTreeSection;
 import lv.odylab.evemanage.client.view.tab.quickcalculator.CalculationItemTreeSection;
@@ -35,6 +41,7 @@ import lv.odylab.evemanage.client.view.tab.quickcalculator.DirectLinkSection;
 import lv.odylab.evemanage.client.view.tab.quickcalculator.PricesSection;
 import lv.odylab.evemanage.client.view.tab.quickcalculator.SkillsForCalculationSection;
 import lv.odylab.evemanage.client.widget.OpaqueLoadableBlueprintImage;
+import lv.odylab.evemanage.client.widget.PriceTextBox;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -54,12 +61,12 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     private Label errorMessageLabel;
     private Image errorImage;
 
-    private BlueprintInformationSection blueprintInformationSection;
-    private CalculationItemTreeSection calculationItemTreeSection;
-    private BlueprintItemTreeSection blueprintItemTreeSection;
-    private PricesSection pricesSection;
-    private SkillsForCalculationSection skillsForCalculationSection;
-    private DirectLinkSection directLinkSection;
+    private QuickCalculatorTabPresenter.BlueprintInformationSectionDisplay blueprintInformationSection;
+    private QuickCalculatorTabPresenter.CalculationItemTreeSectionDisplay calculationItemTreeSection;
+    private QuickCalculatorTabPresenter.BlueprintItemTreeSectionDisplay blueprintItemTreeSection;
+    private QuickCalculatorTabPresenter.PricesSectionDisplay pricesSection;
+    private QuickCalculatorTabPresenter.SkillsForCalculationSectionDisplay skillsForCalculationSection;
+    private QuickCalculatorTabPresenter.DirectLinkSectionDisplay directLinkSection;
 
     @Inject
     public QuickCalculatorTabView(CalculationProcessor calculationProcessor, EveCalculator calculator, EveManageResources resources, EveManageMessages messages, BlueprintInformationSection blueprintInformationSection, CalculationItemTreeSection calculationItemTreeSection, BlueprintItemTreeSection blueprintItemTreeSection, PricesSection pricesSection, SkillsForCalculationSection skillsForCalculationSection, DirectLinkSection directLinkSection) {
@@ -128,18 +135,21 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         blueprintInformationSection.cleanBlueprintInformation();
         calculationItemTreeSection.cleanCalculationItemTree();
         blueprintItemTreeSection.cleanBlueprintItemTree();
+        Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap = pricesSection.getTypeIdToCalculationPriceSetItemMap();
         pricesSection.cleanPrices();
+        skillsForCalculationSection.cleanSkillsForCalculation();
 
         CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
         BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
         calculationItemTree.build(calculation);
         blueprintItemTree.build(calculation);
 
-        CalculationProcessorResult calculationProcessorResult = calculationProcessor.process(calculationItemTree, blueprintItemTree);
+        CalculationProcessorResult calculationProcessorResult = calculationProcessor.process(calculation.getQuantity(), calculationItemTree, blueprintItemTree, existingTypeIdToCalculationPriceSetItemMap, createTypeIdToSkillLevelMap(calculation.getSkillLevels()));
         blueprintInformationSection.drawBlueprintInformation(calculation);
         calculationItemTreeSection.drawCalculationItemTree(calculationItemTree);
         blueprintItemTreeSection.drawBlueprintItemTree(blueprintItemTree);
         pricesSection.drawCalculationPriceSetItems(calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap().values());
+        skillsForCalculationSection.drawSkillsForCalculation(calculation.getSkillLevels());
     }
 
     @Override
@@ -147,14 +157,8 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         Map<Long[], UsedBlueprintDto> pathNodesToUsedBlueprintMap = new HashMap<Long[], UsedBlueprintDto>();
         pathNodesToUsedBlueprintMap.put(pathNodes, usedBlueprint);
         List<String> pathNodesStringsWithBlueprintOrSchematic = calculationItemTreeSection.addCalculationItemTreeNodes(pathNodesToUsedBlueprintMap);
-
-        CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
-        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
-        CalculationProcessorResult calculationProcessorResult = calculationProcessor.process(calculationItemTree, blueprintItemTree);
-        Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap = calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap();
-        pricesSection.cleanPrices();
-        pricesSection.drawCalculationPriceSetItems(new ArrayList<CalculationPriceItemDto>(typeIdToCalculationPriceSetItemMap.values()));
-        recalculate();
+        blueprintItemTreeSection.addBlueprintItemTreeNodes(pathNodesToUsedBlueprintMap);
+        redrawPricesAndRecalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
 
         return pathNodesStringsWithBlueprintOrSchematic;
     }
@@ -164,13 +168,6 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         EditableCalculationItem editableCalculationItem = calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
         calculationItemTreeSection.hideCalculationItemDetails(editableCalculationItem);
         calculationItemTreeSection.hideDetailsTable(editableCalculationItem);
-
-        CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
-        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
-        CalculationProcessorResult calculationProcessorResult = calculationProcessor.process(calculationItemTree, blueprintItemTree);
-        Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap = calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap();
-        pricesSection.cleanPrices();
-        pricesSection.drawCalculationPriceSetItems(new ArrayList<CalculationPriceItemDto>(typeIdToCalculationPriceSetItemMap.values()));
         recalculate();
     }
 
@@ -178,13 +175,6 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     public void reuseBlueprint(String pathNodesString) {
         EditableCalculationItem editableCalculationItem = calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
         calculationItemTreeSection.showCalculationItemDetails(editableCalculationItem);
-
-        CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
-        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
-        CalculationProcessorResult calculationProcessorResult = calculationProcessor.process(calculationItemTree, blueprintItemTree);
-        Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap = calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap();
-        pricesSection.cleanPrices();
-        pricesSection.drawCalculationPriceSetItems(new ArrayList<CalculationPriceItemDto>(typeIdToCalculationPriceSetItemMap.values()));
         recalculate();
     }
 
@@ -198,13 +188,6 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
             }
         }
         List<String> pathNodesStringsWithBlueprintOrSchematic = calculationItemTreeSection.addCalculationItemTreeNodes(pathNodesToUsedBlueprintMap);
-
-        CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
-        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
-        CalculationProcessorResult calculationProcessorResult = calculationProcessor.process(calculationItemTree, blueprintItemTree);
-        Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap = calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap();
-        pricesSection.cleanPrices();
-        pricesSection.drawCalculationPriceSetItems(new ArrayList<CalculationPriceItemDto>(typeIdToCalculationPriceSetItemMap.values()));
         recalculate();
 
         return pathNodesStringsWithBlueprintOrSchematic;
@@ -226,7 +209,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         }
         calculationItemTreeSection.excludeCalculationItemTreeNodesFromCalculation(pathNodesList);
 
-        CalculationProcessorResult calculationProcessorResult = recalculate(pricesSection.createTypeIdToPriceMap());
+        CalculationProcessorResult calculationProcessorResult = recalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
         pricesSection.cleanPrices();
         pricesSection.drawCalculationPriceSetItems(new ArrayList<CalculationPriceItemDto>(calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap().values()));
     }
@@ -245,9 +228,26 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
             }
         }
         calculationItemTreeSection.includeCalculationItemTreeNodesInCalculation(pathNodesList);
-        CalculationProcessorResult calculationProcessorResult = recalculate(pricesSection.createTypeIdToPriceMap());
+        CalculationProcessorResult calculationProcessorResult = recalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
         pricesSection.cleanPrices();
         pricesSection.drawCalculationPriceSetItems(new ArrayList<CalculationPriceItemDto>(calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap().values()));
+    }
+
+    @Override
+    public void inventBlueprint(Long[] pathNodes, InventedBlueprintDto inventedBlueprintDto) {
+        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
+        blueprintItemTree.addInventedBlueprintNodes(pathNodes, inventedBlueprintDto.getBlueprintItems());
+        BlueprintItemTreeNode blueprintItemTreeNode = blueprintItemTree.getNodeByPathNodes(pathNodes);
+        String pathNodesString = blueprintItemTreeNode.getBlueprintItem().getPathExpression().getPathNodesString();
+        EditableBlueprintItem editableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().get(pathNodesString);
+        editableBlueprintItem.getInventionTable().setWidget(0, 0, editableBlueprintItem.getUseDecryptorButton());
+        blueprintItemTreeSection.drawDecryptors(editableBlueprintItem.getDecryptorTable(), inventedBlueprintDto.getDecryptors());
+        List<ItemTypeDto> baseItems = inventedBlueprintDto.getBaseItems();
+        if (baseItems.size() > 0) {
+            editableBlueprintItem.getInventionTable().setWidget(0, 1, editableBlueprintItem.getUseBaseItemButton());
+            blueprintItemTreeSection.drawBaseItems(editableBlueprintItem.getBaseItemTable(), baseItems);
+        }
+        skillsForCalculationSection.drawSkillsForCalculation(inventedBlueprintDto.getSkillLevels());
     }
 
     @Override
@@ -255,14 +255,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         Map<Long[], UsedSchematicDto> pathNodesToSchematicMap = new HashMap<Long[], UsedSchematicDto>();
         pathNodesToSchematicMap.put(pathNodes, schematic);
         List<String> pathNodesStringsWithSchematic = calculationItemTreeSection.addCalculationItemTreeNodesForSchematic(pathNodesToSchematicMap);
-
-        CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
-        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
-        CalculationProcessorResult calculationProcessorResult = calculationProcessor.process(calculationItemTree, blueprintItemTree);
-        Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap = calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap();
-        pricesSection.cleanPrices();
-        pricesSection.drawCalculationPriceSetItems(new ArrayList<CalculationPriceItemDto>(typeIdToCalculationPriceSetItemMap.values()));
-        recalculate();
+        redrawPricesAndRecalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
 
         return pathNodesStringsWithSchematic;
     }
@@ -272,13 +265,6 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         EditableCalculationItem editableCalculationItem = calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
         calculationItemTreeSection.hideCalculationItemDetails(editableCalculationItem);
         calculationItemTreeSection.hideDetailsTable(editableCalculationItem);
-
-        CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
-        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
-        CalculationProcessorResult calculationProcessorResult = calculationProcessor.process(calculationItemTree, blueprintItemTree);
-        Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap = calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap();
-        pricesSection.cleanPrices();
-        pricesSection.drawCalculationPriceSetItems(new ArrayList<CalculationPriceItemDto>(typeIdToCalculationPriceSetItemMap.values()));
         recalculate();
     }
 
@@ -286,13 +272,6 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     public void reuseSchematics(String pathNodesString) {
         EditableCalculationItem editableCalculationItem = calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
         calculationItemTreeSection.showCalculationItemDetails(editableCalculationItem);
-
-        CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
-        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
-        CalculationProcessorResult calculationProcessorResult = calculationProcessor.process(calculationItemTree, blueprintItemTree);
-        Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap = calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap();
-        pricesSection.cleanPrices();
-        pricesSection.drawCalculationPriceSetItems(new ArrayList<CalculationPriceItemDto>(typeIdToCalculationPriceSetItemMap.values()));
         recalculate();
     }
 
@@ -305,6 +284,15 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
             ComputableCalculationPriceSetItem computableCalculationPriceSetItem = pricesSection.getTypeIdToComputableCalculationPriceSetItemMap().get(typeID);
             computableCalculationPriceSetItem.getCalculationPriceItem().setPrice(price);
             typeIdToPriceMap.put(typeID, price);
+        }
+        for (Map.Entry<String, EditableBlueprintItem> mapEntry : blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().entrySet()) {
+            String pathNodesString = mapEntry.getKey();
+            PriceTextBox copyPriceTextBox = mapEntry.getValue().getCopyPriceTextBox();
+            if (copyPriceTextBox != null) {
+                BigDecimal price = copyPriceTextBox.getPrice();
+                ComputableBlueprintItem computableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToComputableBlueprintItemMap().get(pathNodesString);
+                computableBlueprintItem.getBlueprintItem().setPrice(price);
+            }
         }
         calculationItemTreeSection.getCalculationItemTree().setPrices(typeIdToPriceMap);
         recalculate();
@@ -348,6 +336,11 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     }
 
     @Override
+    public void recalculate() {
+        recalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
+    }
+
+    @Override
     public QuickCalculatorTabPresenter.BlueprintInformationSectionDisplay getBlueprintInformationSectionDisplay() {
         return blueprintInformationSection;
     }
@@ -377,31 +370,49 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         return directLinkSection;
     }
 
-    private void redrawPrices() {
-
+    private CalculationProcessorResult recalculate(Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap) {
+        return recalculate(processAndGetCalculationProcessorResult(existingTypeIdToCalculationPriceSetItemMap));
     }
 
-    private CalculationProcessorResult recalculate() {
-        return recalculate(null);
-    }
-
-    private CalculationProcessorResult recalculate(Map<Long, BigDecimal> typeIdToPriceMap) {
-        CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
-        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
-        Long quantity = Long.valueOf(blueprintInformationSection.getEditableBlueprintInformation().getQuantityTextBox().getText());
-        CalculationProcessorResult pricingProcessorResult = calculationProcessor.process(calculationItemTree, blueprintItemTree);
-        for (Map.Entry<String, ComputableCalculationItem> mapEntry : calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().entrySet()) {
-            ComputableCalculationItem computableCalculationItem = mapEntry.getValue();
+    private CalculationProcessorResult recalculate(CalculationProcessorResult calculationProcessorResult) {
+        for (ComputableCalculationItem computableCalculationItem : calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().values()) {
             computableCalculationItem.recalculate();
         }
-        for (Map.Entry<Long, CalculationPriceItemDto> mapEntry : pricingProcessorResult.getTypeIdToCalculationPriceSetItemMap().entrySet()) {
+        for (ComputableBlueprintItem computableBlueprintItem : blueprintItemTreeSection.getPathNodesStringToComputableBlueprintItemMap().values()) {
+            computableBlueprintItem.recalculate();
+        }
+        for (Map.Entry<Long, CalculationPriceItemDto> mapEntry : calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap().entrySet()) {
             CalculationPriceItemDto calculationPriceSetItemDto = mapEntry.getValue();
             ComputableCalculationPriceSetItem computableCalculationPriceSetItem = pricesSection.getTypeIdToComputableCalculationPriceSetItemMap().get(mapEntry.getKey());
             computableCalculationPriceSetItem.setCalculationPriceItem(calculationPriceSetItemDto);
             computableCalculationPriceSetItem.recalculate();
         }
-        blueprintInformationSection.getComputableBlueprintInformation().getCalculation().setPrice(pricingProcessorResult.getTotalPrice());
-        blueprintInformationSection.getComputableBlueprintInformation().recalculate(calculator);
-        return pricingProcessorResult;
+        ComputableBlueprintInformation computableBlueprintInformation = blueprintInformationSection.getComputableBlueprintInformation();
+        computableBlueprintInformation.getCalculation().setPrice(calculationProcessorResult.getTotalPrice());
+        computableBlueprintInformation.recalculate(calculator);
+        return calculationProcessorResult;
+    }
+
+    private CalculationProcessorResult processAndGetCalculationProcessorResult(Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap) {
+        Long quantity = Long.valueOf(blueprintInformationSection.getEditableBlueprintInformation().getQuantityTextBox().getText());
+        CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
+        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
+        Map<Long, Integer> typeIdToSkillLevelMap = skillsForCalculationSection.getTypeIdToSkillLevelMap();
+        return calculationProcessor.process(quantity, calculationItemTree, blueprintItemTree, existingTypeIdToCalculationPriceSetItemMap, typeIdToSkillLevelMap);
+    }
+
+    private void redrawPricesAndRecalculate(Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap) {
+        CalculationProcessorResult calculationProcessorResult = processAndGetCalculationProcessorResult(existingTypeIdToCalculationPriceSetItemMap);
+        pricesSection.cleanPrices();
+        pricesSection.drawCalculationPriceSetItems(calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap().values());
+        recalculate(calculationProcessorResult);
+    }
+
+    private Map<Long, Integer> createTypeIdToSkillLevelMap(List<SkillLevelDto> skillLevels) {
+        Map<Long, Integer> typeIdToSkillLevelMap = new HashMap<Long, Integer>();
+        for (SkillLevelDto skillLevel : skillLevels) {
+            typeIdToSkillLevelMap.put(skillLevel.getTypeID(), skillLevel.getLevel());
+        }
+        return typeIdToSkillLevelMap;
     }
 }

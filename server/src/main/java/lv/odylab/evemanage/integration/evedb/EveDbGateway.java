@@ -14,6 +14,8 @@ import java.util.List;
 
 public interface EveDbGateway {
 
+    List<ItemTypeDto> getBaseItemsForTypeID(Long typeID) throws EveDbException;
+
     BlueprintTypeDto getBlueprintTypeByTypeID(Long typeID) throws EveDbException;
 
     BlueprintDetailsDto getBlueprintDetailsForTypeID(Long typeID) throws EveDbException;

@@ -1,5 +1,6 @@
 package lv.odylab.evemanage.domain.eve;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -41,18 +42,22 @@ public enum SkillForCalculation {
     OFFENSIVE_SUBSYSTEM_TECHNOLOGY(30327L, 270L, "Offensive Subsystem Technology"),
     PROPULSION_SUBSYSTEM_TECHNOLOGY(30788L, 270L, "Propulsion Subsystem Technology");
 
-    private Long typeID;
-    private Long groupID;
-    private String name;
+    private final Long typeID;
+    private final Long groupID;
+    private final String name;
 
-    private static Map<Long, SkillForCalculation> typeIdToSkillMap = new HashMap<Long, SkillForCalculation>();
-    private static Set<Long> typeIdSet = new HashSet<Long>();
+    private static Map<Long, SkillForCalculation> typeIdToSkillMap;
+    private static Set<Long> typeIdSet;
 
     static {
+        Map<Long, SkillForCalculation> typeIdToSkillMap = new HashMap<Long, SkillForCalculation>();
+        Set<Long> typeIdSet = new HashSet<Long>();
         for (SkillForCalculation skillForCalculation : values()) {
             typeIdToSkillMap.put(skillForCalculation.getTypeID(), skillForCalculation);
             typeIdSet.add(skillForCalculation.getTypeID());
         }
+        SkillForCalculation.typeIdToSkillMap = Collections.unmodifiableMap(typeIdToSkillMap);
+        SkillForCalculation.typeIdSet = Collections.unmodifiableSet(typeIdSet);
     }
 
     private SkillForCalculation(Long typeID, Long groupID, String name) {

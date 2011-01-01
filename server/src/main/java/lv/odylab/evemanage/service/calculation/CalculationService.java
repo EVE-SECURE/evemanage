@@ -13,6 +13,8 @@ public interface CalculationService {
 
     UsedBlueprint useBlueprint(Long[] pathNodes, Long blueprintProductTypeID) throws InvalidItemTypeException, EveDbException, InvalidNameException;
 
+    InventedBlueprint inventBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException;
+
     UsedSchematic useSchematic(Long[] pathNodes, String schematicName) throws InvalidItemTypeException, EveDbException;
 
 }

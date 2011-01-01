@@ -68,7 +68,7 @@ public class ComputableCalculationItem {
             totalPriceForParent = totalPriceForParent.add(calculationItem.getTotalPriceForParent());
         }
         if (quantityLabel != null) {
-            quantityLabel.setQuantity(quantity);
+            quantityLabel.setQuantity(quantity, firstCalculationItem.getQuantityMultiplier());
         }
         if (quantityForParentLabel != null) {
             quantityForParentLabel.setQuantity(parentQuantity * quantity);
@@ -80,7 +80,7 @@ public class ComputableCalculationItem {
             totalPriceLabel.setPrice(totalPrice);
         }
         if (parentQuantityLabel != null) {
-            parentQuantityLabel.setQuantity(parentQuantity);
+            parentQuantityLabel.setQuantity(parentQuantity, firstCalculationItem.getParentQuantityMultiplier());
         }
         if (totalPriceForParentLabel != null) {
             totalPriceForParentLabel.setPrice(totalPriceForParent);

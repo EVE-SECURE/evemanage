@@ -121,13 +121,13 @@ public class CalculationItemTreeSection implements QuickCalculatorTabPresenter.C
         rootCalculationItemTable.setWidget(index, 0, imageItemInfoLink);
         rootCalculationItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, calculationItemTreeNodeSummary.getItemTypeName(), calculationItemTreeNodeSummary.getItemTypeID()));
         rootCalculationItemTable.setWidget(index, 2, new Label("x"));
-        QuantityLabel quantityForParentLabel = new QuantityLabel(calculationItemTreeNodeSummary.getParentQuantity() * calculationItemTreeNodeSummary.getQuantity());
+        QuantityLabel quantityForParentLabel = new QuantityLabel(resources, calculationItemTreeNodeSummary.getParentQuantity() * calculationItemTreeNodeSummary.getQuantity(), calculationItemTreeNodeSummary.getParentQuantityMultiplier());
         HorizontalPanel quantityAndDamagePerJobPanel = new HorizontalPanel();
         quantityAndDamagePerJobPanel.add(quantityForParentLabel);
         BigDecimal damagePerJob = calculationItemTreeNodeSummary.getDamagePerJob();
         if (BigDecimal.ONE.compareTo(damagePerJob) == 1) {
             DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
-            damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+            damagePerJobLabel.addStyleName(resources.css().damagePerJobLabel());
             quantityAndDamagePerJobPanel.add(damagePerJobLabel);
             quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
         }
@@ -278,13 +278,13 @@ public class CalculationItemTreeSection implements QuickCalculatorTabPresenter.C
         calculationItemTable.setWidget(index, 0, imageItemInfoLink);
         calculationItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, calculationItemTreeNodeSummary.getItemTypeName(), calculationItemTreeNodeSummary.getItemTypeID()));
         calculationItemTable.setWidget(index, 2, new Label("x"));
-        QuantityLabel quantityLabel = new QuantityLabel(calculationItemTreeNodeSummary.getQuantity(), calculationItemTreeNodeSummary.getQuantityMultiplier());
+        QuantityLabel quantityLabel = new QuantityLabel(resources, calculationItemTreeNodeSummary.getQuantity(), calculationItemTreeNodeSummary.getQuantityMultiplier());
         HorizontalPanel quantityAndDamagePerJobPanel = new HorizontalPanel();
         quantityAndDamagePerJobPanel.add(quantityLabel);
         BigDecimal damagePerJob = calculationItemTreeNodeSummary.getDamagePerJob();
         if (BigDecimal.ONE.compareTo(damagePerJob) == 1) {
             DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
-            damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+            damagePerJobLabel.addStyleName(resources.css().damagePerJobLabel());
             quantityAndDamagePerJobPanel.add(damagePerJobLabel);
             quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
         }
@@ -296,7 +296,7 @@ public class CalculationItemTreeSection implements QuickCalculatorTabPresenter.C
         PriceLabel totalPriceLabel = new PriceLabel(calculationItemTreeNodeSummary.getTotalPrice());
         calculationItemTable.setWidget(index, 7, totalPriceLabel);
         calculationItemTable.setWidget(index, 8, new Label("x"));
-        QuantityLabel parentQuantityLabel = new QuantityLabel(calculationItemTreeNodeSummary.getParentQuantity(), calculationItemTreeNodeSummary.getParentQuantityMultiplier());
+        QuantityLabel parentQuantityLabel = new QuantityLabel(resources, calculationItemTreeNodeSummary.getParentQuantity(), calculationItemTreeNodeSummary.getParentQuantityMultiplier());
         calculationItemTable.setWidget(index, 9, parentQuantityLabel);
         calculationItemTable.setWidget(index, 10, new Label("="));
         PriceLabel totalPriceForParentLabel = new PriceLabel(calculationItemTreeNodeSummary.getTotalPriceForParent());
@@ -492,16 +492,6 @@ public class CalculationItemTreeSection implements QuickCalculatorTabPresenter.C
     }
 
     @Override
-    public Map<String, EditableCalculationItem> getPathNodesStringToEditableCalculationItemMap() {
-        return pathNodesStringToEditableCalculationItemMap;
-    }
-
-    @Override
-    public Map<String, ComputableCalculationItem> getPathNodesStringToComputableCalculationItemMap() {
-        return pathNodesStringToComputableCalculationItemMap;
-    }
-
-    @Override
     public List<String> getPathNodeStringsWithUsedBlueprint() {
         return pathNodeStringsWithUsedBlueprint;
     }
@@ -584,6 +574,16 @@ public class CalculationItemTreeSection implements QuickCalculatorTabPresenter.C
             CalculationItemTreeNode calculationItemTreeNode = calculationItemTree.getNodeByPathNodes(pathNodes);
             calculationItemTreeNode.setExcludeChildNodesFromCalculation(false);
         }
+    }
+
+    @Override
+    public Map<String, EditableCalculationItem> getPathNodesStringToEditableCalculationItemMap() {
+        return pathNodesStringToEditableCalculationItemMap;
+    }
+
+    @Override
+    public Map<String, ComputableCalculationItem> getPathNodesStringToComputableCalculationItemMap() {
+        return pathNodesStringToComputableCalculationItemMap;
     }
 
     @Override

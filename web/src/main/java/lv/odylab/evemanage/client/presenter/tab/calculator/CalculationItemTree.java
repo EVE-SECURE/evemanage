@@ -127,7 +127,7 @@ public class CalculationItemTree {
                 recursivelyPopulateCalculationExpressionWithPriceInformation(calculationItemTreeNode, typeIdToPriceMap);
             } else {
                 CalculationItemDto calculationItem = calculationItemTreeNode.getCalculationItems().get(0);
-                typeIdToPriceMap.put(calculationItem.getItemTypeID(), calculationItem.getPrice());
+                typeIdToPriceMap.put(calculationItem.getItemTypeID(), calculationItem.getActualPrice());
             }
         }
         for (Map.Entry<Long, BigDecimal> entry : typeIdToPriceMap.entrySet()) {
@@ -146,7 +146,7 @@ public class CalculationItemTree {
                 recursivelyPopulateCalculationExpressionWithPriceInformation(calculationItemTreeNode, typeIdToPriceMap);
             } else {
                 CalculationItemDto calculationItem = calculationItemTreeNode.getCalculationItems().get(0);
-                typeIdToPriceMap.put(calculationItem.getItemTypeID(), calculationItem.getPrice());
+                typeIdToPriceMap.put(calculationItem.getItemTypeID(), calculationItem.getActualPrice());
             }
         }
     }*/
