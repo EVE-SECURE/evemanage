@@ -4,6 +4,7 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.Unindexed;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
+import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 
 import javax.persistence.Embedded;
@@ -21,6 +22,8 @@ public class Calculation implements Serializable {
     @Indexed
     private String name;
     private String price;
+    private String pricePerUnit;
+    private Long quantity;
     private Long blueprintTypeID;
     private String blueprintTypeName;
     private Long productTypeID;
@@ -43,6 +46,10 @@ public class Calculation implements Serializable {
     private Date updatedDate;
     @Embedded
     private List<CalculationItem> calculationItems;
+    @Embedded
+    private List<BlueprintItem> blueprintItems;
+    @Embedded
+    private List<SkillLevel> skillLevels;
 
     public Long getId() {
         return id;
@@ -74,6 +81,22 @@ public class Calculation implements Serializable {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public String getPricePerUnit() {
+        return pricePerUnit;
+    }
+
+    public void setPricePerUnit(String pricePerUnit) {
+        this.pricePerUnit = pricePerUnit;
+    }
+
+    public Long getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
     }
 
     public Long getBlueprintTypeID() {
@@ -210,5 +233,21 @@ public class Calculation implements Serializable {
 
     public void setCalculationItems(List<CalculationItem> calculationItems) {
         this.calculationItems = calculationItems;
+    }
+
+    public List<BlueprintItem> getBlueprintItems() {
+        return blueprintItems;
+    }
+
+    public void setBlueprintItems(List<BlueprintItem> blueprintItems) {
+        this.blueprintItems = blueprintItems;
+    }
+
+    public List<SkillLevel> getSkillLevels() {
+        return skillLevels;
+    }
+
+    public void setSkillLevels(List<SkillLevel> skillLevels) {
+        this.skillLevels = skillLevels;
     }
 }

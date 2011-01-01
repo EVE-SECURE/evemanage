@@ -10,10 +10,14 @@ public class EveCalculator {
     }
 
     public Long calculateMaterialAmount(Long quantity, Integer meLevel, Integer wasteFactor) {
+        return calculateMaterialAmount(quantity, meLevel, wasteFactor, 5);
+    }
+
+    public Long calculateMaterialAmount(Long quantity, Integer meLevel, Integer wasteFactor, Integer productionEfficiencySkillLevel) {
         if (meLevel < 0) {
-            return Math.round(quantity * (1.0 + wasteFactor / 100.0 * (1 - meLevel)));
+            return Math.round(quantity * (1.25 - 0.05 * productionEfficiencySkillLevel + wasteFactor / 100.0 * (1 - meLevel)));
         } else {
-            return Math.round(quantity * (1.0 + wasteFactor / 100.0 / (1 + meLevel)));
+            return Math.round(quantity * (1.25 - 0.05 * productionEfficiencySkillLevel + wasteFactor / 100.0 / (1 + meLevel)));
         }
     }
 
@@ -39,5 +43,13 @@ public class EveCalculator {
 
     public Integer calculateInventionTime(Integer researchTechTime, double inventionSlotMultiplier) {
         return (int) Math.round(researchTechTime * inventionSlotMultiplier);
+    }
+
+    public Long calculateBlueprintCopyQuantity(Long parentQuantity, Integer maxProductionLimit) {
+        return (long) Math.ceil(1.0 * parentQuantity / maxProductionLimit);
+    }
+
+    public RationalNumber calculateBlueprintQuantityCorrectiveMultiplier(Long requiredQuantity, Long quantity, Integer maxProductionLimit) {
+        return new RationalNumber(requiredQuantity, quantity * maxProductionLimit);
     }
 }

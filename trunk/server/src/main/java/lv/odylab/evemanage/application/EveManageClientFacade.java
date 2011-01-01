@@ -11,6 +11,7 @@ import lv.odylab.evemanage.application.exception.validation.InvalidPriceExceptio
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDetailsDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.InventedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
@@ -138,6 +139,8 @@ public interface EveManageClientFacade {
     UsedBlueprintDto useBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException;
 
     UsedBlueprintDto useBlueprint(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException;
+
+    InventedBlueprintDto inventBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException;
 
     UsedSchematicDto useSchematic(Long[] pathNodes, String schematicName) throws InvalidItemTypeException, EveDbException;
 

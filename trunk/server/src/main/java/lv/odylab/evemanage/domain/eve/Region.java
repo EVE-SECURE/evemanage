@@ -1,5 +1,6 @@
 package lv.odylab.evemanage.domain.eve;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,15 +70,17 @@ public enum Region {
     VERGE_VENDOR(10000068L, "Verge Vendor"),
     BLACK_RISE(10000069L, "Black Rise");
 
-    private Long regionID;
-    private String name;
+    private final Long regionID;
+    private final String name;
 
-    private static Map<Long, Region> regionIdToRegionMap = new HashMap<Long, Region>();
+    private static Map<Long, Region> regionIdToRegionMap;
 
     static {
+        Map<Long, Region> regionIdToRegionMap = new HashMap<Long, Region>();
         for (Region region : values()) {
             regionIdToRegionMap.put(region.getRegionID(), region);
         }
+        Region.regionIdToRegionMap = Collections.unmodifiableMap(regionIdToRegionMap);
     }
 
     private Region(Long regionID, String name) {

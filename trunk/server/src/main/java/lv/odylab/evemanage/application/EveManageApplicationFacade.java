@@ -21,6 +21,7 @@ import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
 import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
+import lv.odylab.evemanage.service.calculation.InventedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedSchematic;
 
@@ -134,6 +135,8 @@ public interface EveManageApplicationFacade {
     UsedBlueprint useBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException;
 
     UsedBlueprint useBlueprint(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException;
+
+    InventedBlueprint inventBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException;
 
     UsedSchematic useSchematic(Long[] pathNodes, String schematicName) throws InvalidItemTypeException, EveDbException;
 

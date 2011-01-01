@@ -1,5 +1,6 @@
 package lv.odylab.evemanage.service.calculation;
 
+import lv.odylab.evemanage.domain.calculation.BlueprintItem;
 import lv.odylab.evemanage.domain.calculation.CalculationItem;
 
 import java.io.Serializable;
@@ -9,6 +10,7 @@ public class UsedBlueprint implements Serializable {
     private Integer materialLevel;
     private Integer productivityLevel;
     private List<CalculationItem> calculationItems;
+    private BlueprintItem blueprintItem;
 
     public Integer getMaterialLevel() {
         return materialLevel;
@@ -32,5 +34,13 @@ public class UsedBlueprint implements Serializable {
 
     public void setCalculationItems(List<CalculationItem> calculationItems) {
         this.calculationItems = calculationItems;
+    }
+
+    public BlueprintItem getBlueprintItem() {
+        return blueprintItem;
+    }
+
+    public void setBlueprintItem(BlueprintItem blueprintItem) {
+        this.blueprintItem = blueprintItem;
     }
 }

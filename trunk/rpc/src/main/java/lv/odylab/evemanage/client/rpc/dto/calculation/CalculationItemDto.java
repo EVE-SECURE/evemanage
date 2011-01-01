@@ -1,7 +1,7 @@
 package lv.odylab.evemanage.client.rpc.dto.calculation;
 
 import lv.odylab.evemanage.client.rpc.PathExpression;
-import lv.odylab.evemanage.client.rpc.RationalNumberProductExpression;
+import lv.odylab.evemanage.client.rpc.RationalNumber;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -13,9 +13,9 @@ public class CalculationItemDto implements Serializable {
     private String itemTypeName;
     private String itemTypeIcon;
     private Long quantity;
-    private RationalNumberProductExpression quantityMultiplier;
+    private RationalNumber quantityMultiplier;
     private Long parentQuantity;
-    private RationalNumberProductExpression parentQuantityMultiplier;
+    private RationalNumber parentQuantityMultiplier;
     private Long perfectQuantity;
     private Integer wasteFactor;
     private BigDecimal damagePerJob;
@@ -71,11 +71,11 @@ public class CalculationItemDto implements Serializable {
         this.quantity = quantity;
     }
 
-    public RationalNumberProductExpression getQuantityMultiplier() {
+    public RationalNumber getQuantityMultiplier() {
         return quantityMultiplier;
     }
 
-    public void setQuantityMultiplier(RationalNumberProductExpression quantityMultiplier) {
+    public void setQuantityMultiplier(RationalNumber quantityMultiplier) {
         this.quantityMultiplier = quantityMultiplier;
     }
 
@@ -87,11 +87,11 @@ public class CalculationItemDto implements Serializable {
         this.parentQuantity = parentQuantity;
     }
 
-    public RationalNumberProductExpression getParentQuantityMultiplier() {
+    public RationalNumber getParentQuantityMultiplier() {
         return parentQuantityMultiplier;
     }
 
-    public void setParentQuantityMultiplier(RationalNumberProductExpression parentQuantityMultiplier) {
+    public void setParentQuantityMultiplier(RationalNumber parentQuantityMultiplier) {
         this.parentQuantityMultiplier = parentQuantityMultiplier;
     }
 

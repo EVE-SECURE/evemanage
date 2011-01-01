@@ -13,6 +13,7 @@ import lv.odylab.evemanage.application.exception.validation.InvalidPriceExceptio
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDetailsDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.InventedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
@@ -40,6 +41,7 @@ import lv.odylab.evemanage.domain.user.PriceFetchOption;
 import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
+import lv.odylab.evemanage.service.calculation.InventedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedSchematic;
 
@@ -456,6 +458,12 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     public UsedBlueprintDto useBlueprint(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException {
         UsedBlueprint usedBlueprint = applicationFacade.useBlueprint(pathNodes, blueprintProductTypeID);
         return mapper.map(usedBlueprint, UsedBlueprintDto.class);
+    }
+
+    @Override
+    public InventedBlueprintDto inventBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
+        InventedBlueprint inventedBlueprint = applicationFacade.inventBlueprint(pathNodes, blueprintName);
+        return mapper.map(inventedBlueprint, InventedBlueprintDto.class);
     }
 
     @Override

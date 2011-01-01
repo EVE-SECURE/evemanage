@@ -7,6 +7,7 @@ public class UsedBlueprintDto implements Serializable {
     private Integer materialLevel;
     private Integer productivityLevel;
     private List<CalculationItemDto> calculationItems;
+    private BlueprintItemDto blueprintItem;
 
     public Integer getMaterialLevel() {
         return materialLevel;
@@ -30,5 +31,13 @@ public class UsedBlueprintDto implements Serializable {
 
     public void setCalculationItems(List<CalculationItemDto> calculationItems) {
         this.calculationItems = calculationItems;
+    }
+
+    public BlueprintItemDto getBlueprintItem() {
+        return blueprintItem;
+    }
+
+    public void setBlueprintItem(BlueprintItemDto blueprintItem) {
+        this.blueprintItem = blueprintItem;
     }
 }

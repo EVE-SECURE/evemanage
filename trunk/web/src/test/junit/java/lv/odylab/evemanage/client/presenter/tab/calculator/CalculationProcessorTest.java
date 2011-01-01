@@ -1,6 +1,5 @@
 package lv.odylab.evemanage.client.presenter.tab.calculator;
 
-import lv.odylab.evemanage.client.rpc.EveCalculator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,7 +8,7 @@ public class CalculationProcessorTest {
 
     @Before
     public void setUp() {
-        calculationProcessor = new CalculationProcessor(new EveCalculator());
+        //calculationProcessor = new CalculationProcessor(new EveCalculator());
     }
 
     @Test
@@ -374,15 +373,15 @@ public class CalculationProcessorTest {
         assertThat(typeIdToCalculationPriceSetItemMap.get(38L).getQuantity(), equalTo(149562L));
         assertThat(typeIdToCalculationPriceSetItemMap.get(39L).getQuantity(), equalTo(23852L));
         assertThat(typeIdToCalculationPriceSetItemMap.get(40L).getQuantity(), equalTo(7524L));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(21009L).getPrice(), equalTo(new BigDecimal("4000000.00")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(21017L).getPrice(), equalTo(new BigDecimal("4200000.00")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(34L).getPrice(), equalTo(new BigDecimal("2.20")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(35L).getPrice(), equalTo(new BigDecimal("3.00")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(36L).getPrice(), equalTo(new BigDecimal("26.85")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(37L).getPrice(), equalTo(new BigDecimal("51.00")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(38L).getPrice(), equalTo(new BigDecimal("80.00")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(39L).getPrice(), equalTo(new BigDecimal("1000.01")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(40L).getPrice(), equalTo(new BigDecimal("1800.00")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(21009L).getActualPrice(), equalTo(new BigDecimal("4000000.00")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(21017L).getActualPrice(), equalTo(new BigDecimal("4200000.00")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(34L).getActualPrice(), equalTo(new BigDecimal("2.20")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(35L).getActualPrice(), equalTo(new BigDecimal("3.00")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(36L).getActualPrice(), equalTo(new BigDecimal("26.85")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(37L).getActualPrice(), equalTo(new BigDecimal("51.00")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(38L).getActualPrice(), equalTo(new BigDecimal("80.00")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(39L).getActualPrice(), equalTo(new BigDecimal("1000.01")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(40L).getActualPrice(), equalTo(new BigDecimal("1800.00")));
         assertThat(typeIdToCalculationPriceSetItemMap.get(21009L).getTotalPrice(), equalTo(new BigDecimal("64000000.00")));
         assertThat(typeIdToCalculationPriceSetItemMap.get(21017L).getTotalPrice(), equalTo(new BigDecimal("63000000.00")));
         assertThat(typeIdToCalculationPriceSetItemMap.get(34L).getTotalPrice(), equalTo(new BigDecimal("187829714.60")));
@@ -480,15 +479,15 @@ public class CalculationProcessorTest {
         assertThat(typeIdToCalculationPriceSetItemMap.get(38L).getQuantity(), equalTo(1495620L));
         assertThat(typeIdToCalculationPriceSetItemMap.get(39L).getQuantity(), equalTo(238520L));
         assertThat(typeIdToCalculationPriceSetItemMap.get(40L).getQuantity(), equalTo(75240L));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(21009L).getPrice(), equalTo(new BigDecimal("4000000.00")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(21017L).getPrice(), equalTo(new BigDecimal("4200000.00")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(34L).getPrice(), equalTo(new BigDecimal("2.20")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(35L).getPrice(), equalTo(new BigDecimal("3.00")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(36L).getPrice(), equalTo(new BigDecimal("26.85")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(37L).getPrice(), equalTo(new BigDecimal("51.00")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(38L).getPrice(), equalTo(new BigDecimal("80.00")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(39L).getPrice(), equalTo(new BigDecimal("1000.01")));
-        assertThat(typeIdToCalculationPriceSetItemMap.get(40L).getPrice(), equalTo(new BigDecimal("1800.00")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(21009L).getActualPrice(), equalTo(new BigDecimal("4000000.00")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(21017L).getActualPrice(), equalTo(new BigDecimal("4200000.00")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(34L).getActualPrice(), equalTo(new BigDecimal("2.20")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(35L).getActualPrice(), equalTo(new BigDecimal("3.00")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(36L).getActualPrice(), equalTo(new BigDecimal("26.85")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(37L).getActualPrice(), equalTo(new BigDecimal("51.00")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(38L).getActualPrice(), equalTo(new BigDecimal("80.00")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(39L).getActualPrice(), equalTo(new BigDecimal("1000.01")));
+        assertThat(typeIdToCalculationPriceSetItemMap.get(40L).getActualPrice(), equalTo(new BigDecimal("1800.00")));
         assertThat(typeIdToCalculationPriceSetItemMap.get(21009L).getTotalPrice(), equalTo(new BigDecimal("640000000.00")));
         assertThat(typeIdToCalculationPriceSetItemMap.get(21017L).getTotalPrice(), equalTo(new BigDecimal("630000000.00")));
         assertThat(typeIdToCalculationPriceSetItemMap.get(34L).getTotalPrice(), equalTo(new BigDecimal("1878297146.00")));

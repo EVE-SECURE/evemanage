@@ -29,13 +29,13 @@ public enum Decryptor {
     SYMBIOTIC_FIGURES(23186L, 730L, "Symbiotic Figures", "0.6", 9, -2, 1),
     STOLEN_FORMULAS(23187L, 730L, "Stolen Formulas", "1.8", 4, -1, 2);
 
-    private Long typeID;
-    private Long categoryID;
-    private String name;
-    private String probabilityMultiplier;
-    private Integer maxRunModifier;
-    private Integer meModifier;
-    private Integer peModifier;
+    private final Long typeID;
+    private final Long categoryID;
+    private final String name;
+    private final String probabilityMultiplier;
+    private final Integer maxRunModifier;
+    private final Integer meModifier;
+    private final Integer peModifier;
 
     private Decryptor(Long typeID, Long categoryID, String name, String probabilityMultiplier, Integer maxRunModifier, Integer meModifier, Integer peModifier) {
         this.typeID = typeID;
@@ -45,6 +45,34 @@ public enum Decryptor {
         this.maxRunModifier = maxRunModifier;
         this.meModifier = meModifier;
         this.peModifier = peModifier;
+    }
+
+    public Long getTypeID() {
+        return typeID;
+    }
+
+    public Long getCategoryID() {
+        return categoryID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getProbabilityMultiplier() {
+        return probabilityMultiplier;
+    }
+
+    public Integer getMaxRunModifier() {
+        return maxRunModifier;
+    }
+
+    public Integer getMeModifier() {
+        return meModifier;
+    }
+
+    public Integer getPeModifier() {
+        return peModifier;
     }
 }
 

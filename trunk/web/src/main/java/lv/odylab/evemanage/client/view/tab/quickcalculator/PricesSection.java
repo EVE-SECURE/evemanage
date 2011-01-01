@@ -1,7 +1,13 @@
 package lv.odylab.evemanage.client.view.tab.quickcalculator;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DecoratedPopupPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -31,9 +37,12 @@ import lv.odylab.evemanage.client.widget.PriceLabel;
 import lv.odylab.evemanage.client.widget.PriceTextBox;
 import lv.odylab.evemanage.client.widget.QuantityLabel;
 import lv.odylab.evemanage.client.widget.RegionListBox;
+import lv.odylab.evemanage.client.widget.SortableFlexTable;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +56,10 @@ public class PricesSection implements QuickCalculatorTabPresenter.PricesSectionD
     private EveImageUrlProvider imageUrlProvider;
 
     private Image spinnerImage;
-    private Label priceSetLabel;
-    private FlexTable priceSetItemTable;
+    private HorizontalPanel pricesSectionLabelAndSortByImagePanel;
+    private Label pricesSectionLabel;
+    private Image sortByImage;
+    private SortableFlexTable priceSetItemTable;
     private FlexTable applyAndFetchPricesTable;
     private Button fetchEveCentralPricesButton;
     private Button fetchEveMetricsPricesButton;
@@ -58,6 +69,7 @@ public class PricesSection implements QuickCalculatorTabPresenter.PricesSectionD
 
     private Map<Long, EditableCalculationPriceSetItem> typeIdToEditableCalculationPriceSetItemMap;
     private Map<Long, ComputableCalculationPriceSetItem> typeIdToComputableCalculationPriceSetItemMap;
+    private List<HandlerRegistration> pricesSectionStaticRegistrationHandlers;
 
     @Inject
     public PricesSection(EveManageConstants constants, EveManageResources resources, EveManageMessages messages, EveManageUrlMessages urlMessages, CcpJsMessages ccpJsMessages, EveImageUrlProvider imageUrlProvider) {
@@ -72,9 +84,31 @@ public class PricesSection implements QuickCalculatorTabPresenter.PricesSectionD
         spinnerImage.setTitle(messages.loading());
         spinnerImage.setVisible(false);
 
-        priceSetLabel = new Label(messages.prices());
-        priceSetLabel.addStyleName(resources.css().tabHeadingText());
-        priceSetItemTable = new FlexTable();
+        pricesSectionLabel = new Label(messages.prices());
+        pricesSectionLabel.addStyleName(resources.css().tabHeadingText());
+        sortByImage = new Image(resources.sortByIcon());
+        sortByImage.addStyleName(resources.css().image16());
+        sortByImage.setTitle("Click to see sorting options");
+        pricesSectionLabelAndSortByImagePanel = new HorizontalPanel();
+        pricesSectionLabelAndSortByImagePanel.add(pricesSectionLabel);
+        pricesSectionLabelAndSortByImagePanel.add(sortByImage);
+
+        final DecoratedPopupPanel pricesSortingPopup = new DecoratedPopupPanel(true);
+        FlexTable pricesSortingTable = new FlexTable();
+        pricesSortingTable.setWidget(0, 0, new Label("Sort by:"));
+        Anchor typeIdSortAnchor = new Anchor("type id (default)");
+        Anchor nameSortAnchor = new Anchor("name");
+        Anchor priceSortAnchor = new Anchor("price");
+        Anchor quantitySortAnchor = new Anchor("quantity");
+        Anchor totalPriceSortAnchor = new Anchor("total price");
+        pricesSortingTable.setWidget(1, 0, typeIdSortAnchor);
+        pricesSortingTable.setWidget(2, 0, nameSortAnchor);
+        pricesSortingTable.setWidget(3, 0, priceSortAnchor);
+        pricesSortingTable.setWidget(4, 0, quantitySortAnchor);
+        pricesSortingTable.setWidget(5, 0, totalPriceSortAnchor);
+        pricesSortingPopup.add(pricesSortingTable);
+
+        priceSetItemTable = new SortableFlexTable(PRICES_TYPE_A_Z_COMPARATOR);
 
         applyAndFetchPricesTable = new FlexTable();
         fetchEveCentralPricesButton = new Button(messages.fetchPricesFromEveCentral());
@@ -89,11 +123,63 @@ public class PricesSection implements QuickCalculatorTabPresenter.PricesSectionD
 
         typeIdToEditableCalculationPriceSetItemMap = new HashMap<Long, EditableCalculationPriceSetItem>();
         typeIdToComputableCalculationPriceSetItemMap = new HashMap<Long, ComputableCalculationPriceSetItem>();
+        pricesSectionStaticRegistrationHandlers = new ArrayList<HandlerRegistration>();
+
+        pricesSectionStaticRegistrationHandlers.add(sortByImage.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Widget source = (Widget) event.getSource();
+                int left = source.getAbsoluteLeft() + 10;
+                int top = source.getAbsoluteTop() + 10;
+                pricesSortingPopup.setPopupPosition(left, top);
+                pricesSortingPopup.show();
+            }
+        }));
+        pricesSectionStaticRegistrationHandlers.add(typeIdSortAnchor.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                priceSetItemTable.setCurrentComparator(PRICES_TYPE_A_Z_COMPARATOR);
+                pricesSortingPopup.hide();
+                priceSetItemTable.sort();
+            }
+        }));
+        pricesSectionStaticRegistrationHandlers.add(nameSortAnchor.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                priceSetItemTable.setCurrentComparator(PRICES_NAME_A_Z_COMPARATOR);
+                pricesSortingPopup.hide();
+                priceSetItemTable.sort();
+            }
+        }));
+        pricesSectionStaticRegistrationHandlers.add(priceSortAnchor.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                priceSetItemTable.setCurrentComparator(PRICES_PRICE_A_Z_COMPARATOR);
+                pricesSortingPopup.hide();
+                priceSetItemTable.sort();
+            }
+        }));
+        pricesSectionStaticRegistrationHandlers.add(quantitySortAnchor.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                priceSetItemTable.setCurrentComparator(PRICES_QUANTITY_A_Z_COMPARATOR);
+                pricesSortingPopup.hide();
+                priceSetItemTable.sort();
+            }
+        }));
+        pricesSectionStaticRegistrationHandlers.add(totalPriceSortAnchor.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                priceSetItemTable.setCurrentComparator(PRICES_TOTAL_PRICE_A_Z_COMPARATOR);
+                pricesSortingPopup.hide();
+                priceSetItemTable.sort();
+            }
+        }));
     }
 
     @Override
     public void attach(HasWidgets container) {
-        container.add(priceSetLabel);
+        container.add(pricesSectionLabelAndSortByImagePanel);
         container.add(priceSetItemTable);
         applyAndFetchPricesTable.setWidget(0, 0, fetchEveCentralPricesButton);
         applyAndFetchPricesTable.setWidget(0, 1, fetchEveMetricsPricesButton);
@@ -187,13 +273,13 @@ public class PricesSection implements QuickCalculatorTabPresenter.PricesSectionD
         eveMetricsImage.setTitle(messages.eveMetricsItemPrice());
         priceSetItemTable.setWidget(index, 4, new EveMetricsItemPriceLink(constants, urlMessages, eveMetricsImage, calculationPriceItem.getItemCategoryID(), typeID));
         priceSetItemTable.setWidget(index, 5, new Label("x"));
-        QuantityLabel quantityLabel = new QuantityLabel(calculationPriceItem.getQuantity());
+        QuantityLabel quantityLabel = new QuantityLabel(resources, calculationPriceItem.getQuantity(), calculationPriceItem.getQuantityMultiplier());
         HorizontalPanel quantityAndDamagePerJobPanel = new HorizontalPanel();
         quantityAndDamagePerJobPanel.add(quantityLabel);
         BigDecimal damagePerJob = calculationPriceItem.getDamagePerJob();
         if (BigDecimal.ONE.compareTo(damagePerJob) == 1) {
             DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
-            damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+            damagePerJobLabel.addStyleName(resources.css().damagePerJobLabel());
             quantityAndDamagePerJobPanel.add(damagePerJobLabel);
             quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
         }
@@ -208,14 +294,14 @@ public class PricesSection implements QuickCalculatorTabPresenter.PricesSectionD
     }
 
     @Override
-    public Map<Long, BigDecimal> createTypeIdToPriceMap() {
-        Map<Long, BigDecimal> typeIdToPriceMap = new HashMap<Long, BigDecimal>();
+    public Map<Long, CalculationPriceItemDto> getTypeIdToCalculationPriceSetItemMap() {
+        Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap = new HashMap<Long, CalculationPriceItemDto>();
         for (Map.Entry<Long, EditableCalculationPriceSetItem> mapEntry : typeIdToEditableCalculationPriceSetItemMap.entrySet()) {
             ComputableCalculationPriceSetItem computableCalculationPriceSetItem = typeIdToComputableCalculationPriceSetItemMap.get(mapEntry.getKey());
             computableCalculationPriceSetItem.getCalculationPriceItem();
-            typeIdToPriceMap.put(mapEntry.getKey(), computableCalculationPriceSetItem.getCalculationPriceItem().getPrice());
+            typeIdToCalculationPriceSetItemMap.put(mapEntry.getKey(), computableCalculationPriceSetItem.getCalculationPriceItem());
         }
-        return typeIdToPriceMap;
+        return typeIdToCalculationPriceSetItemMap;
     }
 
     @Override
@@ -227,4 +313,46 @@ public class PricesSection implements QuickCalculatorTabPresenter.PricesSectionD
     public Map<Long, ComputableCalculationPriceSetItem> getTypeIdToComputableCalculationPriceSetItemMap() {
         return typeIdToComputableCalculationPriceSetItemMap;
     }
+
+    @Override
+    public List<HandlerRegistration> getPricesSectionStaticRegistrationHandlers() {
+        return pricesSectionStaticRegistrationHandlers;
+    }
+
+    private final Comparator<Widget[]> PRICES_TYPE_A_Z_COMPARATOR = new Comparator<Widget[]>() {
+        @Override
+        public int compare(Widget[] widgetRow1, Widget[] widgetRow2) {
+            return ((EveItemInfoLink) widgetRow1[0]).getItemTypeID().compareTo(((EveItemInfoLink) widgetRow2[0]).getItemTypeID());
+        }
+    };
+
+    private final Comparator<Widget[]> PRICES_NAME_A_Z_COMPARATOR = new Comparator<Widget[]>() {
+        @Override
+        public int compare(Widget[] widgetRow1, Widget[] widgetRow2) {
+            return ((HasText) widgetRow1[1]).getText().compareTo(((HasText) widgetRow2[1]).getText());
+        }
+    };
+
+    private final Comparator<Widget[]> PRICES_PRICE_A_Z_COMPARATOR = new Comparator<Widget[]>() {
+        @Override
+        public int compare(Widget[] widgetRow1, Widget[] widgetRow2) {
+            return ((PriceTextBox) widgetRow1[2]).getPrice().compareTo(((PriceTextBox) widgetRow2[2]).getPrice());
+        }
+    };
+
+    // TODO this looks ugly
+    private final Comparator<Widget[]> PRICES_QUANTITY_A_Z_COMPARATOR = new Comparator<Widget[]>() {
+        @Override
+        public int compare(Widget[] widgetRow1, Widget[] widgetRow2) {
+            return ((QuantityLabel) (((HorizontalPanel) widgetRow1[6]).getWidget(0))).getActualQuantity().compareTo(
+                    ((QuantityLabel) (((HorizontalPanel) widgetRow2[6]).getWidget(0))).getActualQuantity());
+        }
+    };
+
+    private final Comparator<Widget[]> PRICES_TOTAL_PRICE_A_Z_COMPARATOR = new Comparator<Widget[]>() {
+        @Override
+        public int compare(Widget[] widgetRow1, Widget[] widgetRow2) {
+            return ((PriceLabel) widgetRow1[8]).getPrice().compareTo(((PriceLabel) widgetRow2[8]).getPrice());
+        }
+    };
 }

@@ -28,6 +28,7 @@ import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
 import lv.odylab.evemanage.security.EveManageSecurityManager;
 import lv.odylab.evemanage.service.blueprint.BlueprintManagementService;
 import lv.odylab.evemanage.service.calculation.CalculationService;
+import lv.odylab.evemanage.service.calculation.InventedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedSchematic;
 import lv.odylab.evemanage.service.eve.EveManagementService;
@@ -332,6 +333,11 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     @Override
     public UsedBlueprint useBlueprint(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException {
         return calculationService.useBlueprint(pathNodes, blueprintProductTypeID);
+    }
+
+    @Override
+    public InventedBlueprint inventBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
+        return calculationService.inventBlueprint(pathNodes, blueprintName);
     }
 
     @Override

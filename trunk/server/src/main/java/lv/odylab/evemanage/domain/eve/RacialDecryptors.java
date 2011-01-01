@@ -9,7 +9,7 @@ public enum RacialDecryptors {
     GALLENTE(Decryptor.SYMBIOTIC_FIGURES, Decryptor.ENGAGEMENT_PLAN, Decryptor.COLLISION_MEASUREMENTS, Decryptor.TEST_REPORTS, Decryptor.STOLEN_FORMULAS),
     MINMATAR(Decryptor.CIRCUITRY_SCHEMATICS, Decryptor.OPERATION_HANDBOOK, Decryptor.CALIBRATION_DATA, Decryptor.ADVANCED_THEORIES, Decryptor.ASSEMBLY_INSTRUCTIONS);
 
-    private List<Decryptor> decryptors;
+    private final List<Decryptor> decryptors;
 
     private RacialDecryptors(Decryptor... decryptors) {
         this.decryptors = Arrays.asList(decryptors);

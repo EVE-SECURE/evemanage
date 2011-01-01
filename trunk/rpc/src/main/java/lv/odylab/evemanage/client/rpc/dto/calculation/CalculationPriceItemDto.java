@@ -1,5 +1,7 @@
 package lv.odylab.evemanage.client.rpc.dto.calculation;
 
+import lv.odylab.evemanage.client.rpc.RationalNumber;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -9,7 +11,9 @@ public class CalculationPriceItemDto implements Serializable {
     private String itemTypeName;
     private String itemTypeIcon;
     private BigDecimal price;
+    private RationalNumber priceMultiplier;
     private Long quantity;
+    private RationalNumber quantityMultiplier;
     private BigDecimal damagePerJob;
     private BigDecimal totalPrice;
 
@@ -53,12 +57,28 @@ public class CalculationPriceItemDto implements Serializable {
         this.price = price;
     }
 
+    public RationalNumber getPriceMultiplier() {
+        return priceMultiplier;
+    }
+
+    public void setPriceMultiplier(RationalNumber priceMultiplier) {
+        this.priceMultiplier = priceMultiplier;
+    }
+
     public Long getQuantity() {
         return quantity;
     }
 
     public void setQuantity(Long quantity) {
         this.quantity = quantity;
+    }
+
+    public RationalNumber getQuantityMultiplier() {
+        return quantityMultiplier;
+    }
+
+    public void setQuantityMultiplier(RationalNumber quantityMultiplier) {
+        this.quantityMultiplier = quantityMultiplier;
     }
 
     public BigDecimal getDamagePerJob() {

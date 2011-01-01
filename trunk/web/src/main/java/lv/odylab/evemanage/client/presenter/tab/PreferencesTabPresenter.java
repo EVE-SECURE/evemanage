@@ -503,10 +503,6 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
                 }
             }));
         }
-        bindSkillLevelListBoxes();
-    }
-
-    private void bindSkillLevelListBoxes() {
         for (EditablePreferenceSkillLevel editablePreferenceSkillLevel : display.getTypeIdToEditablePreferenceSkillLevelMap().values()) {
             final SkillLevelListBox skillLevelListBox = editablePreferenceSkillLevel.getSkillLevelListBox();
             final SkillBookImage skillBookImage = editablePreferenceSkillLevel.getSkillBookImage();

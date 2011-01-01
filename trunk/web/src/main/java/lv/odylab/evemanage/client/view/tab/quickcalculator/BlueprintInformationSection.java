@@ -54,7 +54,7 @@ public class BlueprintInformationSection implements QuickCalculatorTabPresenter.
 
     private EditableBlueprintInformation editableBlueprintInformation;
     private ComputableBlueprintInformation computableBlueprintInformation;
-    private List<HandlerRegistration> blueprintInformationSectionRegistrationHandlers;
+    private List<HandlerRegistration> blueprintInformationSectionStaticRegistrationHandlers;
 
     @Inject
     public BlueprintInformationSection(EveManageConstants constants, EveManageResources resources, EveManageMessages messages, EveManageUrlMessages urlMessages, CcpJsMessages ccpJsMessages, EveImageUrlProvider imageUrlProvider, BlueprintTypeSuggestOracle blueprintTypeSuggestOracle) {
@@ -76,7 +76,7 @@ public class BlueprintInformationSection implements QuickCalculatorTabPresenter.
 
         editableBlueprintInformation = new EditableBlueprintInformation();
         computableBlueprintInformation = new ComputableBlueprintInformation();
-        blueprintInformationSectionRegistrationHandlers = new ArrayList<HandlerRegistration>();
+        blueprintInformationSectionStaticRegistrationHandlers = new ArrayList<HandlerRegistration>();
     }
 
     @Override
@@ -177,7 +177,7 @@ public class BlueprintInformationSection implements QuickCalculatorTabPresenter.
         editBlueprintInfoPopupFlexTable.getFlexCellFormatter().setColSpan(3, 0, 2);
         editBlueprintInfoPopup.setWidget(editBlueprintInfoPopupFlexTable);
 
-        blueprintInformationSectionRegistrationHandlers.add(editButton.addClickHandler(new ClickHandler() {
+        blueprintInformationSectionStaticRegistrationHandlers.add(editButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 Widget source = (Widget) event.getSource();
@@ -187,7 +187,7 @@ public class BlueprintInformationSection implements QuickCalculatorTabPresenter.
                 editBlueprintInfoPopup.show();
             }
         }));
-        blueprintInformationSectionRegistrationHandlers.add(applyButton.addClickHandler(new ClickHandler() {
+        blueprintInformationSectionStaticRegistrationHandlers.add(applyButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 editBlueprintInfoPopup.hide();
@@ -223,7 +223,7 @@ public class BlueprintInformationSection implements QuickCalculatorTabPresenter.
     }
 
     @Override
-    public List<HandlerRegistration> getBlueprintInformationSectionRegistrationHandlers() {
-        return blueprintInformationSectionRegistrationHandlers;
+    public List<HandlerRegistration> getBlueprintInformationSectionStaticRegistrationHandlers() {
+        return blueprintInformationSectionStaticRegistrationHandlers;
     }
 }

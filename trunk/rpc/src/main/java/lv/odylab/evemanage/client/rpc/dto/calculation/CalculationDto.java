@@ -1,5 +1,7 @@
 package lv.odylab.evemanage.client.rpc.dto.calculation;
 
+import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -8,6 +10,8 @@ public class CalculationDto implements Serializable {
     private Long id;
     private String name;
     private BigDecimal price;
+    private BigDecimal pricePerUnit;
+    private Long quantity;
     private Long blueprintTypeID;
     private String blueprintTypeName;
     private Long productTypeID;
@@ -22,6 +26,7 @@ public class CalculationDto implements Serializable {
     private Integer productPortionSize;
     private List<CalculationItemDto> calculationItems;
     private List<BlueprintItemDto> blueprintItems;
+    private List<SkillLevelDto> skillLevels;
 
     public Long getId() {
         return id;
@@ -45,6 +50,22 @@ public class CalculationDto implements Serializable {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public BigDecimal getPricePerUnit() {
+        return pricePerUnit;
+    }
+
+    public void setPricePerUnit(BigDecimal pricePerUnit) {
+        this.pricePerUnit = pricePerUnit;
+    }
+
+    public Long getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
     }
 
     public Long getBlueprintTypeID() {
@@ -157,5 +178,13 @@ public class CalculationDto implements Serializable {
 
     public void setBlueprintItems(List<BlueprintItemDto> blueprintItems) {
         this.blueprintItems = blueprintItems;
+    }
+
+    public List<SkillLevelDto> getSkillLevels() {
+        return skillLevels;
+    }
+
+    public void setSkillLevels(List<SkillLevelDto> skillLevels) {
+        this.skillLevels = skillLevels;
     }
 }

@@ -15,13 +15,16 @@ import lv.odylab.evedb.rpc.dto.PlanetSchematicDto;
 import lv.odylab.evedb.rpc.dto.RamTypeRequirementDto;
 import lv.odylab.evemanage.application.exception.validation.InvalidPriceException;
 import lv.odylab.evemanage.client.rpc.PathExpression;
-import lv.odylab.evemanage.client.rpc.RationalNumberProductExpression;
+import lv.odylab.evemanage.client.rpc.RationalNumber;
 import lv.odylab.evemanage.client.rpc.dto.ItemTypeDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.MaterialDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.RequirementDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.BlueprintItemDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.DecryptorDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.InventedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyCharacterInfoDto;
@@ -37,11 +40,13 @@ import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
+import lv.odylab.evemanage.domain.calculation.BlueprintItem;
 import lv.odylab.evemanage.domain.calculation.Calculation;
 import lv.odylab.evemanage.domain.calculation.CalculationItem;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.eve.ApiKeyCharacterInfo;
 import lv.odylab.evemanage.domain.eve.Character;
+import lv.odylab.evemanage.domain.eve.Decryptor;
 import lv.odylab.evemanage.domain.eve.Region;
 import lv.odylab.evemanage.domain.eve.SkillForCalculation;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
@@ -62,6 +67,7 @@ import lv.odylab.evemanage.integration.evedb.dto.SchematicItemDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
 import lv.odylab.evemanage.integration.evemetricsapi.dto.ItemPriceDto;
+import lv.odylab.evemanage.service.calculation.InventedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedSchematic;
 import lv.odylab.evemanage.service.priceset.PriceSetItemDtoComparator;
@@ -462,6 +468,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         itemTypeDto.setItemCategoryID(invTypeBasicInfoDto.getItemCategoryID());
         itemTypeDto.setName(invTypeBasicInfoDto.getName());
         itemTypeDto.setGraphicIcon(invTypeBasicInfoDto.getIcon());
+        itemTypeDto.setMetaLevel(invTypeBasicInfoDto.getMetaLevel());
         return itemTypeDto;
     }
 
@@ -472,6 +479,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         itemTypeDtoToMap.setItemCategoryID(itemTypeDto.getItemCategoryID());
         itemTypeDtoToMap.setName(itemTypeDto.getName());
         itemTypeDtoToMap.setGraphicIcon(itemTypeDto.getGraphicIcon());
+        itemTypeDtoToMap.setMetaLevel(itemTypeDto.getMetaLevel());
         return itemTypeDtoToMap;
     }
 
@@ -484,6 +492,10 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         blueprintTypeDto.setProductTypeName(invBlueprintTypeDto.getProductTypeName());
         blueprintTypeDto.setProductCategoryID(invBlueprintTypeDto.getProductCategoryID());
         blueprintTypeDto.setProductGraphicIcon(invBlueprintTypeDto.getProductIcon());
+        blueprintTypeDto.setParentBlueprintTypeID(invBlueprintTypeDto.getParentBlueprintTypeID());
+        blueprintTypeDto.setParentBlueprintTypeName(invBlueprintTypeDto.getParentBlueprintTypeName());
+        blueprintTypeDto.setParentProductTypeID(invBlueprintTypeDto.getParentProductTypeID());
+        blueprintTypeDto.setParentProductTypeName(invBlueprintTypeDto.getParentProductTypeName());
         blueprintTypeDto.setTechLevel(invBlueprintTypeDto.getTechLevel());
         blueprintTypeDto.setProductionTime(invBlueprintTypeDto.getProductionTime());
         blueprintTypeDto.setResearchProductivityTime(invBlueprintTypeDto.getResearchProductivityTime());
@@ -505,6 +517,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         itemTypeDto.setItemCategoryID(invTypeBasicInfoDto.getItemCategoryID());
         itemTypeDto.setName(invTypeBasicInfoDto.getName());
         itemTypeDto.setGraphicIcon(invTypeBasicInfoDto.getIcon());
+        itemTypeDto.setMetaLevel(invTypeBasicInfoDto.getMetaLevel());
         return itemTypeDto;
     }
 
@@ -610,6 +623,8 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         calculationDto.setId(calculation.getId());
         calculationDto.setName(calculation.getName());
         calculationDto.setPrice(new BigDecimal(calculation.getPrice()));
+        calculationDto.setPricePerUnit(new BigDecimal(calculation.getPricePerUnit()));
+        calculationDto.setQuantity(calculation.getQuantity());
         calculationDto.setBlueprintTypeID(calculation.getBlueprintTypeID());
         calculationDto.setBlueprintTypeName(calculation.getBlueprintTypeName());
         calculationDto.setProductTypeName(calculation.getProductTypeName());
@@ -627,6 +642,16 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
             calculationItemDtos.add(map(calculationItem, CalculationItemDto.class));
         }
         calculationDto.setCalculationItems(calculationItemDtos);
+        List<BlueprintItemDto> blueprintItemDtos = new ArrayList<BlueprintItemDto>();
+        for (BlueprintItem blueprintItem : calculation.getBlueprintItems()) {
+            blueprintItemDtos.add(map(blueprintItem, BlueprintItemDto.class));
+        }
+        calculationDto.setBlueprintItems(blueprintItemDtos);
+        List<SkillLevelDto> skillLevelDtos = new ArrayList<SkillLevelDto>();
+        for (SkillLevel skillLevel : calculation.getSkillLevels()) {
+            skillLevelDtos.add(map(skillLevel, SkillLevelDto.class));
+        }
+        calculationDto.setSkillLevels(skillLevelDtos);
         return calculationDto;
     }
 
@@ -653,7 +678,34 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
             calculationItemDtos.add(map(calculationItem, CalculationItemDto.class));
         }
         usedBlueprintDto.setCalculationItems(calculationItemDtos);
+        usedBlueprintDto.setBlueprintItem(map(usedBlueprint.getBlueprintItem(), BlueprintItemDto.class));
         return usedBlueprintDto;
+    }
+
+    @Override
+    public InventedBlueprintDto map(InventedBlueprint inventedBlueprint, Class<InventedBlueprintDto> inventedBlueprintDtoClass) {
+        InventedBlueprintDto inventedBlueprintDto = new InventedBlueprintDto();
+        List<BlueprintItemDto> blueprintItemDtos = new ArrayList<BlueprintItemDto>();
+        for (BlueprintItem blueprintItem : inventedBlueprint.getBlueprintItems()) {
+            blueprintItemDtos.add(map(blueprintItem, BlueprintItemDto.class));
+        }
+        inventedBlueprintDto.setBlueprintItems(blueprintItemDtos);
+        List<DecryptorDto> decryptorDtos = new ArrayList<DecryptorDto>();
+        for (Decryptor decryptor : inventedBlueprint.getDecryptors()) {
+            decryptorDtos.add(map(decryptor, DecryptorDto.class));
+        }
+        inventedBlueprintDto.setDecryptors(decryptorDtos);
+        List<SkillLevelDto> skillLevelDtos = new ArrayList<SkillLevelDto>();
+        for (SkillLevel skillLevel : inventedBlueprint.getSkillLevels()) {
+            skillLevelDtos.add(map(skillLevel, SkillLevelDto.class));
+        }
+        inventedBlueprintDto.setSkillLevels(skillLevelDtos);
+        List<ItemTypeDto> baseItemTypes = new ArrayList<ItemTypeDto>();
+        for (lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto baseItem : inventedBlueprint.getBaseItems()) {
+            baseItemTypes.add(map(baseItem, ItemTypeDto.class));
+        }
+        inventedBlueprintDto.setBaseItems(baseItemTypes);
+        return inventedBlueprintDto;
     }
 
     @Override
@@ -677,12 +729,12 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         calculationItemDto.setQuantity(calculationItem.getQuantity());
         String quantityMultiplier = calculationItem.getQuantityMultiplier();
         if (quantityMultiplier != null) {
-            calculationItemDto.setQuantityMultiplier(RationalNumberProductExpression.parseExpression(quantityMultiplier));
+            calculationItemDto.setQuantityMultiplier(RationalNumber.parse(quantityMultiplier));
         }
         calculationItemDto.setParentQuantity(calculationItem.getParentQuantity());
         String parentQuantityMultiplier = calculationItem.getParentQuantityMultiplier();
         if (parentQuantityMultiplier != null) {
-            calculationItemDto.setParentQuantityMultiplier(RationalNumberProductExpression.parseExpression(parentQuantityMultiplier));
+            calculationItemDto.setParentQuantityMultiplier(RationalNumber.parse(parentQuantityMultiplier));
         }
         calculationItemDto.setPerfectQuantity(calculationItem.getPerfectQuantity());
         calculationItemDto.setWasteFactor(calculationItem.getWasteFactor());
@@ -691,5 +743,40 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         calculationItemDto.setTotalPrice(new BigDecimal(calculationItem.getTotalPrice()));
         calculationItemDto.setTotalPriceForParent(new BigDecimal(calculationItem.getTotalPriceForParent()));
         return calculationItemDto;
+    }
+
+    private BlueprintItemDto map(BlueprintItem blueprintItem, Class<BlueprintItemDto> blueprintItemDtoClass) {
+        BlueprintItemDto blueprintItemDto = new BlueprintItemDto();
+        blueprintItemDto.setPathExpression(PathExpression.parseExpression(blueprintItem.getPath()));
+        blueprintItemDto.setBlueprintUse(blueprintItem.getBlueprintUse());
+        blueprintItemDto.setItemTypeID(blueprintItem.getItemTypeID());
+        blueprintItemDto.setItemCategoryID(blueprintItem.getItemCategoryID());
+        blueprintItemDto.setItemTypeName(blueprintItem.getItemTypeName());
+        blueprintItemDto.setItemTypeIcon(blueprintItem.getItemTypeIcon());
+        blueprintItemDto.setParentBlueprintTypeID(blueprintItem.getParentBlueprintTypeID());
+        blueprintItemDto.setParentBlueprintTypeName(blueprintItem.getParentBlueprintTypeName());
+        blueprintItemDto.setParentProductTypeID(blueprintItem.getParentProductTypeID());
+        blueprintItemDto.setParentProductTypeName(blueprintItem.getParentProductTypeName());
+        blueprintItemDto.setQuantity(blueprintItem.getQuantity());
+        blueprintItemDto.setParentQuantity(blueprintItem.getParentQuantity());
+        blueprintItemDto.setPrice(new BigDecimal(blueprintItem.getPrice()));
+        blueprintItemDto.setTotalPrice(new BigDecimal(blueprintItem.getTotalPrice()));
+        blueprintItemDto.setTotalPriceForParent(new BigDecimal(blueprintItem.getTotalPriceForParent()));
+        blueprintItemDto.setMaxProductionLimit(blueprintItem.getMaxProductionLimit());
+        blueprintItemDto.setRuns(blueprintItem.getRuns());
+        blueprintItemDto.setChance(new BigDecimal(blueprintItem.getChance()));
+        return blueprintItemDto;
+    }
+
+    private DecryptorDto map(Decryptor decryptor, Class<DecryptorDto> decryptorDtoClass) {
+        DecryptorDto decryptorDto = new DecryptorDto();
+        decryptorDto.setTypeID(decryptor.getTypeID());
+        decryptorDto.setTypeName(decryptor.getName());
+        decryptorDto.setCategoryID(decryptor.getCategoryID());
+        decryptorDto.setProbabilityMultiplier(new BigDecimal(decryptor.getProbabilityMultiplier()));
+        decryptorDto.setMaxRunModifier(decryptor.getMaxRunModifier());
+        decryptorDto.setMeModifier(decryptor.getMeModifier());
+        decryptorDto.setPeModifier(decryptor.getPeModifier());
+        return decryptorDto;
     }
 }

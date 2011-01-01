@@ -18,6 +18,7 @@ import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.MaterialDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.RequirementDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.InventedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyCharacterInfoDto;
@@ -55,6 +56,7 @@ import lv.odylab.evemanage.integration.evedb.dto.SchematicItemDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
 import lv.odylab.evemanage.integration.evemetricsapi.dto.ItemPriceDto;
+import lv.odylab.evemanage.service.calculation.InventedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedSchematic;
 import lv.odylab.evemetricsapi.parser.method.itemprice.ItemPriceType;
@@ -138,6 +140,8 @@ public interface EveManageDtoMapper {
     SchematicItemDto map(PlanetSchematicDto planetSchematicDto, Class<SchematicItemDto> schematicItemDtoClass);
 
     UsedBlueprintDto map(UsedBlueprint usedBlueprint, Class<UsedBlueprintDto> usedBlueprintDtoClass);
+
+    InventedBlueprintDto map(InventedBlueprint inventedBlueprint, Class<InventedBlueprintDto> inventedBlueprintDtoClass);
 
     UsedSchematicDto map(UsedSchematic usedSchematic, Class<UsedSchematicDto> usedSchematicDtoClass);
 

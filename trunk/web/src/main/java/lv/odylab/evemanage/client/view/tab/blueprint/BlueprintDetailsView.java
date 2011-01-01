@@ -104,7 +104,7 @@ public class BlueprintDetailsView implements BlueprintDetailsPresenter.Display {
             BigDecimal damagePerJob = requirement.getDamagePerJob();
             if (BigDecimal.ONE.compareTo(damagePerJob) == 1 && BigDecimal.ZERO.compareTo(damagePerJob) != 0) {
                 DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
-                damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+                damagePerJobLabel.addStyleName(resources.css().damagePerJobLabel());
                 quantityAndDamagePerJobPanel.add(damagePerJobLabel);
                 quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
             }
@@ -218,7 +218,7 @@ public class BlueprintDetailsView implements BlueprintDetailsPresenter.Display {
             BigDecimal damagePerJob = requirement.getDamagePerJob();
             if (BigDecimal.ONE.compareTo(damagePerJob) == 1 && BigDecimal.ZERO.compareTo(damagePerJob) != 0) {
                 DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
-                damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+                damagePerJobLabel.addStyleName(resources.css().damagePerJobLabel());
                 quantityAndDamagePerJobPanel.add(damagePerJobLabel);
                 quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
             }

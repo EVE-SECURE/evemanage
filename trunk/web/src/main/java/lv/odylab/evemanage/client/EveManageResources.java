@@ -47,6 +47,9 @@ public interface EveManageResources extends ClientBundle {
     @Source("images/nok.png")
     ImageResource nokIcon();
 
+    @Source("images/sortby.png")
+    ImageResource sortByIcon();
+
     @Source("images/lab.png")
     ImageResource lab();
 
@@ -100,6 +103,9 @@ public interface EveManageResources extends ClientBundle {
 
     @Source("images/level5.png")
     ImageResource level5();
+
+    @Source("images/decryptor.png")
+    ImageResource decryptorIcon();
 
     @Source("images/dashboard/crystallineCarbonideArmorPlate.png")
     ImageResource dashboardCrystallineCarbonideArmorPlateImage();

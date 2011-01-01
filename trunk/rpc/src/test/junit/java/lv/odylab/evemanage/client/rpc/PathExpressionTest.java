@@ -116,4 +116,9 @@ public class PathExpressionTest {
     public void testGetPathNodesString() {
         assertThat(PathExpression.parseExpression("/1/2/3/456:-1:-2/7").getPathNodesString(), equalTo("/1/2/3/456/7"));
     }
+
+    @Test
+    public void testCreatePathNodesStringFromPathNodes() {
+        assertThat(PathExpression.createPathNodesStringFromPathNodes(new Long[]{1L, 2L, 3L}), equalTo("/1/2/3"));
+    }
 }
