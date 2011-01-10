@@ -59,7 +59,6 @@ import lv.odylab.evemanage.client.presenter.Presenter;
 import lv.odylab.evemanage.client.presenter.tab.blueprint.BlueprintDetailsPresenter;
 import lv.odylab.evemanage.client.presenter.tab.blueprint.ComputableBlueprintDetails;
 import lv.odylab.evemanage.client.presenter.tab.blueprint.EditableBlueprintDetails;
-import lv.odylab.evemanage.client.rpc.EveCalculator;
 import lv.odylab.evemanage.client.rpc.EveManageRemoteServiceAsync;
 import lv.odylab.evemanage.client.rpc.action.blueprints.BlueprintAddAction;
 import lv.odylab.evemanage.client.rpc.action.blueprints.BlueprintAddActionResponse;
@@ -88,6 +87,8 @@ import lv.odylab.evemanage.client.widget.AttachedCharacterListBox;
 import lv.odylab.evemanage.client.widget.OnlyDigitsAndMinusChangeHandler;
 import lv.odylab.evemanage.client.widget.OnlyDigitsChangeHandler;
 import lv.odylab.evemanage.client.widget.SharingLevelListBox;
+import lv.odylab.evemanage.shared.EveCalculator;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,7 +133,7 @@ public class BlueprintsTabPresenter implements Presenter, BlueprintsTabErrorEven
 
         AttachedCharacterListBox getAttachedCharacterNames();
 
-        void setSharingLevels(List<String> sharingLevels);
+        void setSharingLevels(List<SharingLevel> sharingLevels);
 
         void setFullApiKeys(List<ApiKeyDto> fullApiKeys);
 

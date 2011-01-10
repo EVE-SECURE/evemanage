@@ -2,6 +2,7 @@ package lv.odylab.evemanage.client.widget;
 
 import com.google.gwt.user.client.ui.Label;
 import lv.odylab.evemanage.client.EveManageMessages;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 public class SharingLevelLabel extends Label {
     private final EveManageMessages messages;
@@ -10,13 +11,12 @@ public class SharingLevelLabel extends Label {
         this.messages = messages;
     }
 
-    public void setSharingLevel(String sharingLevel) {
-        // TODO remove string constant usage
-        if (sharingLevel.equals("PERSONAL")) {
+    public void setSharingLevel(SharingLevel sharingLevel) {
+        if (SharingLevel.PERSONAL.equals(sharingLevel)) {
             setText(messages.personal());
-        } else if (sharingLevel.equals("CORPORATION")) {
+        } else if (SharingLevel.CORPORATION.equals(sharingLevel)) {
             setText(messages.corporation());
-        } else if (sharingLevel.equals("ALLIANCE")) {
+        } else if (SharingLevel.ALLIANCE.equals(sharingLevel)) {
             setText(messages.alliance());
         } else {
             setText("UNKNOWN");

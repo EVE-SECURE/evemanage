@@ -3,8 +3,8 @@ package lv.odylab.evemanage.client.presenter.tab.calculator;
 import com.google.inject.Inject;
 import lv.odylab.evemanage.client.presenter.tab.calculator.processor.BlueprintItemTreeProcessor;
 import lv.odylab.evemanage.client.presenter.tab.calculator.processor.CalculationItemTreeProcessor;
-import lv.odylab.evemanage.client.rpc.RationalNumber;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceItemDto;
+import lv.odylab.evemanage.shared.RationalNumber;
 
 import java.math.BigDecimal;
 import java.util.Map;

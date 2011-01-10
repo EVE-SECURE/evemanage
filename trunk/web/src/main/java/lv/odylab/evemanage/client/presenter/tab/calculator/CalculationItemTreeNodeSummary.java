@@ -1,6 +1,6 @@
 package lv.odylab.evemanage.client.presenter.tab.calculator;
 
-import lv.odylab.evemanage.client.rpc.RationalNumber;
+import lv.odylab.evemanage.shared.RationalNumber;
 
 import java.math.BigDecimal;
 

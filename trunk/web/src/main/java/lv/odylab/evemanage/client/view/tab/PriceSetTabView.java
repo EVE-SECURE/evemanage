@@ -33,6 +33,7 @@ import lv.odylab.evemanage.client.widget.PriceLabel;
 import lv.odylab.evemanage.client.widget.PriceSetListBox;
 import lv.odylab.evemanage.client.widget.PriceTextBox;
 import lv.odylab.evemanage.client.widget.SharingLevelListBox;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -337,9 +338,9 @@ public class PriceSetTabView implements PriceSetTabPresenter.Display {
     }
 
     @Override
-    public void setSharingLevels(List<String> sharingLevels) {
+    public void setSharingLevels(List<SharingLevel> sharingLevels) {
         sharingLevelListBox.clear();
-        for (String sharingLevel : sharingLevels) {
+        for (SharingLevel sharingLevel : sharingLevels) {
             sharingLevelListBox.addItem(sharingLevel);
         }
     }

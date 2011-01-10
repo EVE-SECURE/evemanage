@@ -1,8 +1,8 @@
 package lv.odylab.evemanage.client.presenter.tab.calculator;
 
-import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
+import lv.odylab.evemanage.shared.PathExpression;
 
 import java.math.BigDecimal;
 import java.util.List;

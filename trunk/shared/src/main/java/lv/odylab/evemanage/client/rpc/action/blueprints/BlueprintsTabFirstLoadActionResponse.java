@@ -4,13 +4,14 @@ import lv.odylab.evemanage.client.rpc.action.Response;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.util.List;
 
 public class BlueprintsTabFirstLoadActionResponse implements Response {
     private List<BlueprintDto> blueprints;
     private List<CharacterNameDto> attachedCharacterNames;
-    private List<String> sharingLevels;
+    private List<SharingLevel> sharingLevels;
     private List<ApiKeyDto> fullApiKeys;
 
     public List<BlueprintDto> getBlueprints() {
@@ -29,11 +30,11 @@ public class BlueprintsTabFirstLoadActionResponse implements Response {
         this.attachedCharacterNames = attachedCharacterNames;
     }
 
-    public List<String> getSharingLevels() {
+    public List<SharingLevel> getSharingLevels() {
         return sharingLevels;
     }
 
-    public void setSharingLevels(List<String> sharingLevels) {
+    public void setSharingLevels(List<SharingLevel> sharingLevels) {
         this.sharingLevels = sharingLevels;
     }
 

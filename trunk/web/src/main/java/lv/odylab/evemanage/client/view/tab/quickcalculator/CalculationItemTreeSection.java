@@ -26,7 +26,6 @@ import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNo
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNodeSummary;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableCalculationItem;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationItem;
-import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
@@ -38,6 +37,7 @@ import lv.odylab.evemanage.client.widget.OpaqueLoadableBlueprintImage;
 import lv.odylab.evemanage.client.widget.OpaqueLoadableSchematicImage;
 import lv.odylab.evemanage.client.widget.PriceLabel;
 import lv.odylab.evemanage.client.widget.QuantityLabel;
+import lv.odylab.evemanage.shared.PathExpression;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

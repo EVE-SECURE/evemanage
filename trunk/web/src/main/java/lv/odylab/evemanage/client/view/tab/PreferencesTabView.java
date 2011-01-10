@@ -22,7 +22,6 @@ import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.view.tab.preferences.ApiKeysSection;
 import lv.odylab.evemanage.client.view.tab.preferences.CharactersSection;
@@ -30,6 +29,7 @@ import lv.odylab.evemanage.client.view.tab.preferences.PriceFetchingSection;
 import lv.odylab.evemanage.client.view.tab.preferences.SkillsForCalculationSection;
 import lv.odylab.evemanage.client.widget.PriceFetchOptionListBox;
 import lv.odylab.evemanage.client.widget.RegionListBox;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 
 import java.util.List;
 import java.util.Map;
@@ -226,12 +226,12 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
     }
 
     @Override
-    public void setPriceFetchOptions(List<PriceFetchOptionDto> priceFetchOptions) {
+    public void setPriceFetchOptions(List<PriceFetchOption> priceFetchOptions) {
         priceFetchingSection.setPriceFetchOptions(priceFetchOptions);
     }
 
     @Override
-    public void setPreferredPriceFetchOption(PriceFetchOptionDto preferredPriceFetchOption) {
+    public void setPreferredPriceFetchOption(PriceFetchOption preferredPriceFetchOption) {
         priceFetchingSection.setPreferredPriceFetchOption(preferredPriceFetchOption);
     }
 

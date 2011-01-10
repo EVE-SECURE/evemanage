@@ -1,4 +1,4 @@
-package lv.odylab.evemanage.domain.eve;
+package lv.odylab.evemanage.shared.eve;
 
 public enum ApiKeyType {
     LIMITED, FULL

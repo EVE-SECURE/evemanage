@@ -2,10 +2,11 @@ package lv.odylab.evemanage.client.presenter.tab.calculator.processor;
 
 import com.google.inject.Inject;
 import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTreeNode;
-import lv.odylab.evemanage.client.rpc.EveCalculator;
-import lv.odylab.evemanage.client.rpc.RationalNumber;
 import lv.odylab.evemanage.client.rpc.dto.calculation.BlueprintItemDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceItemDto;
+import lv.odylab.evemanage.shared.EveCalculator;
+import lv.odylab.evemanage.shared.RationalNumber;
+import lv.odylab.evemanage.shared.eve.BlueprintUse;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class BlueprintItemTreeProcessor {
 
     private BigDecimal applyPricesForLastNode(Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap, Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap, Long parentQuantity, Map<Long, Integer> typeIdToSkillLevelMap, BlueprintItemTreeNode blueprintItemTreeNode) {
         BlueprintItemDto blueprintItem = blueprintItemTreeNode.getBlueprintItem();
-        String blueprintUse = blueprintItem.getBlueprintUse();
+        BlueprintUse blueprintUse = blueprintItem.getBlueprintUse();
         Long quantity = calculateQuantity(blueprintItem, parentQuantity);
         Integer maxProductionLimit = blueprintItem.getMaxProductionLimit();
         Long runs = calculateRuns(blueprintUse, parentQuantity, maxProductionLimit);
@@ -65,30 +66,27 @@ public class BlueprintItemTreeProcessor {
         return totalPrice;
     }
 
-    // TODO remove string constant usage
     private Long calculateQuantity(BlueprintItemDto blueprintItem, Long parentQuantity) {
-        String blueprintUse = blueprintItem.getBlueprintUse();
-        if ("ORIGINAL".equals(blueprintUse)) {
+        BlueprintUse blueprintUse = blueprintItem.getBlueprintUse();
+        if (BlueprintUse.ORIGINAL.equals(blueprintUse)) {
             return 1L;
-        } else if ("COPY".equals(blueprintUse)) {
+        } else if (BlueprintUse.COPY.equals(blueprintUse)) {
             return calculator.calculateBlueprintCopyQuantity(parentQuantity, blueprintItem.getMaxProductionLimit());
         }
         return blueprintItem.getQuantity() * parentQuantity;
     }
 
-    // TODO remove string constant usage
-    private Long calculateRuns(String blueprintUse, Long parentQuantity, Integer maxProductionLimit) {
-        if ("ORIGINAL".equals(blueprintUse)) {
+    private Long calculateRuns(BlueprintUse blueprintUse, Long parentQuantity, Integer maxProductionLimit) {
+        if (BlueprintUse.ORIGINAL.equals(blueprintUse)) {
             return parentQuantity;
-        } else if ("COPY".equals(blueprintUse)) {
+        } else if (BlueprintUse.COPY.equals(blueprintUse)) {
             return Long.valueOf(maxProductionLimit);
         }
         return null;
     }
 
-    // TODO remove string constant usage
-    private BigDecimal calculateBlueprintPrice(String blueprintUse, BigDecimal price) {
-        if ("ORIGINAL".equals(blueprintUse)) {
+    private BigDecimal calculateBlueprintPrice(BlueprintUse blueprintUse, BigDecimal price) {
+        if (BlueprintUse.ORIGINAL.equals(blueprintUse)) {
             return BigDecimal.ZERO;
         } else {
             return price;

@@ -1,5 +1,7 @@
 package lv.odylab.evemanage.client.rpc.dto.eve;
 
+import lv.odylab.evemanage.shared.eve.ApiKeyType;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -8,7 +10,7 @@ public class ApiKeyDto implements Serializable {
     private Long id;
     private List<ApiKeyCharacterInfoDto> characterInfos;
     private Date lastCheckDate;
-    private String keyType;
+    private ApiKeyType keyType;
     private Boolean isValid;
 
     public Long getId() {
@@ -35,11 +37,11 @@ public class ApiKeyDto implements Serializable {
         this.lastCheckDate = lastCheckDate;
     }
 
-    public String getKeyType() {
+    public ApiKeyType getKeyType() {
         return keyType;
     }
 
-    public void setKeyType(String keyType) {
+    public void setKeyType(ApiKeyType keyType) {
         this.keyType = keyType;
     }
 

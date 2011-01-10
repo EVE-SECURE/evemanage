@@ -1,10 +1,10 @@
 package lv.odylab.evemanage.client.event.quickcalculator;
 
 import lv.odylab.evemanage.client.EveManageConstants;
-import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorDirectSetActionResponse;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
+import lv.odylab.evemanage.shared.CalculationExpression;
 
 import java.util.Map;
 

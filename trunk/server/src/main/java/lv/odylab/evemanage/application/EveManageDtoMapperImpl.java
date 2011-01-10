@@ -14,8 +14,6 @@ import lv.odylab.evedb.rpc.dto.InvTypeMaterialDto;
 import lv.odylab.evedb.rpc.dto.PlanetSchematicDto;
 import lv.odylab.evedb.rpc.dto.RamTypeRequirementDto;
 import lv.odylab.evemanage.application.exception.validation.InvalidPriceException;
-import lv.odylab.evemanage.client.rpc.PathExpression;
-import lv.odylab.evemanage.client.rpc.RationalNumber;
 import lv.odylab.evemanage.client.rpc.dto.ItemTypeDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.MaterialDto;
@@ -36,7 +34,6 @@ import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
@@ -46,13 +43,9 @@ import lv.odylab.evemanage.domain.calculation.CalculationItem;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.eve.ApiKeyCharacterInfo;
 import lv.odylab.evemanage.domain.eve.Character;
-import lv.odylab.evemanage.domain.eve.Decryptor;
-import lv.odylab.evemanage.domain.eve.Region;
-import lv.odylab.evemanage.domain.eve.SkillForCalculation;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
-import lv.odylab.evemanage.domain.user.PriceFetchOption;
 import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.eveapi.dto.AccountBalanceDto;
@@ -71,6 +64,14 @@ import lv.odylab.evemanage.service.calculation.InventedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedSchematic;
 import lv.odylab.evemanage.service.priceset.PriceSetItemDtoComparator;
+import lv.odylab.evemanage.shared.PathExpression;
+import lv.odylab.evemanage.shared.RationalNumber;
+import lv.odylab.evemanage.shared.eve.ApiKeyType;
+import lv.odylab.evemanage.shared.eve.BlueprintUse;
+import lv.odylab.evemanage.shared.eve.Decryptor;
+import lv.odylab.evemanage.shared.eve.Region;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
+import lv.odylab.evemanage.shared.eve.SkillForCalculation;
 import lv.odylab.evemetricsapi.parser.method.itemprice.ItemPriceType;
 
 import java.math.BigDecimal;
@@ -121,13 +122,6 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
     }
 
     @Override
-    public PriceFetchOptionDto map(PriceFetchOption priceFetchOption, Class<PriceFetchOptionDto> priceFetchOptionDtoClass) {
-        PriceFetchOptionDto priceFetchOptionDto = new PriceFetchOptionDto();
-        priceFetchOptionDto.setName(priceFetchOption.toString());
-        return priceFetchOptionDto;
-    }
-
-    @Override
     public BlueprintDto map(Blueprint blueprint, Class<BlueprintDto> blueprintDtoClass) {
         BlueprintDto blueprintDto = new BlueprintDto();
         blueprintDto.setId(blueprint.getId());
@@ -143,7 +137,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         if (blueprint.getAttachedCharacterInfo() != null) {
             blueprintDto.setAttachedCharacterInfo(mapForCharacterInfo(blueprint.getAttachedCharacterInfo(), CharacterInfoDto.class));
         }
-        blueprintDto.setSharingLevel(blueprint.getSharingLevel());
+        blueprintDto.setSharingLevel(SharingLevel.valueOf(blueprint.getSharingLevel()));
         return blueprintDto;
     }
 
@@ -362,7 +356,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         if (priceSet.getAttachedCharacterInfo() != null) {
             priceSetDto.setAttachedCharacterName(map(priceSet.getAttachedCharacterInfo(), CharacterNameDto.class));
         }
-        priceSetDto.setSharingLevel(priceSet.getSharingLevel());
+        priceSetDto.setSharingLevel(SharingLevel.valueOf(priceSet.getSharingLevel()));
         priceSetDto.setCreatedDate(priceSet.getCreatedDate());
         priceSetDto.setUpdatedDate(priceSet.getUpdatedDate());
         List<PriceSetItemDto> priceSetItemDtoList = new ArrayList<PriceSetItemDto>();
@@ -446,7 +440,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         }
         apiKeyDto.setCharacterInfos(characterInfoDtos);
         apiKeyDto.setLastCheckDate(apiKey.getLastCheckDate());
-        apiKeyDto.setKeyType(apiKey.getKeyType());
+        apiKeyDto.setKeyType(ApiKeyType.valueOf(apiKey.getKeyType()));
         apiKeyDto.setValid(apiKey.isValid());
         return apiKeyDto;
     }
@@ -748,7 +742,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
     private BlueprintItemDto map(BlueprintItem blueprintItem, Class<BlueprintItemDto> blueprintItemDtoClass) {
         BlueprintItemDto blueprintItemDto = new BlueprintItemDto();
         blueprintItemDto.setPathExpression(PathExpression.parseExpression(blueprintItem.getPath()));
-        blueprintItemDto.setBlueprintUse(blueprintItem.getBlueprintUse());
+        blueprintItemDto.setBlueprintUse(BlueprintUse.valueOf(blueprintItem.getBlueprintUse()));
         blueprintItemDto.setItemTypeID(blueprintItem.getItemTypeID());
         blueprintItemDto.setItemCategoryID(blueprintItem.getItemCategoryID());
         blueprintItemDto.setItemTypeName(blueprintItem.getItemTypeName());

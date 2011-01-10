@@ -1,6 +1,7 @@
 package lv.odylab.evemanage.client.rpc.dto.priceset;
 
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -10,7 +11,7 @@ public class PriceSetDto implements Serializable {
     private Long id;
     private String name;
     private CharacterNameDto attachedCharacterName;
-    private String sharingLevel;
+    private SharingLevel sharingLevel;
     private Date createdDate;
     private Date updatedDate;
     private List<PriceSetItemDto> items;
@@ -39,11 +40,11 @@ public class PriceSetDto implements Serializable {
         this.attachedCharacterName = attachedCharacterName;
     }
 
-    public String getSharingLevel() {
+    public SharingLevel getSharingLevel() {
         return sharingLevel;
     }
 
-    public void setSharingLevel(String sharingLevel) {
+    public void setSharingLevel(SharingLevel sharingLevel) {
         this.sharingLevel = sharingLevel;
     }
 

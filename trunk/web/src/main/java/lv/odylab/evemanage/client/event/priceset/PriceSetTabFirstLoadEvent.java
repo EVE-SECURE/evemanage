@@ -6,6 +6,7 @@ import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class PriceSetTabFirstLoadEvent extends PriceSetTabEvent<PriceSetTabFirst
     private PriceSetDto priceSet;
     private Integer currentPriceSetNameIndex;
     private List<CharacterNameDto> attachedCharacterNames;
-    private List<String> sharingLevels;
+    private List<SharingLevel> sharingLevels;
 
     public PriceSetTabFirstLoadEvent(TrackingManager trackingManager, EveManageConstants constants, PriceSetTabFirstLoadActionResponse response, Long msDuration) {
         super(trackingManager, constants, msDuration);
@@ -69,7 +70,7 @@ public class PriceSetTabFirstLoadEvent extends PriceSetTabEvent<PriceSetTabFirst
         return attachedCharacterNames;
     }
 
-    public List<String> getSharingLevels() {
+    public List<SharingLevel> getSharingLevels() {
         return sharingLevels;
     }
 }

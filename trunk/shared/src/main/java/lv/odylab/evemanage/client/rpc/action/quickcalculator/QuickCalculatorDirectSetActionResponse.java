@@ -1,8 +1,8 @@
 package lv.odylab.evemanage.client.rpc.action.quickcalculator;
 
-import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.action.Response;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
+import lv.odylab.evemanage.shared.CalculationExpression;
 
 import java.util.Map;
 

@@ -22,11 +22,11 @@ import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
-import lv.odylab.evemanage.domain.eve.Region;
-import lv.odylab.evemanage.domain.user.PriceFetchOption;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
+import lv.odylab.evemanage.shared.eve.Region;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -40,7 +40,7 @@ public interface EveManageClientFacade {
 
     List<CharacterNameDto> getAvailableAttachedCharacterNames();
 
-    List<String> getAvailableSharingLevels();
+    List<SharingLevel> getAvailableSharingLevels();
 
     List<ApiKeyDto> getFullApiKeys();
 
@@ -54,9 +54,9 @@ public interface EveManageClientFacade {
 
     RegionDto getPreferredRegion();
 
-    List<PriceFetchOptionDto> getPriceFetchOptions();
+    List<PriceFetchOption> getPriceFetchOptions();
 
-    PriceFetchOptionDto getPreferredPriceFetchOption();
+    PriceFetchOption getPreferredPriceFetchOption();
 
     void savePriceFetchConfiguration(Region preferredRegion, String preferredPriceFetchOption);
 
@@ -68,19 +68,19 @@ public interface EveManageClientFacade {
 
     List<BlueprintDto> getAllianceBlueprints();
 
-    BlueprintDto saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, String sharingLevel);
+    BlueprintDto saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, SharingLevel sharingLevel);
 
     void deleteBlueprint(Long blueprintID);
 
     BlueprintDetailsDto getBlueprintDetails(Long blueprintTypeID) throws EveDbException;
 
-    void importBlueprintsFromXml(String importXml, Long attachedCharacterID, String sharingLevel) throws EveApiException;
+    void importBlueprintsFromXml(String importXml, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException;
 
-    void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, String sharingLevel);
+    void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, SharingLevel sharingLevel);
 
-    void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException;
+    void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException;
 
-    void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException;
+    void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException;
 
     PriceSetDto getPriceSet(Long priceSetID);
 
@@ -98,7 +98,7 @@ public interface EveManageClientFacade {
 
     void renamePriceSet(Long priceSetID, String priceSetName) throws InvalidNameException;
 
-    void savePriceSet(Long priceSetID, List<PriceSetItemDto> priceSetItemDtos, String sharingLevel, Long attachedCharacterID) throws InvalidPriceException;
+    void savePriceSet(Long priceSetID, List<PriceSetItemDto> priceSetItemDtos, SharingLevel sharingLevel, Long attachedCharacterID) throws InvalidPriceException;
 
     List<PriceSetItemDto> fetchPricesFromEveCentral(List<PriceSetItemDto> priceSetItemDtos) throws InvalidPriceException, EveCentralApiException;
 

@@ -5,7 +5,7 @@ import lv.odylab.evemanage.client.EveManageMessages;
 
 public class CharacterOrCorporationLevelListBox extends ListBox {
     public CharacterOrCorporationLevelListBox(EveManageMessages messages) {
-        // TODO remove string constant usage
+        // TODO remove constant usage
         addItem(messages.character(), "CHARACTER");
         addItem(messages.corporation(), "CORPORATION");
     }

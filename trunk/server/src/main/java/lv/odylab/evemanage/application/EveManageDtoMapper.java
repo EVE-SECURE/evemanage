@@ -30,7 +30,6 @@ import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
@@ -38,11 +37,9 @@ import lv.odylab.evemanage.domain.calculation.Calculation;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.eve.ApiKeyCharacterInfo;
 import lv.odylab.evemanage.domain.eve.Character;
-import lv.odylab.evemanage.domain.eve.Region;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
-import lv.odylab.evemanage.domain.user.PriceFetchOption;
 import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.eveapi.dto.AccountBalanceDto;
@@ -59,6 +56,7 @@ import lv.odylab.evemanage.integration.evemetricsapi.dto.ItemPriceDto;
 import lv.odylab.evemanage.service.calculation.InventedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedSchematic;
+import lv.odylab.evemanage.shared.eve.Region;
 import lv.odylab.evemetricsapi.parser.method.itemprice.ItemPriceType;
 
 public interface EveManageDtoMapper {
@@ -70,8 +68,6 @@ public interface EveManageDtoMapper {
     SkillLevel map(SkillLevelDto skillLevelDto, Class<SkillLevel> skillLevelClass);
 
     RegionDto map(Region region, Class<RegionDto> regionDtoClass);
-
-    PriceFetchOptionDto map(PriceFetchOption priceFetchOption, Class<PriceFetchOptionDto> priceFetchOptionDtoClass);
 
     BlueprintDto map(Blueprint blueprint, Class<BlueprintDto> blueprintDtoClass);
 

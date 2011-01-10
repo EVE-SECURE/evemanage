@@ -25,7 +25,6 @@ import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDtoComparator;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
@@ -33,17 +32,18 @@ import lv.odylab.evemanage.domain.blueprint.Blueprint;
 import lv.odylab.evemanage.domain.calculation.Calculation;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.eve.Character;
-import lv.odylab.evemanage.domain.eve.Region;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
-import lv.odylab.evemanage.domain.user.PriceFetchOption;
 import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
 import lv.odylab.evemanage.service.calculation.InventedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedSchematic;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
+import lv.odylab.evemanage.shared.eve.Region;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -88,7 +88,7 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public List<String> getAvailableSharingLevels() {
+    public List<SharingLevel> getAvailableSharingLevels() {
         return applicationFacade.getAvailableSharingLevels();
     }
 
@@ -150,19 +150,13 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public List<PriceFetchOptionDto> getPriceFetchOptions() {
-        List<PriceFetchOption> priceFetchOptions = applicationFacade.getPriceFetchOptions();
-        List<PriceFetchOptionDto> priceFetchOptionDtos = new ArrayList<PriceFetchOptionDto>();
-        for (PriceFetchOption priceFetchOption : priceFetchOptions) {
-            priceFetchOptionDtos.add(mapper.map(priceFetchOption, PriceFetchOptionDto.class));
-        }
-        return priceFetchOptionDtos;
+    public List<PriceFetchOption> getPriceFetchOptions() {
+        return applicationFacade.getPriceFetchOptions();
     }
 
     @Override
-    public PriceFetchOptionDto getPreferredPriceFetchOption() {
-        PriceFetchOption preferredPriceFetchOption = applicationFacade.getPreferredPriceFetchOption();
-        return mapper.map(preferredPriceFetchOption, PriceFetchOptionDto.class);
+    public PriceFetchOption getPreferredPriceFetchOption() {
+        return applicationFacade.getPreferredPriceFetchOption();
     }
 
     @Override
@@ -207,7 +201,7 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public BlueprintDto saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, String sharingLevel) {
+    public BlueprintDto saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, SharingLevel sharingLevel) {
         Blueprint blueprint = applicationFacade.saveBlueprint(blueprintID, itemID, meLevel, peLevel, attachedCharacterID, sharingLevel);
         return mapper.map(blueprint, BlueprintDto.class);
     }
@@ -225,25 +219,25 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
 
     @Override
     @Logging(logArguments = false)
-    public void importBlueprintsFromXml(String importXml, Long attachedCharacterID, String sharingLevel) throws EveApiException {
+    public void importBlueprintsFromXml(String importXml, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException {
         applicationFacade.importBlueprintsFromXml(importXml, attachedCharacterID, sharingLevel);
     }
 
     @Override
     @Logging(logArguments = false)
-    public void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, String sharingLevel) {
+    public void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, SharingLevel sharingLevel) {
         applicationFacade.importBlueprintsFromCsv(importCsv, attachedCharacterID, sharingLevel);
     }
 
     @Override
     @Logging(logArguments = false)
-    public void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException {
+    public void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException {
         applicationFacade.importBlueprintsUsingOneTimeFullApiKey(fullApiKey, userID, characterID, level, attachedCharacterID, sharingLevel);
     }
 
     @Override
     @Logging(logArguments = false)
-    public void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException {
+    public void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException {
         applicationFacade.importBlueprintsUsingFullApiKey(characterID, level, attachedCharacterID, sharingLevel);
     }
 
@@ -307,7 +301,7 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public void savePriceSet(Long priceSetID, List<PriceSetItemDto> priceSetItemDtos, String sharingLevel, Long attachedCharacterID) throws InvalidPriceException {
+    public void savePriceSet(Long priceSetID, List<PriceSetItemDto> priceSetItemDtos, SharingLevel sharingLevel, Long attachedCharacterID) throws InvalidPriceException {
         Set<PriceSetItem> priceSetItems = new HashSet<PriceSetItem>();
         for (PriceSetItemDto priceSetItemDto : priceSetItemDtos) {
             priceSetItems.add(mapper.map(priceSetItemDto, PriceSetItem.class));

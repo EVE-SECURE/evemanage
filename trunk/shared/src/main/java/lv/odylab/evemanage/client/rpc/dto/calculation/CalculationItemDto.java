@@ -1,7 +1,7 @@
 package lv.odylab.evemanage.client.rpc.dto.calculation;
 
-import lv.odylab.evemanage.client.rpc.PathExpression;
-import lv.odylab.evemanage.client.rpc.RationalNumber;
+import lv.odylab.evemanage.shared.PathExpression;
+import lv.odylab.evemanage.shared.RationalNumber;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

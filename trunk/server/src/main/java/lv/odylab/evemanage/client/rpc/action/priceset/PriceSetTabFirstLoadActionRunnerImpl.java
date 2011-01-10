@@ -5,6 +5,7 @@ import lv.odylab.evemanage.application.EveManageClientFacade;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class PriceSetTabFirstLoadActionRunnerImpl implements PriceSetTabFirstLoa
             priceSet = clientFacade.getPriceSet(priceSetID);
         }
         List<CharacterNameDto> attachedCharacterNames = clientFacade.getAvailableAttachedCharacterNames();
-        List<String> sharingLevels = clientFacade.getAvailableSharingLevels();
+        List<SharingLevel> sharingLevels = clientFacade.getAvailableSharingLevels();
 
         PriceSetTabFirstLoadActionResponse response = new PriceSetTabFirstLoadActionResponse();
         response.setPriceSetNames(priceSetNames);

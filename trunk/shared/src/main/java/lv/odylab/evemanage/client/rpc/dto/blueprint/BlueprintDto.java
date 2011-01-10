@@ -1,6 +1,7 @@
 package lv.odylab.evemanage.client.rpc.dto.blueprint;
 
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterInfoDto;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.io.Serializable;
 
@@ -16,7 +17,7 @@ public class BlueprintDto implements Serializable {
     private Integer productivityLevel;
     private Integer materialLevel;
     private CharacterInfoDto attachedCharacterInfo;
-    private String sharingLevel;
+    private SharingLevel sharingLevel;
     private String createdDate;
     private String updatedDate;
 
@@ -108,11 +109,11 @@ public class BlueprintDto implements Serializable {
         this.attachedCharacterInfo = attachedCharacterInfo;
     }
 
-    public String getSharingLevel() {
+    public SharingLevel getSharingLevel() {
         return sharingLevel;
     }
 
-    public void setSharingLevel(String sharingLevel) {
+    public void setSharingLevel(SharingLevel sharingLevel) {
         this.sharingLevel = sharingLevel;
     }
 

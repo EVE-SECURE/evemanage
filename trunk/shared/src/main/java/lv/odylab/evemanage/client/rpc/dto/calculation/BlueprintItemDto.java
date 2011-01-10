@@ -1,14 +1,15 @@
 package lv.odylab.evemanage.client.rpc.dto.calculation;
 
-import lv.odylab.evemanage.client.rpc.PathExpression;
-import lv.odylab.evemanage.client.rpc.RationalNumber;
+import lv.odylab.evemanage.shared.PathExpression;
+import lv.odylab.evemanage.shared.RationalNumber;
+import lv.odylab.evemanage.shared.eve.BlueprintUse;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class BlueprintItemDto implements Serializable {
     private PathExpression pathExpression;
-    private String blueprintUse;
+    private BlueprintUse blueprintUse;
     private Long itemTypeID;
     private Long itemCategoryID;
     private String itemTypeName;
@@ -37,11 +38,11 @@ public class BlueprintItemDto implements Serializable {
         this.pathExpression = pathExpression;
     }
 
-    public String getBlueprintUse() {
+    public BlueprintUse getBlueprintUse() {
         return blueprintUse;
     }
 
-    public void setBlueprintUse(String blueprintUse) {
+    public void setBlueprintUse(BlueprintUse blueprintUse) {
         this.blueprintUse = blueprintUse;
     }
 

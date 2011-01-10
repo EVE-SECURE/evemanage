@@ -67,7 +67,6 @@ import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableBlueprin
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationItem;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationPriceSetItem;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationSkillLevel;
-import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.EveManageRemoteServiceAsync;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorFetchPricesFromEveCentralAction;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorFetchPricesFromEveCentralActionResponse;
@@ -94,7 +93,6 @@ import lv.odylab.evemanage.client.rpc.dto.calculation.InventedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
 import lv.odylab.evemanage.client.widget.BlueprintUseButton;
@@ -108,6 +106,9 @@ import lv.odylab.evemanage.client.widget.RegionListBox;
 import lv.odylab.evemanage.client.widget.SkillBookImage;
 import lv.odylab.evemanage.client.widget.SkillLevelImage;
 import lv.odylab.evemanage.client.widget.SkillLevelListBox;
+import lv.odylab.evemanage.shared.CalculationExpression;
+import lv.odylab.evemanage.shared.eve.BlueprintUse;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -276,9 +277,9 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
 
         RegionListBox getPreferredRegionListBox();
 
-        void setPriceFetchOptions(List<PriceFetchOptionDto> priceFetchOptions);
+        void setPriceFetchOptions(List<PriceFetchOption> priceFetchOptions);
 
-        void setPreferredPriceFetchOption(PriceFetchOptionDto preferredPriceFetchOption);
+        void setPreferredPriceFetchOption(PriceFetchOption preferredPriceFetchOption);
 
         PriceFetchOptionListBox getPreferredPriceFetchOption();
 
@@ -920,7 +921,7 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
                 if (editableBlueprintItem.getInventionBlueprintItemTable() != null) {
                     blueprintItemTreeSectionDisplay.hideBlueprintInventionItems(editableBlueprintItem);
                 }
-                blueprintItem.setBlueprintUse("ORIGINAL"); // TODO remove string constant usage
+                blueprintItem.setBlueprintUse(BlueprintUse.ORIGINAL);
                 display.recalculate();
             }
         }));
@@ -933,7 +934,7 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
                 if (editableBlueprintItem.getInventionBlueprintItemTable() != null) {
                     blueprintItemTreeSectionDisplay.hideBlueprintInventionItems(editableBlueprintItem);
                 }
-                blueprintItem.setBlueprintUse("COPY"); // TODO remove string constant usage
+                blueprintItem.setBlueprintUse(BlueprintUse.COPY);
                 display.recalculate();
             }
         }));

@@ -2,6 +2,7 @@ package lv.odylab.evemanage.client.rpc.action.blueprints;
 
 import lv.odylab.evemanage.client.rpc.action.Action;
 import lv.odylab.evemanage.client.rpc.action.RunnedBy;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 @RunnedBy(BlueprintsImportActionRunner.class)
 public class BlueprintsImportAction implements Action<BlueprintsImportActionResponse> {
@@ -14,7 +15,7 @@ public class BlueprintsImportAction implements Action<BlueprintsImportActionResp
     private Long fullApiKeyCharacterID;
     private String fullApiKeyLevel;
     private Long attachedCharacterID;
-    private String sharingLevel;
+    private SharingLevel sharingLevel;
 
     public String getImportXml() {
         return importXml;
@@ -88,11 +89,11 @@ public class BlueprintsImportAction implements Action<BlueprintsImportActionResp
         this.attachedCharacterID = attachedCharacterID;
     }
 
-    public String getSharingLevel() {
+    public SharingLevel getSharingLevel() {
         return sharingLevel;
     }
 
-    public void setSharingLevel(String sharingLevel) {
+    public void setSharingLevel(SharingLevel sharingLevel) {
         this.sharingLevel = sharingLevel;
     }
 }

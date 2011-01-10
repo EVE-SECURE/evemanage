@@ -5,8 +5,8 @@ import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 
 import java.util.List;
 
@@ -18,8 +18,8 @@ public class PreferencesTabFirstLoadActionResponse implements Response {
     private List<SkillLevelDto> skillLevelsForCalculation;
     private List<RegionDto> regions;
     private RegionDto preferredRegion;
-    private List<PriceFetchOptionDto> priceFetchOptions;
-    private PriceFetchOptionDto preferredPriceFetchOption;
+    private List<PriceFetchOption> priceFetchOptions;
+    private PriceFetchOption preferredPriceFetchOption;
 
     public List<CharacterDto> getCharacters() {
         return characters;
@@ -77,19 +77,19 @@ public class PreferencesTabFirstLoadActionResponse implements Response {
         this.preferredRegion = preferredRegion;
     }
 
-    public List<PriceFetchOptionDto> getPriceFetchOptions() {
+    public List<PriceFetchOption> getPriceFetchOptions() {
         return priceFetchOptions;
     }
 
-    public void setPriceFetchOptions(List<PriceFetchOptionDto> priceFetchOptions) {
+    public void setPriceFetchOptions(List<PriceFetchOption> priceFetchOptions) {
         this.priceFetchOptions = priceFetchOptions;
     }
 
-    public PriceFetchOptionDto getPreferredPriceFetchOption() {
+    public PriceFetchOption getPreferredPriceFetchOption() {
         return preferredPriceFetchOption;
     }
 
-    public void setPreferredPriceFetchOption(PriceFetchOptionDto preferredPriceFetchOption) {
+    public void setPreferredPriceFetchOption(PriceFetchOption preferredPriceFetchOption) {
         this.preferredPriceFetchOption = preferredPriceFetchOption;
     }
 }

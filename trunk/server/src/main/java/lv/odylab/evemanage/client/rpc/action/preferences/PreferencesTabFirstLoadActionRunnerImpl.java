@@ -6,9 +6,9 @@ import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 
 import java.util.List;
 
@@ -30,8 +30,8 @@ public class PreferencesTabFirstLoadActionRunnerImpl implements PreferencesTabFi
         List<SkillLevelDto> skillLevelsForCalculation = clientFacade.getSkillLevelsForCalculation();
         List<RegionDto> regions = clientFacade.getRegions();
         RegionDto preferredRegion = clientFacade.getPreferredRegion();
-        List<PriceFetchOptionDto> priceFetchOptions = clientFacade.getPriceFetchOptions();
-        PriceFetchOptionDto preferredPriceFetchOption = clientFacade.getPreferredPriceFetchOption();
+        List<PriceFetchOption> priceFetchOptions = clientFacade.getPriceFetchOptions();
+        PriceFetchOption preferredPriceFetchOption = clientFacade.getPreferredPriceFetchOption();
 
         PreferencesTabFirstLoadActionResponse response = new PreferencesTabFirstLoadActionResponse();
         response.setCharacters(characters);

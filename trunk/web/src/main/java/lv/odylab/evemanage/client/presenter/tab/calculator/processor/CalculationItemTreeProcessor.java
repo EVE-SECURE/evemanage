@@ -3,11 +3,11 @@ package lv.odylab.evemanage.client.presenter.tab.calculator.processor;
 import com.google.inject.Inject;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNode;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNodeSummary;
-import lv.odylab.evemanage.client.rpc.EveCalculator;
-import lv.odylab.evemanage.client.rpc.PathExpression;
-import lv.odylab.evemanage.client.rpc.RationalNumber;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceItemDto;
+import lv.odylab.evemanage.shared.EveCalculator;
+import lv.odylab.evemanage.shared.PathExpression;
+import lv.odylab.evemanage.shared.RationalNumber;
 
 import java.math.BigDecimal;
 import java.util.List;
