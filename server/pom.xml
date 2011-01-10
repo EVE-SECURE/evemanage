@@ -62,7 +62,7 @@
         </dependency>
         <dependency>
             <groupId>lv.odylab.evemanage</groupId>
-            <artifactId>evemanage-rpc</artifactId>
+            <artifactId>evemanage-shared</artifactId>
             <version>${odylab.evemanage.version}</version>
         </dependency>
         <dependency>
