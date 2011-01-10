@@ -6,20 +6,20 @@ import lv.odylab.evemanage.application.exception.EveCentralApiException;
 import lv.odylab.evemanage.application.exception.EveMetricsApiException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.client.rpc.ErrorCode;
-import lv.odylab.evemanage.domain.SharingLevel;
 import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.eve.CharacterDao;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetDao;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
-import lv.odylab.evemanage.domain.user.PriceFetchOption;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.domain.user.UserDao;
 import lv.odylab.evemanage.integration.evecentralapi.EveCentralApiGateway;
 import lv.odylab.evemanage.integration.evecentralapi.dto.MarketStatDto;
 import lv.odylab.evemanage.integration.evemetricsapi.EveMetricsApiGateway;
 import lv.odylab.evemanage.integration.evemetricsapi.dto.ItemPriceDto;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -135,10 +135,10 @@ public class PriceSetManagementServiceImpl implements PriceSetManagementService 
     }
 
     @Override
-    public void savePriceSet(Long priceSetID, Set<PriceSetItem> priceSetItems, String sharingLevel, Long attachedCharacterID, Key<User> userKey) {
+    public void savePriceSet(Long priceSetID, Set<PriceSetItem> priceSetItems, SharingLevel sharingLevel, Long attachedCharacterID, Key<User> userKey) {
         PriceSet priceSet = priceSetDao.get(priceSetID, userKey);
         priceSet.setItems(priceSetItems);
-        priceSet.setSharingLevel(sharingLevel);
+        priceSet.setSharingLevel(sharingLevel.toString());
         if (attachedCharacterID != null) {
             Character character = characterDao.getByCharacterID(attachedCharacterID, userKey);
             CharacterInfo characterInfo = new CharacterInfo();

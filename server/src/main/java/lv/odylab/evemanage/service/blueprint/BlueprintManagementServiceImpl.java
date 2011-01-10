@@ -10,7 +10,6 @@ import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.application.exception.EveDbException;
 import lv.odylab.evemanage.application.exception.EveManageSecurityException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
-import lv.odylab.evemanage.domain.SharingLevel;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
 import lv.odylab.evemanage.domain.blueprint.BlueprintDao;
 import lv.odylab.evemanage.domain.eve.ApiKey;
@@ -28,6 +27,7 @@ import lv.odylab.evemanage.integration.evedb.dto.BlueprintTypeDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
 import lv.odylab.evemanage.security.EveManageSecurityManager;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,7 +151,7 @@ public class BlueprintManagementServiceImpl implements BlueprintManagementServic
     }
 
     @Override
-    public Blueprint saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, String sharingLevel, Key<User> userKey) {
+    public Blueprint saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, SharingLevel sharingLevel, Key<User> userKey) {
         Blueprint blueprint = blueprintDao.get(blueprintID, userKey);
         blueprint.setItemID(itemID);
         blueprint.setMaterialLevel(meLevel);
@@ -162,7 +162,7 @@ public class BlueprintManagementServiceImpl implements BlueprintManagementServic
         } else {
             blueprint.setAttachedCharacterInfo(null);
         }
-        blueprint.setSharingLevel(sharingLevel);
+        blueprint.setSharingLevel(sharingLevel.toString());
         blueprint.setUpdatedDate(new Date());
         blueprintDao.put(blueprint, userKey);
         return blueprint;
@@ -175,12 +175,12 @@ public class BlueprintManagementServiceImpl implements BlueprintManagementServic
     }
 
     @Override
-    public void importBlueprintsFromXml(String importXml, Long attachedCharacterID, String sharingLevel, Key<User> userKey) throws EveApiException {
+    public void importBlueprintsFromXml(String importXml, Long attachedCharacterID, SharingLevel sharingLevel, Key<User> userKey) throws EveApiException {
         proceedIndustryJobImport(eveApiGateway.importFromIndustryJobXml(importXml), attachedCharacterID, sharingLevel, userKey);
     }
 
     @Override
-    public void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, String sharingLevel, Key<User> userKey) {
+    public void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, SharingLevel sharingLevel, Key<User> userKey) {
         String[] importCsvStrings = importCsv.trim().split("\n");
         String[] columns = importCsvStrings[0].split(",");
         List<String> possibleColumns = Arrays.asList("name", "typeid", "me", "pe", "itemid");
@@ -217,9 +217,9 @@ public class BlueprintManagementServiceImpl implements BlueprintManagementServic
             }
 
             if (name != null) {
-                addBlueprintTaskLauncher.launch(userKey.getId(), name, itemID, me, pe, attachedCharacterID, sharingLevel);
+                addBlueprintTaskLauncher.launch(userKey.getId(), name, itemID, me, pe, attachedCharacterID, sharingLevel.toString());
             } else if (typeID != null) {
-                addBlueprintTaskLauncher.launch(userKey.getId(), typeID, itemID, me, pe, attachedCharacterID, sharingLevel);
+                addBlueprintTaskLauncher.launch(userKey.getId(), typeID, itemID, me, pe, attachedCharacterID, sharingLevel.toString());
             } else {
                 throw new CsvImportException("noNameAndTypeID");
             }
@@ -227,7 +227,7 @@ public class BlueprintManagementServiceImpl implements BlueprintManagementServic
     }
 
     @Override
-    public void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, String sharingLevel, Key<User> userKey) throws EveApiException {
+    public void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel, Key<User> userKey) throws EveApiException {
         if ("CHARACTER".equals(level)) {
             proceedIndustryJobImport(eveApiGateway.getCharacterIndustryJobs(fullApiKey, userID, characterID), attachedCharacterID, sharingLevel, userKey);
         } else {
@@ -236,7 +236,7 @@ public class BlueprintManagementServiceImpl implements BlueprintManagementServic
     }
 
     @Override
-    public void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, String sharingLevel, Key<User> userKey) throws EveApiException {
+    public void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel, Key<User> userKey) throws EveApiException {
         ApiKey fullApiKey = apiKeyDao.getFullForCharacterID(characterID, userKey);
         String fullApiKeyString;
         try {
@@ -254,7 +254,7 @@ public class BlueprintManagementServiceImpl implements BlueprintManagementServic
         }
     }
 
-    private void proceedIndustryJobImport(List<IndustryJobDto> industryJobDtos, Long attachedCharacterID, String sharingLevel, Key<User> userKey) {
+    private void proceedIndustryJobImport(List<IndustryJobDto> industryJobDtos, Long attachedCharacterID, SharingLevel sharingLevel, Key<User> userKey) {
         List<Blueprint> existingBlueprints = blueprintDao.getAll(userKey);
         Set<Long> existingItemIDs = new HashSet<Long>();
         for (Blueprint blueprint : existingBlueprints) {
@@ -271,7 +271,7 @@ public class BlueprintManagementServiceImpl implements BlueprintManagementServic
                     industryJobDto.getInstalledItemLicensedProductionRunsRemaining() == -1 &&
                     !newItemIDs.contains(itemID) &&
                     !existingItemIDs.contains(itemID)) {
-                addBlueprintTaskLauncher.launch(userKey.getId(), industryJobDto.getInstalledItemTypeID(), industryJobDto.getInstalledItemID(), industryJobDto.getInstalledItemMaterialLevel(), industryJobDto.getInstalledItemProductivityLevel(), attachedCharacterID, sharingLevel);
+                addBlueprintTaskLauncher.launch(userKey.getId(), industryJobDto.getInstalledItemTypeID(), industryJobDto.getInstalledItemID(), industryJobDto.getInstalledItemMaterialLevel(), industryJobDto.getInstalledItemProductivityLevel(), attachedCharacterID, sharingLevel.toString());
                 newItemIDs.add(itemID);
             }
         }

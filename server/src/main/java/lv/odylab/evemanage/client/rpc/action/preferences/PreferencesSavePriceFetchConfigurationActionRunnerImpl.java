@@ -2,7 +2,7 @@ package lv.odylab.evemanage.client.rpc.action.preferences;
 
 import com.google.inject.Inject;
 import lv.odylab.evemanage.application.EveManageClientFacade;
-import lv.odylab.evemanage.domain.eve.Region;
+import lv.odylab.evemanage.shared.eve.Region;
 
 public class PreferencesSavePriceFetchConfigurationActionRunnerImpl implements PreferencesSavePriceFetchConfigurationActionRunner {
     private EveManageClientFacade clientFacade;

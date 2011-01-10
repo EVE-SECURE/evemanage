@@ -2,6 +2,7 @@ package lv.odylab.evemanage.client.rpc.action.blueprints;
 
 import lv.odylab.evemanage.client.rpc.action.Action;
 import lv.odylab.evemanage.client.rpc.action.RunnedBy;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 @RunnedBy(BlueprintSaveActionRunner.class)
 public class BlueprintSaveAction implements Action<BlueprintSaveActionResponse> {
@@ -9,7 +10,7 @@ public class BlueprintSaveAction implements Action<BlueprintSaveActionResponse> 
     private Integer meLevel;
     private Integer peLevel;
     private Long attachedCharacterID;
-    private String sharingLevel;
+    private SharingLevel sharingLevel;
     private Long itemID;
 
     public Long getBlueprintID() {
@@ -44,11 +45,11 @@ public class BlueprintSaveAction implements Action<BlueprintSaveActionResponse> 
         this.attachedCharacterID = attachedCharacterID;
     }
 
-    public String getSharingLevel() {
+    public SharingLevel getSharingLevel() {
         return sharingLevel;
     }
 
-    public void setSharingLevel(String sharingLevel) {
+    public void setSharingLevel(SharingLevel sharingLevel) {
         this.sharingLevel = sharingLevel;
     }
 

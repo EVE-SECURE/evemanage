@@ -2,15 +2,15 @@ package lv.odylab.evemanage.client.rpc.action.quickcalculator;
 
 import lv.odylab.evemanage.client.rpc.action.Response;
 import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 
 import java.util.List;
 
 public class QuickCalculatorTabFirstLoadActionResponse implements Response {
     private List<RegionDto> regions;
     private RegionDto preferredRegion;
-    private List<PriceFetchOptionDto> priceFetchOptions;
-    private PriceFetchOptionDto preferredPriceFetchOption;
+    private List<PriceFetchOption> priceFetchOptions;
+    private PriceFetchOption preferredPriceFetchOption;
 
     public List<RegionDto> getRegions() {
         return regions;
@@ -28,19 +28,19 @@ public class QuickCalculatorTabFirstLoadActionResponse implements Response {
         this.preferredRegion = preferredRegion;
     }
 
-    public List<PriceFetchOptionDto> getPriceFetchOptions() {
+    public List<PriceFetchOption> getPriceFetchOptions() {
         return priceFetchOptions;
     }
 
-    public void setPriceFetchOptions(List<PriceFetchOptionDto> priceFetchOptions) {
+    public void setPriceFetchOptions(List<PriceFetchOption> priceFetchOptions) {
         this.priceFetchOptions = priceFetchOptions;
     }
 
-    public PriceFetchOptionDto getPreferredPriceFetchOption() {
+    public PriceFetchOption getPreferredPriceFetchOption() {
         return preferredPriceFetchOption;
     }
 
-    public void setPreferredPriceFetchOption(PriceFetchOptionDto preferredPriceFetchOption) {
+    public void setPreferredPriceFetchOption(PriceFetchOption preferredPriceFetchOption) {
         this.preferredPriceFetchOption = preferredPriceFetchOption;
     }
 }

@@ -65,7 +65,6 @@ import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
 import lv.odylab.evemanage.client.widget.OnlyDigitsChangeHandler;
@@ -74,6 +73,7 @@ import lv.odylab.evemanage.client.widget.RegionListBox;
 import lv.odylab.evemanage.client.widget.SkillBookImage;
 import lv.odylab.evemanage.client.widget.SkillLevelImage;
 import lv.odylab.evemanage.client.widget.SkillLevelListBox;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,9 +151,9 @@ public class PreferencesTabPresenter implements Presenter, PreferencesTabErrorEv
 
         RegionListBox getPreferredRegionListBox();
 
-        void setPriceFetchOptions(List<PriceFetchOptionDto> priceFetchOptions);
+        void setPriceFetchOptions(List<PriceFetchOption> priceFetchOptions);
 
-        void setPreferredPriceFetchOption(PriceFetchOptionDto preferredPriceFetchOption);
+        void setPreferredPriceFetchOption(PriceFetchOption preferredPriceFetchOption);
 
         PriceFetchOptionListBox getPreferredPriceFetchOption();
 

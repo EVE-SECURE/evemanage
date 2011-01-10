@@ -11,9 +11,9 @@ import lv.odylab.evemanage.client.EveManageMessages;
 import lv.odylab.evemanage.client.EveManageResources;
 import lv.odylab.evemanage.client.presenter.tab.PreferencesTabPresenter;
 import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.widget.PriceFetchOptionListBox;
 import lv.odylab.evemanage.client.widget.RegionListBox;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 
 import java.util.List;
 
@@ -84,12 +84,12 @@ public class PriceFetchingSection implements PreferencesTabPresenter.PriceFetchi
     }
 
     @Override
-    public void setPriceFetchOptions(List<PriceFetchOptionDto> priceFetchOptions) {
+    public void setPriceFetchOptions(List<PriceFetchOption> priceFetchOptions) {
         preferredPriceFetchOptionListBox.setPriceFetchOptions(priceFetchOptions);
     }
 
     @Override
-    public void setPreferredPriceFetchOption(PriceFetchOptionDto preferredPriceFetchOption) {
+    public void setPreferredPriceFetchOption(PriceFetchOption preferredPriceFetchOption) {
         preferredPriceFetchOptionListBox.selectFetchOptions(preferredPriceFetchOption);
     }
 

@@ -24,6 +24,7 @@ import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.widget.EveCharacterInfoLink;
 import lv.odylab.evemanage.client.widget.EveCorporationInfoLink;
 import lv.odylab.evemanage.client.widget.ValidOrInvalidImage;
+import lv.odylab.evemanage.shared.eve.ApiKeyType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -132,8 +133,7 @@ public class ApiKeysSection implements PreferencesTabPresenter.ApiKeysSectionDis
     private void drawApiKey(ApiKeyDto apiKeyDto) {
         int index = apiKeysFlexTable.getRowCount();
         Image apiKeyImage;
-        // TODO remove string constant usage
-        if ("FULL".equals(apiKeyDto.getKeyType())) {
+        if (ApiKeyType.FULL.equals(apiKeyDto.getKeyType())) {
             apiKeyImage = new Image(resources.fullKeyIcon());
             apiKeyImage.setTitle(messages.fullApiKey());
         } else {

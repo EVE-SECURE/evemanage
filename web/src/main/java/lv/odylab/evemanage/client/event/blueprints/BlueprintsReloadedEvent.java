@@ -5,6 +5,7 @@ import lv.odylab.evemanage.client.rpc.action.blueprints.BlueprintsReloadActionRe
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class BlueprintsReloadedEvent extends BlueprintsTabEvent<BlueprintsReload
     public static final Type<BlueprintsReloadedEventHandler> TYPE = new Type<BlueprintsReloadedEventHandler>();
     private List<BlueprintDto> blueprints;
     private List<CharacterNameDto> attachedCharacterNames;
-    private List<String> sharingLevels;
+    private List<SharingLevel> sharingLevels;
 
     public BlueprintsReloadedEvent(TrackingManager trackingManager, EveManageConstants constants, BlueprintsReloadActionResponse response, Long msDuration) {
         super(trackingManager, constants, msDuration);
@@ -35,7 +36,7 @@ public class BlueprintsReloadedEvent extends BlueprintsTabEvent<BlueprintsReload
         return attachedCharacterNames;
     }
 
-    public List<String> getSharingLevels() {
+    public List<SharingLevel> getSharingLevels() {
         return sharingLevels;
     }
 

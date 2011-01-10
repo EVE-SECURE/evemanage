@@ -1,4 +1,4 @@
-package lv.odylab.evemanage.client.rpc;
+package lv.odylab.evemanage.shared;
 
 import org.junit.Test;
 

@@ -12,14 +12,11 @@ import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeExcep
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
-import lv.odylab.evemanage.domain.SharingLevel;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
 import lv.odylab.evemanage.domain.calculation.Calculation;
 import lv.odylab.evemanage.domain.eve.ApiKey;
-import lv.odylab.evemanage.domain.eve.Region;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
-import lv.odylab.evemanage.domain.user.PriceFetchOption;
 import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.EveDbGateway;
@@ -34,6 +31,9 @@ import lv.odylab.evemanage.service.calculation.UsedSchematic;
 import lv.odylab.evemanage.service.eve.EveManagementService;
 import lv.odylab.evemanage.service.priceset.PriceSetManagementService;
 import lv.odylab.evemanage.service.user.UserManagementService;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
+import lv.odylab.evemanage.shared.eve.Region;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,8 +86,8 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public List<String> getAvailableSharingLevels() {
-        return Arrays.asList(SharingLevel.PERSONAL.toString(), SharingLevel.CORPORATION.toString(), SharingLevel.ALLIANCE.toString());
+    public List<SharingLevel> getAvailableSharingLevels() {
+        return Arrays.asList(SharingLevel.PERSONAL, SharingLevel.CORPORATION, SharingLevel.ALLIANCE);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public Blueprint saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, String sharingLevel) {
+    public Blueprint saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, SharingLevel sharingLevel) {
         return blueprintManagementService.saveBlueprint(blueprintID, itemID, meLevel, peLevel, attachedCharacterID, sharingLevel, getCurrentUserKey());
     }
 
@@ -171,22 +171,22 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public void importBlueprintsFromXml(String importXml, Long attachedCharacterID, String sharingLevel) throws EveApiException {
+    public void importBlueprintsFromXml(String importXml, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException {
         blueprintManagementService.importBlueprintsFromXml(importXml, attachedCharacterID, sharingLevel, getCurrentUserKey());
     }
 
     @Override
-    public void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, String sharingLevel) {
+    public void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, SharingLevel sharingLevel) {
         blueprintManagementService.importBlueprintsFromCsv(importCsv, attachedCharacterID, sharingLevel, getCurrentUserKey());
     }
 
     @Override
-    public void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException {
+    public void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException {
         blueprintManagementService.importBlueprintsUsingOneTimeFullApiKey(fullApiKey, userID, characterID, level, attachedCharacterID, sharingLevel, getCurrentUserKey());
     }
 
     @Override
-    public void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException {
+    public void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException {
         blueprintManagementService.importBlueprintsUsingFullApiKey(characterID, level, attachedCharacterID, sharingLevel, getCurrentUserKey());
     }
 
@@ -231,7 +231,7 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public void savePriceSet(Long priceSetID, Set<PriceSetItem> priceSetItems, String sharingLevel, Long attachedCharacterID) {
+    public void savePriceSet(Long priceSetID, Set<PriceSetItem> priceSetItems, SharingLevel sharingLevel, Long attachedCharacterID) {
         priceSetManagementService.savePriceSet(priceSetID, priceSetItems, sharingLevel, attachedCharacterID, getCurrentUserKey());
     }
 

@@ -6,6 +6,7 @@ import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public class BlueprintsTabFirstLoadEvent extends BlueprintsTabEvent<BlueprintsTa
     public static final Type<BlueprintsTabFirstLoadEventHandler> TYPE = new Type<BlueprintsTabFirstLoadEventHandler>();
     private List<BlueprintDto> blueprints;
     private List<CharacterNameDto> attachedCharacterNames;
-    private List<String> sharingLevels;
+    private List<SharingLevel> sharingLevels;
     private List<ApiKeyDto> fullApiKeys;
 
     public BlueprintsTabFirstLoadEvent(TrackingManager trackingManager, EveManageConstants constants, BlueprintsTabFirstLoadActionResponse response, Long msDuration) {
@@ -38,7 +39,7 @@ public class BlueprintsTabFirstLoadEvent extends BlueprintsTabEvent<BlueprintsTa
         return attachedCharacterNames;
     }
 
-    public List<String> getSharingLevels() {
+    public List<SharingLevel> getSharingLevels() {
         return sharingLevels;
     }
 

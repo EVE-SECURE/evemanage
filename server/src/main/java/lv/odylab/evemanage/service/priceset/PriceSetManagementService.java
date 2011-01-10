@@ -7,8 +7,9 @@ import lv.odylab.evemanage.application.exception.validation.InvalidNameException
 import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
-import lv.odylab.evemanage.domain.user.PriceFetchOption;
 import lv.odylab.evemanage.domain.user.User;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,7 +34,7 @@ public interface PriceSetManagementService {
 
     void renamePriceSet(Long priceSetID, String priceSetName, Key<User> userKey) throws InvalidNameException;
 
-    void savePriceSet(Long priceSetID, Set<PriceSetItem> priceSetItems, String sharingLevel, Long attachedCharacterID, Key<User> userKey);
+    void savePriceSet(Long priceSetID, Set<PriceSetItem> priceSetItems, SharingLevel sharingLevel, Long attachedCharacterID, Key<User> userKey);
 
     void savePriceSet(PriceSet priceSet, Key<User> userKey);
 

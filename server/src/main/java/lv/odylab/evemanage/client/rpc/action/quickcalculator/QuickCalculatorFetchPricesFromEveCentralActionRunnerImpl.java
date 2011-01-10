@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import lv.odylab.evemanage.application.EveManageClientFacade;
 import lv.odylab.evemanage.application.exception.validation.NoItemsException;
 import lv.odylab.evemanage.client.rpc.ErrorCode;
-import lv.odylab.evemanage.domain.user.PriceFetchOption;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 
 import java.math.BigDecimal;
 import java.util.List;

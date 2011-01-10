@@ -1,4 +1,4 @@
-package lv.odylab.evemanage.domain.eve;
+package lv.odylab.evemanage.shared.eve;
 
 /**
  * 0.6 | +9 | -2 | +1 | Circular Logic | Interface Alignment Chart | Symbiotic Figures | Circuitry Schematics

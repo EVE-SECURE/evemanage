@@ -10,10 +10,10 @@ import lv.odylab.evemanage.domain.eve.ApiKeyCharacterInfo;
 import lv.odylab.evemanage.domain.eve.ApiKeyDao;
 import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.eve.CharacterDao;
-import lv.odylab.evemanage.domain.eve.SkillForCalculation;
 import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.eveapi.dto.SkillLevelDto;
+import lv.odylab.evemanage.shared.eve.SkillForCalculation;
 
 import java.util.ArrayList;
 import java.util.Date;

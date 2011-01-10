@@ -6,6 +6,7 @@ import com.googlecode.objectify.ObjectifyFactory;
 import lv.odylab.evemanage.application.exception.validation.DifferentUserException;
 import lv.odylab.evemanage.application.exception.validation.DuplicateApiKeyException;
 import lv.odylab.evemanage.domain.user.User;
+import lv.odylab.evemanage.shared.eve.ApiKeyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

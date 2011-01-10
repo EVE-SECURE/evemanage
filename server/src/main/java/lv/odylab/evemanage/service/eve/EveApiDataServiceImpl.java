@@ -10,7 +10,6 @@ import lv.odylab.evemanage.application.exception.EveManageSecurityException;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.eve.ApiKeyCharacterInfo;
 import lv.odylab.evemanage.domain.eve.ApiKeyDao;
-import lv.odylab.evemanage.domain.eve.ApiKeyType;
 import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
 import lv.odylab.evemanage.domain.user.User;
@@ -21,6 +20,7 @@ import lv.odylab.evemanage.integration.eveapi.dto.CorporationSheetDto;
 import lv.odylab.evemanage.integration.eveapi.dto.SkillLevelDto;
 import lv.odylab.evemanage.security.EveManageSecurityManager;
 import lv.odylab.evemanage.security.HashCalculator;
+import lv.odylab.evemanage.shared.eve.ApiKeyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

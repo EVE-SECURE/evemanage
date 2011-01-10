@@ -37,6 +37,7 @@ import lv.odylab.evemanage.client.widget.MultiplierLabel;
 import lv.odylab.evemanage.client.widget.PriceLabel;
 import lv.odylab.evemanage.client.widget.PriceTextBox;
 import lv.odylab.evemanage.client.widget.QuantityLabel;
+import lv.odylab.evemanage.shared.eve.BlueprintUse;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -262,7 +263,6 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
         return pathNodesStringToComputableBlueprintItemMap;
     }
 
-    // TODO remove string constant usage
     private void drawRootBlueprintItem(final BlueprintItemDto blueprintItem) {
         final int index = blueprintItemTable.getRowCount();
         String pathNodesString = blueprintItem.getPathExpression().getPathNodesString();
@@ -300,7 +300,7 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
             blueprintItemTreeSectionHandlerRegistrations.add(inventAnchor.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    blueprintUseButton.setBlueprintUse("INVENTION");
+                    blueprintUseButton.setBlueprintUse(BlueprintUse.INVENTION);
                     editBlueprintUsagePopup.hide();
                     blueprintItemTable.setWidget(index, 3, inventionTable);
                 }
@@ -380,10 +380,10 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
         computableBlueprintItem.setCopyCorrectiveMultiplierLabel(correctiveMultiplier);
         computableBlueprintItem.setCopyTotalPriceLabel(totalPrice);
 
-        String blueprintUse = blueprintItem.getBlueprintUse();
-        if ("ORIGINAL".equals(blueprintUse)) {
+        BlueprintUse blueprintUse = blueprintItem.getBlueprintUse();
+        if (BlueprintUse.ORIGINAL.equals(blueprintUse)) {
             blueprintItemTable.setWidget(index, 3, originalTable);
-        } else if ("COPY".equals(blueprintUse)) {
+        } else if (BlueprintUse.COPY.equals(blueprintUse)) {
             blueprintItemTable.setWidget(index, 3, copyTable);
         }
 
@@ -400,7 +400,7 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
         blueprintItemTreeSectionHandlerRegistrations.add(useOriginalAnchor.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                blueprintUseButton.setBlueprintUse("ORIGINAL");
+                blueprintUseButton.setBlueprintUse(BlueprintUse.ORIGINAL);
                 editBlueprintUsagePopup.hide();
                 blueprintItemTable.setWidget(index, 3, originalTable);
             }
@@ -408,7 +408,7 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
         blueprintItemTreeSectionHandlerRegistrations.add(useCopyAnchor.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                blueprintUseButton.setBlueprintUse("COPY");
+                blueprintUseButton.setBlueprintUse(BlueprintUse.COPY);
                 editBlueprintUsagePopup.hide();
                 blueprintItemTable.setWidget(index, 3, copyTable);
             }
@@ -435,14 +435,14 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
             blueprintImage.addStyleName(resources.css().image16());
             inventionBlueprintItemTable.setWidget(index, 0, new EveItemInfoLink(ccpJsMessages, blueprintImage, itemTypeID));
             inventionBlueprintItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, blueprintItem.getItemTypeName(), itemTypeID));
-            inventionBlueprintItemTable.setWidget(index, 2, new Label(blueprintItem.getBlueprintUse()));
+            inventionBlueprintItemTable.setWidget(index, 2, new Label(blueprintItem.getBlueprintUse().toString()));
         } else {
             String imageUrl = imageUrlProvider.getImage16Url(itemCategoryID, itemTypeID, blueprintItem.getItemTypeIcon());
             Image image = new Image(imageUrl);
             image.addStyleName(resources.css().image16());
             inventionBlueprintItemTable.setWidget(index, 0, new EveItemInfoLink(ccpJsMessages, image, itemTypeID));
             inventionBlueprintItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, blueprintItem.getItemTypeName(), itemTypeID));
-            inventionBlueprintItemTable.setWidget(index, 2, new Label(blueprintItem.getBlueprintUse()));
+            inventionBlueprintItemTable.setWidget(index, 2, new Label(blueprintItem.getBlueprintUse().toString()));
         }
     }
 }

@@ -3,8 +3,8 @@ package lv.odylab.evemanage.client.event.quickcalculator;
 import lv.odylab.evemanage.client.EveManageConstants;
 import lv.odylab.evemanage.client.rpc.action.quickcalculator.QuickCalculatorTabFirstLoadActionResponse;
 import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ public class QuickCalculatorTabFirstLoadEvent extends QuickCalculatorTabEvent<Qu
     public static final Type<QuickCalculatorTabFirstLoadEventHandler> TYPE = new Type<QuickCalculatorTabFirstLoadEventHandler>();
     private List<RegionDto> regions;
     private RegionDto preferredRegion;
-    private List<PriceFetchOptionDto> priceFetchOptions;
-    private PriceFetchOptionDto preferredPriceFetchOption;
+    private List<PriceFetchOption> priceFetchOptions;
+    private PriceFetchOption preferredPriceFetchOption;
 
     public QuickCalculatorTabFirstLoadEvent(TrackingManager trackingManager, EveManageConstants constants, QuickCalculatorTabFirstLoadActionResponse response, Long msDuration) {
         super(trackingManager, constants, msDuration);
@@ -37,11 +37,11 @@ public class QuickCalculatorTabFirstLoadEvent extends QuickCalculatorTabEvent<Qu
         return preferredRegion;
     }
 
-    public List<PriceFetchOptionDto> getPriceFetchOptions() {
+    public List<PriceFetchOption> getPriceFetchOptions() {
         return priceFetchOptions;
     }
 
-    public PriceFetchOptionDto getPreferredPriceFetchOption() {
+    public PriceFetchOption getPreferredPriceFetchOption() {
         return preferredPriceFetchOption;
     }
 

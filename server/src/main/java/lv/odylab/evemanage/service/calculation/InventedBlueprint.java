@@ -1,9 +1,9 @@
 package lv.odylab.evemanage.service.calculation;
 
 import lv.odylab.evemanage.domain.calculation.BlueprintItem;
-import lv.odylab.evemanage.domain.eve.Decryptor;
 import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
+import lv.odylab.evemanage.shared.eve.Decryptor;
 
 import java.util.List;
 

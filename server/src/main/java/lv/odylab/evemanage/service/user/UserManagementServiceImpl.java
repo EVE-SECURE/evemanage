@@ -8,14 +8,14 @@ import lv.odylab.appengine.GoogleAppEngineServices;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
 import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.eve.CharacterDao;
-import lv.odylab.evemanage.domain.eve.Region;
-import lv.odylab.evemanage.domain.eve.SkillForCalculation;
 import lv.odylab.evemanage.domain.system.SystemProperty;
 import lv.odylab.evemanage.domain.system.SystemPropertyDao;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
-import lv.odylab.evemanage.domain.user.PriceFetchOption;
 import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.UserDao;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
+import lv.odylab.evemanage.shared.eve.Region;
+import lv.odylab.evemanage.shared.eve.SkillForCalculation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

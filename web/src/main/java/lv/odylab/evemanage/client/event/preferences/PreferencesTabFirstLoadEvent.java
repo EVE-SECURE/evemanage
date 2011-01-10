@@ -6,9 +6,9 @@ import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 
 import java.util.List;
 
@@ -22,8 +22,8 @@ public class PreferencesTabFirstLoadEvent extends PreferencesTabEvent<Preference
     private List<SkillLevelDto> skillLevelsForCalculation;
     private List<RegionDto> regions;
     private RegionDto preferredRegion;
-    private List<PriceFetchOptionDto> priceFetchOptions;
-    private PriceFetchOptionDto preferredPriceFetchOption;
+    private List<PriceFetchOption> priceFetchOptions;
+    private PriceFetchOption preferredPriceFetchOption;
 
     public PreferencesTabFirstLoadEvent(TrackingManager trackingManager, EveManageConstants constants, PreferencesTabFirstLoadActionResponse response, Long msDuration) {
         super(trackingManager, constants, msDuration);
@@ -79,11 +79,11 @@ public class PreferencesTabFirstLoadEvent extends PreferencesTabEvent<Preference
         return preferredRegion;
     }
 
-    public List<PriceFetchOptionDto> getPriceFetchOptions() {
+    public List<PriceFetchOption> getPriceFetchOptions() {
         return priceFetchOptions;
     }
 
-    public PriceFetchOptionDto getPreferredPriceFetchOption() {
+    public PriceFetchOption getPreferredPriceFetchOption() {
         return preferredPriceFetchOption;
     }
 }

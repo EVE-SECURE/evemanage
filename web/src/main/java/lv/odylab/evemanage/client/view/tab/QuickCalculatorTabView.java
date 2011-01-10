@@ -26,7 +26,6 @@ import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableBlueprin
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableBlueprintItem;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationItem;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationPriceSetItem;
-import lv.odylab.evemanage.client.rpc.EveCalculator;
 import lv.odylab.evemanage.client.rpc.dto.ItemTypeDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceItemDto;
@@ -42,6 +41,7 @@ import lv.odylab.evemanage.client.view.tab.quickcalculator.PricesSection;
 import lv.odylab.evemanage.client.view.tab.quickcalculator.SkillsForCalculationSection;
 import lv.odylab.evemanage.client.widget.OpaqueLoadableBlueprintImage;
 import lv.odylab.evemanage.client.widget.PriceTextBox;
+import lv.odylab.evemanage.shared.EveCalculator;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

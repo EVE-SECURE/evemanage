@@ -45,6 +45,7 @@ import lv.odylab.evemanage.client.widget.EveCharacterInfoLink;
 import lv.odylab.evemanage.client.widget.EveCorporationInfoLink;
 import lv.odylab.evemanage.client.widget.EveItemInfoLink;
 import lv.odylab.evemanage.client.widget.SharingLevelListBox;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -113,7 +114,7 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
     private SharingLevelListBox sharingLevelListBox;
     private Button importButton;
     private List<CharacterNameDto> attachedCharacterNames;
-    private List<String> sharingLevels;
+    private List<SharingLevel> sharingLevels;
 
     private Label libraryTitleLabel;
     private FlexTable filterTable;
@@ -583,10 +584,10 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
     }
 
     @Override
-    public void setSharingLevels(List<String> sharingLevels) {
+    public void setSharingLevels(List<SharingLevel> sharingLevels) {
         this.sharingLevels = sharingLevels;
         sharingLevelListBox.clear();
-        for (String sharingLevel : sharingLevels) {
+        for (SharingLevel sharingLevel : sharingLevels) {
             sharingLevelListBox.addItem(sharingLevel);
         }
     }
@@ -931,7 +932,7 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
         editPopupFlexTable.setWidget(2, 1, editAttachToCharacterListBox);
         editPopupFlexTable.setWidget(3, 0, new Label(messages.sharingLevel() + ":"));
         SharingLevelListBox editSharingLevelListBox = new SharingLevelListBox(messages);
-        for (String sharingLevel : sharingLevels) {
+        for (SharingLevel sharingLevel : sharingLevels) {
             editSharingLevelListBox.addItem(sharingLevel);
         }
         editSharingLevelListBox.setSharingLevel(blueprint.getSharingLevel());

@@ -2,7 +2,7 @@ package lv.odylab.evemanage.client.widget;
 
 import com.google.gwt.user.client.ui.Label;
 import lv.odylab.evemanage.client.EveManageResources;
-import lv.odylab.evemanage.client.rpc.RationalNumber;
+import lv.odylab.evemanage.shared.RationalNumber;
 
 public class QuantityLabel extends Label {
     private EveManageResources resources;

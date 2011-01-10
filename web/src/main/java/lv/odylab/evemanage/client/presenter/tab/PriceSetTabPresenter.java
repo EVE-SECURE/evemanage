@@ -95,6 +95,7 @@ import lv.odylab.evemanage.client.tracking.TrackingManager;
 import lv.odylab.evemanage.client.widget.AttachedCharacterListBox;
 import lv.odylab.evemanage.client.widget.PriceSetListBox;
 import lv.odylab.evemanage.client.widget.PriceTextBox;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -127,7 +128,7 @@ public class PriceSetTabPresenter implements Presenter, PriceSetTabErrorEventHan
 
         ListBox getSharingLevelListBox();
 
-        void setSharingLevels(List<String> sharingLevels);
+        void setSharingLevels(List<SharingLevel> sharingLevels);
 
         void addPriceSetItem(PriceSetItemDto priceSetItem);
 

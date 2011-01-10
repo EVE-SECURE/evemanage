@@ -25,7 +25,6 @@ import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableCalcul
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationPriceSetItem;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceItemDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
-import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.util.EveImageUrlProvider;
 import lv.odylab.evemanage.client.widget.DamagePerJobLabel;
 import lv.odylab.evemanage.client.widget.EveCentralQuicklookLink;
@@ -38,6 +37,7 @@ import lv.odylab.evemanage.client.widget.PriceTextBox;
 import lv.odylab.evemanage.client.widget.QuantityLabel;
 import lv.odylab.evemanage.client.widget.RegionListBox;
 import lv.odylab.evemanage.client.widget.SortableFlexTable;
+import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -234,12 +234,12 @@ public class PricesSection implements QuickCalculatorTabPresenter.PricesSectionD
     }
 
     @Override
-    public void setPriceFetchOptions(List<PriceFetchOptionDto> priceFetchOptions) {
+    public void setPriceFetchOptions(List<PriceFetchOption> priceFetchOptions) {
         preferredPriceFetchOptionListBox.setPriceFetchOptions(priceFetchOptions);
     }
 
     @Override
-    public void setPreferredPriceFetchOption(PriceFetchOptionDto preferredPriceFetchOption) {
+    public void setPreferredPriceFetchOption(PriceFetchOption preferredPriceFetchOption) {
         preferredPriceFetchOptionListBox.selectFetchOptions(preferredPriceFetchOption);
     }
 

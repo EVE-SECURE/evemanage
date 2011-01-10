@@ -1,4 +1,4 @@
-package lv.odylab.evemanage.client.rpc;
+package lv.odylab.evemanage.shared;
 
 public class EveCalculator {
     public Double calculateWaste(Integer meLevel, Integer wasteFactor) {

@@ -5,6 +5,7 @@ import lv.odylab.evemanage.application.EveManageClientFacade;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
+import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class BlueprintsTabFirstLoadActionRunnerImpl implements BlueprintsTabFirs
     public BlueprintsTabFirstLoadActionResponse execute(BlueprintsTabFirstLoadAction action) throws Exception {
         List<BlueprintDto> blueprints = clientFacade.getBlueprints();
         List<CharacterNameDto> attachedCharacterNames = clientFacade.getAvailableAttachedCharacterNames();
-        List<String> sharingLevels = clientFacade.getAvailableSharingLevels();
+        List<SharingLevel> sharingLevels = clientFacade.getAvailableSharingLevels();
         List<ApiKeyDto> fullApiKeys = clientFacade.getFullApiKeys();
 
         BlueprintsTabFirstLoadActionResponse response = new BlueprintsTabFirstLoadActionResponse();
