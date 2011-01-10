@@ -47,15 +47,16 @@ public class BlueprintItemTree {
     public BlueprintItemTreeNode getNodeByPathNodes(Long[] pathNodes) {
         BlueprintItemTreeNode blueprintItemTreeNode = null;
         Map<Long, BlueprintItemTreeNode> currentNodeMap = nodeMap;
-        for (int i = 0; i < pathNodes.length; i++) {
+        for (int i = 1; i < pathNodes.length; i++) {
             blueprintItemTreeNode = currentNodeMap.get(pathNodes[i]);
             currentNodeMap = blueprintItemTreeNode.getNodeMap();
         }
         return blueprintItemTreeNode;
     }
 
-    public void addInventedBlueprintNodes(Long[] pathNodes, List<BlueprintItemDto> blueprintItems) {
-
-
+    public void addInventedBlueprintNodes(List<BlueprintItemDto> blueprintItems) {
+        for (BlueprintItemDto blueprintItem : blueprintItems) {
+            createNode(blueprintItem);
+        }
     }
 }

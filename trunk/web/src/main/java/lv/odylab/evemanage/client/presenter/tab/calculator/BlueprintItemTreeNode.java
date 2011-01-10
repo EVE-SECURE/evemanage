@@ -8,7 +8,7 @@ import java.util.TreeMap;
 public class BlueprintItemTreeNode {
     private BlueprintItemDto blueprintItem;
     private Map<Long, BlueprintItemTreeNode> nodeMap = new TreeMap<Long, BlueprintItemTreeNode>();
-    private Boolean excludeChildNodesFromCalculation = false;
+    private Boolean excludeNodeFromCalculation = false;
 
     public BlueprintItemDto getBlueprintItem() {
         return blueprintItem;
@@ -22,11 +22,11 @@ public class BlueprintItemTreeNode {
         return nodeMap;
     }
 
-    public Boolean isExcludeChildNodesFromCalculation() {
-        return excludeChildNodesFromCalculation;
+    public Boolean isExcludeNodeCalculation() {
+        return excludeNodeFromCalculation;
     }
 
-    public void setExcludeChildNodesFromCalculation(Boolean excludeChildNodesFromCalculation) {
-        this.excludeChildNodesFromCalculation = excludeChildNodesFromCalculation;
+    public void setExcludeNodeFromCalculation(Boolean excludeNodeFromCalculation) {
+        this.excludeNodeFromCalculation = excludeNodeFromCalculation;
     }
 }

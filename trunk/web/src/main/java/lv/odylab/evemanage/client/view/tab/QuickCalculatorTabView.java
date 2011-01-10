@@ -136,7 +136,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         calculationItemTreeSection.cleanCalculationItemTree();
         blueprintItemTreeSection.cleanBlueprintItemTree();
         Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap = pricesSection.getTypeIdToCalculationPriceSetItemMap();
-        pricesSection.cleanPrices();
+        pricesSection.cleanPricesSection();
         skillsForCalculationSection.cleanSkillsForCalculation();
 
         CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
@@ -150,6 +150,7 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         blueprintItemTreeSection.drawBlueprintItemTree(blueprintItemTree);
         pricesSection.drawCalculationPriceSetItems(calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap().values());
         skillsForCalculationSection.drawSkillsForCalculation(calculation.getSkillLevels());
+        recalculate(existingTypeIdToCalculationPriceSetItemMap);
     }
 
     @Override
@@ -158,24 +159,37 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         pathNodesToUsedBlueprintMap.put(pathNodes, usedBlueprint);
         List<String> pathNodesStringsWithBlueprintOrSchematic = calculationItemTreeSection.addCalculationItemTreeNodes(pathNodesToUsedBlueprintMap);
         blueprintItemTreeSection.addBlueprintItemTreeNodes(pathNodesToUsedBlueprintMap);
-        redrawPricesAndRecalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
-
+        redrawPricesAndRecalculate();
         return pathNodesStringsWithBlueprintOrSchematic;
     }
 
     @Override
     public void stopUsingBlueprint(String pathNodesString) {
+        ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
+        List<Long[]> pathNodesList = new ArrayList<Long[]>();
+        pathNodesList.add(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes());
+        calculationItemTreeSection.excludeCalculationItemTreeNodesFromCalculation(pathNodesList);
+        blueprintItemTreeSection.excludeBlueprintItemTreeNodesFromCalculation(pathNodesList);
         EditableCalculationItem editableCalculationItem = calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
         calculationItemTreeSection.hideCalculationItemDetails(editableCalculationItem);
         calculationItemTreeSection.hideDetailsTable(editableCalculationItem);
-        recalculate();
+        EditableBlueprintItem editableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().get(pathNodesString);
+        blueprintItemTreeSection.hideBlueprintItemDetails(editableBlueprintItem);
+        redrawPricesAndRecalculate();
     }
 
     @Override
     public void reuseBlueprint(String pathNodesString) {
+        ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
+        List<Long[]> pathNodesList = new ArrayList<Long[]>();
+        pathNodesList.add(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes());
+        calculationItemTreeSection.includeCalculationItemTreeNodesInCalculation(pathNodesList);
+        blueprintItemTreeSection.includeBlueprintItemTreeNodesInCalculation(pathNodesList);
         EditableCalculationItem editableCalculationItem = calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
         calculationItemTreeSection.showCalculationItemDetails(editableCalculationItem);
-        recalculate();
+        EditableBlueprintItem editableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().get(pathNodesString);
+        blueprintItemTreeSection.showBlueprintItemDetails(editableBlueprintItem);
+        redrawPricesAndRecalculate();
     }
 
     @Override
@@ -188,8 +202,8 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
             }
         }
         List<String> pathNodesStringsWithBlueprintOrSchematic = calculationItemTreeSection.addCalculationItemTreeNodes(pathNodesToUsedBlueprintMap);
-        recalculate();
-
+        blueprintItemTreeSection.addBlueprintItemTreeNodes(pathNodesToUsedBlueprintMap);
+        redrawPricesAndRecalculate();
         return pathNodesStringsWithBlueprintOrSchematic;
     }
 
@@ -197,57 +211,63 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     public void stopUsingAllBlueprints() {
         List<Long[]> pathNodesList = new ArrayList<Long[]>();
         for (Map.Entry<String, EditableCalculationItem> mapEntry : calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().entrySet()) {
+            String pathNodesString = mapEntry.getKey();
             EditableCalculationItem editableCalculationItem = mapEntry.getValue();
-            ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(mapEntry.getKey());
+            EditableBlueprintItem editableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().get(pathNodesString);
+            ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
             OpaqueLoadableBlueprintImage blueprintImage = editableCalculationItem.getBlueprintImage();
             if (blueprintImage != null && !blueprintImage.hasOpacity()) {
                 blueprintImage.setOpacity();
                 calculationItemTreeSection.hideCalculationItemDetails(editableCalculationItem);
                 calculationItemTreeSection.hideDetailsTable(editableCalculationItem);
+                blueprintItemTreeSection.hideBlueprintItemDetails(editableBlueprintItem);
                 pathNodesList.add(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes());
             }
         }
         calculationItemTreeSection.excludeCalculationItemTreeNodesFromCalculation(pathNodesList);
-
-        CalculationProcessorResult calculationProcessorResult = recalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
-        pricesSection.cleanPrices();
-        pricesSection.drawCalculationPriceSetItems(new ArrayList<CalculationPriceItemDto>(calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap().values()));
+        blueprintItemTreeSection.excludeBlueprintItemTreeNodesFromCalculation(pathNodesList);
+        redrawPricesAndRecalculate();
     }
 
     @Override
     public void reuseAllBlueprints() {
         List<Long[]> pathNodesList = new ArrayList<Long[]>();
         for (Map.Entry<String, EditableCalculationItem> mapEntry : calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().entrySet()) {
+            String pathNodesString = mapEntry.getKey();
             EditableCalculationItem editableCalculationItem = mapEntry.getValue();
-            ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(mapEntry.getKey());
+            EditableBlueprintItem editableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().get(pathNodesString);
+            ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
             OpaqueLoadableBlueprintImage blueprintImage = editableCalculationItem.getBlueprintImage();
             if (blueprintImage != null && blueprintImage.hasOpacity()) {
                 blueprintImage.removeOpacity();
                 calculationItemTreeSection.showCalculationItemDetails(editableCalculationItem);
+                blueprintItemTreeSection.showBlueprintItemDetails(editableBlueprintItem);
                 pathNodesList.add(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes());
             }
         }
         calculationItemTreeSection.includeCalculationItemTreeNodesInCalculation(pathNodesList);
-        CalculationProcessorResult calculationProcessorResult = recalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
-        pricesSection.cleanPrices();
-        pricesSection.drawCalculationPriceSetItems(new ArrayList<CalculationPriceItemDto>(calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap().values()));
+        blueprintItemTreeSection.includeBlueprintItemTreeNodesInCalculation(pathNodesList);
+        redrawPricesAndRecalculate();
     }
 
     @Override
-    public void inventBlueprint(Long[] pathNodes, InventedBlueprintDto inventedBlueprintDto) {
+    public void inventBlueprint(Long[] pathNodes, InventedBlueprintDto inventedBlueprint) {
         BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
-        blueprintItemTree.addInventedBlueprintNodes(pathNodes, inventedBlueprintDto.getBlueprintItems());
+        blueprintItemTree.addInventedBlueprintNodes(inventedBlueprint.getBlueprintItems());
         BlueprintItemTreeNode blueprintItemTreeNode = blueprintItemTree.getNodeByPathNodes(pathNodes);
         String pathNodesString = blueprintItemTreeNode.getBlueprintItem().getPathExpression().getPathNodesString();
         EditableBlueprintItem editableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().get(pathNodesString);
         editableBlueprintItem.getInventionTable().setWidget(0, 0, editableBlueprintItem.getUseDecryptorButton());
-        blueprintItemTreeSection.drawDecryptors(editableBlueprintItem.getDecryptorTable(), inventedBlueprintDto.getDecryptors());
-        List<ItemTypeDto> baseItems = inventedBlueprintDto.getBaseItems();
+        editableBlueprintItem.getBlueprintUseButton().setEnabled(true);
+        blueprintItemTreeSection.drawDecryptors(editableBlueprintItem.getDecryptorTable(), inventedBlueprint.getDecryptors());
+        List<ItemTypeDto> baseItems = inventedBlueprint.getBaseItems();
         if (baseItems.size() > 0) {
             editableBlueprintItem.getInventionTable().setWidget(0, 1, editableBlueprintItem.getUseBaseItemButton());
             blueprintItemTreeSection.drawBaseItems(editableBlueprintItem.getBaseItemTable(), baseItems);
         }
-        skillsForCalculationSection.drawSkillsForCalculation(inventedBlueprintDto.getSkillLevels());
+        blueprintItemTreeSection.drawChildBlueprintItems(blueprintItemTreeNode);
+        skillsForCalculationSection.drawSkillsForCalculation(inventedBlueprint.getSkillLevels());
+        redrawPricesAndRecalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
     }
 
     @Override
@@ -255,24 +275,31 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         Map<Long[], UsedSchematicDto> pathNodesToSchematicMap = new HashMap<Long[], UsedSchematicDto>();
         pathNodesToSchematicMap.put(pathNodes, schematic);
         List<String> pathNodesStringsWithSchematic = calculationItemTreeSection.addCalculationItemTreeNodesForSchematic(pathNodesToSchematicMap);
-        redrawPricesAndRecalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
-
+        redrawPricesAndRecalculate();
         return pathNodesStringsWithSchematic;
     }
 
     @Override
     public void stopUsingSchematics(String pathNodesString) {
+        ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
+        List<Long[]> pathNodesList = new ArrayList<Long[]>();
+        pathNodesList.add(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes());
+        calculationItemTreeSection.excludeCalculationItemTreeNodesFromCalculation(pathNodesList);
         EditableCalculationItem editableCalculationItem = calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
         calculationItemTreeSection.hideCalculationItemDetails(editableCalculationItem);
         calculationItemTreeSection.hideDetailsTable(editableCalculationItem);
-        recalculate();
+        redrawPricesAndRecalculate();
     }
 
     @Override
     public void reuseSchematics(String pathNodesString) {
+        ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
+        List<Long[]> pathNodesList = new ArrayList<Long[]>();
+        pathNodesList.add(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes());
+        calculationItemTreeSection.includeCalculationItemTreeNodesInCalculation(pathNodesList);
         EditableCalculationItem editableCalculationItem = calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
         calculationItemTreeSection.showCalculationItemDetails(editableCalculationItem);
-        recalculate();
+        redrawPricesAndRecalculate();
     }
 
     @Override
@@ -401,9 +428,13 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         return calculationProcessor.process(quantity, calculationItemTree, blueprintItemTree, existingTypeIdToCalculationPriceSetItemMap, typeIdToSkillLevelMap);
     }
 
+    private void redrawPricesAndRecalculate() {
+        redrawPricesAndRecalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
+    }
+
     private void redrawPricesAndRecalculate(Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap) {
         CalculationProcessorResult calculationProcessorResult = processAndGetCalculationProcessorResult(existingTypeIdToCalculationPriceSetItemMap);
-        pricesSection.cleanPrices();
+        pricesSection.cleanPricesSection();
         pricesSection.drawCalculationPriceSetItems(calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap().values());
         recalculate(calculationProcessorResult);
     }

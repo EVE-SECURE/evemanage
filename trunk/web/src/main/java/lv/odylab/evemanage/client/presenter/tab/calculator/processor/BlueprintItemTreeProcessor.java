@@ -19,7 +19,7 @@ public class BlueprintItemTreeProcessor {
     }
 
     public BigDecimal recursivelyApplyPrices(Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap, Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap, Long parentQuantity, Map<Long, Integer> typeIdToSkillLevelMap, BlueprintItemTreeNode blueprintItemTreeNode) {
-        if (blueprintItemTreeNode.isExcludeChildNodesFromCalculation() || blueprintItemTreeNode.getNodeMap().size() == 0) {
+        if (blueprintItemTreeNode.isExcludeNodeCalculation() || blueprintItemTreeNode.getNodeMap().size() == 0) {
             return applyPricesForLastNode(typeIdToCalculationPriceSetItemMap, existingTypeIdToCalculationPriceSetItemMap, parentQuantity, typeIdToSkillLevelMap, blueprintItemTreeNode);
         }
 
@@ -54,7 +54,10 @@ public class BlueprintItemTreeProcessor {
         blueprintItem.setParentQuantity(parentQuantity);
         blueprintItem.setRuns(runs);
         BigDecimal price = calculateBlueprintPrice(blueprintItem.getBlueprintUse(), blueprintItem.getPrice());
-        RationalNumber correctiveMultiplier = calculator.calculateBlueprintQuantityCorrectiveMultiplier(parentQuantity, quantity, maxProductionLimit);
+        RationalNumber correctiveMultiplier = new RationalNumber(1L);
+        if (maxProductionLimit != null) {
+            correctiveMultiplier = calculator.calculateBlueprintQuantityCorrectiveMultiplier(parentQuantity, quantity, maxProductionLimit);
+        }
         blueprintItem.setCorrectiveMultiplier(correctiveMultiplier);
         BigDecimal totalPrice = price.multiply(BigDecimal.valueOf(quantity)).multiply(correctiveMultiplier.evaluate());
         blueprintItem.setTotalPrice(totalPrice);
@@ -70,7 +73,7 @@ public class BlueprintItemTreeProcessor {
         } else if ("COPY".equals(blueprintUse)) {
             return calculator.calculateBlueprintCopyQuantity(parentQuantity, blueprintItem.getMaxProductionLimit());
         }
-        throw new RuntimeException();
+        return blueprintItem.getQuantity() * parentQuantity;
     }
 
     // TODO remove string constant usage
@@ -80,7 +83,7 @@ public class BlueprintItemTreeProcessor {
         } else if ("COPY".equals(blueprintUse)) {
             return Long.valueOf(maxProductionLimit);
         }
-        throw new RuntimeException();
+        return null;
     }
 
     // TODO remove string constant usage

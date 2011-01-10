@@ -14,7 +14,7 @@ public class EditableBlueprintItem {
     private Anchor useCopyAnchor;
     private PriceTextBox copyPriceTextBox;
     private FlexTable inventionTable;
-    private FlexTable inventionItemsTable;
+    private FlexTable inventionBlueprintItemTable;
     private Button useDecryptorButton;
     private FlexTable decryptorTable;
     private Button useBaseItemButton;
@@ -76,12 +76,12 @@ public class EditableBlueprintItem {
         this.inventionTable = inventionTable;
     }
 
-    public FlexTable getInventionItemsTable() {
-        return inventionItemsTable;
+    public FlexTable getInventionBlueprintItemTable() {
+        return inventionBlueprintItemTable;
     }
 
-    public void setInventionItemsTable(FlexTable inventionItemsTable) {
-        this.inventionItemsTable = inventionItemsTable;
+    public void setInventionBlueprintItemTable(FlexTable inventionBlueprintItemTable) {
+        this.inventionBlueprintItemTable = inventionBlueprintItemTable;
     }
 
     public Button getUseDecryptorButton() {

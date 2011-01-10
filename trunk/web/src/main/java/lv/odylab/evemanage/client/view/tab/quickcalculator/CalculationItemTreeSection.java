@@ -434,6 +434,10 @@ public class CalculationItemTreeSection implements QuickCalculatorTabPresenter.C
     @Override
     public void cleanCalculationItemTree() {
         rootCalculationItemTable.removeAllRows();
+        pathNodesStringToEditableCalculationItemMap.clear();
+        pathNodesStringToComputableCalculationItemMap.clear();
+        pathNodeStringsWithUsedBlueprint.clear();
+        pathNodeStringsWithUsedSchematic.clear();
     }
 
     @Override

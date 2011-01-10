@@ -511,7 +511,7 @@ public interface EveManageMessages extends Messages {
     @DefaultMessage("Sorry, temporary disabled")
     String sorryTemporaryDisabled();
 
-    @DefaultMessage("&copy; 2010 by {0} | All {1} materials are property of {2} | Powered by {3}")
+    @DefaultMessage("&copy; 2010-2011 by {0} | All {1} materials are property of {2} | Powered by {3}")
     String footerText(String authorHtml, String eveOnlineHtml, String ccpGamesHtml, String appEngineHtml);
 
     @DefaultMessage("version: {0} | EveDb version: {1}")

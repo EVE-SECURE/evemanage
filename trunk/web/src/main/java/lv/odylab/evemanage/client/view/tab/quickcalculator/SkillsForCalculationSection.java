@@ -68,6 +68,7 @@ public class SkillsForCalculationSection implements QuickCalculatorTabPresenter.
     @Override
     public void cleanSkillsForCalculation() {
         skillLevelsTable.removeAllRows();
+        typeIdToEditableCalculationSkillLevelMap.clear();
     }
 
     @Override

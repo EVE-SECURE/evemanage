@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DecoratedPopupPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -53,6 +54,8 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
 
     private Label blueprintItemSectionLabel;
     private FlexTable blueprintItemTable;
+    private FlexTable.FlexCellFormatter blueprintItemTableFlexFormatter;
+    private HTMLTable.RowFormatter blueprintItemTableRowFormatter;
 
     private BlueprintItemTree blueprintItemTree;
     private Map<String, EditableBlueprintItem> pathNodesStringToEditableBlueprintItemMap;
@@ -71,6 +74,8 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
         blueprintItemSectionLabel = new Label(messages.blueprintCost());
         blueprintItemSectionLabel.addStyleName(resources.css().tabHeadingText());
         blueprintItemTable = new FlexTable();
+        blueprintItemTableFlexFormatter = blueprintItemTable.getFlexCellFormatter();
+        blueprintItemTableRowFormatter = blueprintItemTable.getRowFormatter();
 
         blueprintItemTree = new BlueprintItemTree();
         pathNodesStringToEditableBlueprintItemMap = new HashMap<String, EditableBlueprintItem>();
@@ -92,24 +97,64 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
     @Override
     public void drawBlueprintItemTree(BlueprintItemTree blueprintItemTree) {
         for (BlueprintItemTreeNode blueprintItemTreeNode : blueprintItemTree.getNodeMap().values()) {
-            drawRootBlueprintItem(blueprintItemTreeNode.getBlueprintItem());
+            if (!blueprintItemTreeNode.isExcludeNodeCalculation()) {
+                BlueprintItemDto blueprintItem = blueprintItemTreeNode.getBlueprintItem();
+                drawRootBlueprintItem(blueprintItem);
+                EditableBlueprintItem editableBlueprintItem = pathNodesStringToEditableBlueprintItemMap.get(blueprintItem.getPathExpression().getPathNodesString());
+                for (BlueprintItemTreeNode childBlueprintItemTreeNode : blueprintItemTreeNode.getNodeMap().values()) {
+                    drawChildBlueprintItem(editableBlueprintItem.getInventionBlueprintItemTable(), childBlueprintItemTreeNode);
+                }
+            }
         }
     }
 
     @Override
     public void cleanBlueprintItemTree() {
         blueprintItemTable.removeAllRows();
+        pathNodesStringToEditableBlueprintItemMap.clear();
+        pathNodesStringToComputableBlueprintItemMap.clear();
+    }
+
+    @Override
+    public void showBlueprintItemDetails(EditableBlueprintItem editableBlueprintItem) {
+        blueprintItemTableRowFormatter.setVisible(editableBlueprintItem.getIndex(), true);
+    }
+
+    @Override
+    public void hideBlueprintItemDetails(EditableBlueprintItem editableBlueprintItem) {
+        blueprintItemTableRowFormatter.setVisible(editableBlueprintItem.getIndex(), false);
+    }
+
+    @Override
+    public void showBlueprintInventionItems(EditableBlueprintItem editableBlueprintItem) {
+        blueprintItemTableRowFormatter.setVisible(editableBlueprintItem.getIndex() + 1, true);
+    }
+
+    @Override
+    public void hideBlueprintInventionItems(EditableBlueprintItem editableBlueprintItem) {
+        blueprintItemTableRowFormatter.setVisible(editableBlueprintItem.getIndex() + 1, false);
     }
 
     @Override
     public void addBlueprintItemTreeNodes(Map<Long[], UsedBlueprintDto> pathNodesToUsedBlueprintMap) {
         for (Map.Entry<Long[], UsedBlueprintDto> mapEntry : pathNodesToUsedBlueprintMap.entrySet()) {
-            Long[] pathNodes = mapEntry.getKey();
             UsedBlueprintDto usedBlueprint = mapEntry.getValue();
             BlueprintItemDto blueprintItem = usedBlueprint.getBlueprintItem();
             if (blueprintItem != null) {
                 blueprintItemTree.createNode(blueprintItem);
+                drawRootBlueprintItem(blueprintItem);
             }
+        }
+    }
+
+    @Override
+    public void drawChildBlueprintItems(BlueprintItemTreeNode blueprintItemTreeNode) {
+        BlueprintItemDto blueprintItem = blueprintItemTreeNode.getBlueprintItem();
+        EditableBlueprintItem editableBlueprintItem = pathNodesStringToEditableBlueprintItemMap.get(blueprintItem.getPathExpression().getPathNodesString());
+        FlexTable inventionBlueprintItemTable = editableBlueprintItem.getInventionBlueprintItemTable();
+        blueprintItemTableRowFormatter.setVisible(editableBlueprintItem.getIndex() + 1, true);
+        for (BlueprintItemTreeNode childBlueprintItemTreeNode : blueprintItemTreeNode.getNodeMap().values()) {
+            drawChildBlueprintItem(inventionBlueprintItemTable, childBlueprintItemTreeNode);
         }
     }
 
@@ -192,6 +237,22 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
     }
 
     @Override
+    public void excludeBlueprintItemTreeNodesFromCalculation(List<Long[]> pathNodesList) {
+        for (Long[] pathNodes : pathNodesList) {
+            BlueprintItemTreeNode blueprintItemTreeNode = blueprintItemTree.getNodeByPathNodes(pathNodes);
+            blueprintItemTreeNode.setExcludeNodeFromCalculation(true);
+        }
+    }
+
+    @Override
+    public void includeBlueprintItemTreeNodesInCalculation(List<Long[]> pathNodesList) {
+        for (Long[] pathNodes : pathNodesList) {
+            BlueprintItemTreeNode blueprintItemTreeNode = blueprintItemTree.getNodeByPathNodes(pathNodes);
+            blueprintItemTreeNode.setExcludeNodeFromCalculation(false);
+        }
+    }
+
+    @Override
     public Map<String, EditableBlueprintItem> getPathNodesStringToEditableBlueprintItemMap() {
         return pathNodesStringToEditableBlueprintItemMap;
     }
@@ -242,9 +303,6 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
                     blueprintUseButton.setBlueprintUse("INVENTION");
                     editBlueprintUsagePopup.hide();
                     blueprintItemTable.setWidget(index, 3, inventionTable);
-                    if (inventionTable.getCellCount(0) == 1) {
-                        blueprintUseButton.setEnabled(false);
-                    }
                 }
             }));
             blueprintItemTreeSectionHandlerRegistrations.add(useDecryptorButton.addClickHandler(new ClickHandler() {
@@ -268,16 +326,15 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
                 }
             }));
 
-            FlexTable inventionItemsTable = new FlexTable();
-            inventionItemsTable.setVisible(false);
-            blueprintItemTable.setWidget(index + 1, 0, inventionItemsTable);
-            blueprintItemTable.getFlexCellFormatter().setColSpan(index + 1, 0, 3);
+            FlexTable inventionBlueprintItemTable = new FlexTable();
+            blueprintItemTableFlexFormatter.setColSpan(index + 1, 1, 3);
+            blueprintItemTable.setWidget(index + 1, 1, inventionBlueprintItemTable);
+            blueprintItemTableRowFormatter.setVisible(index + 1, false);
 
-            editableBlueprintItem.setIndex(index);
             editableBlueprintItem.setInventAnchor(inventAnchor);
             editableBlueprintItem.setUseDecryptorButton(useDecryptorButton);
             editableBlueprintItem.setInventionTable(inventionTable);
-            editableBlueprintItem.setInventionItemsTable(inventionItemsTable);
+            editableBlueprintItem.setInventionBlueprintItemTable(inventionBlueprintItemTable);
             editableBlueprintItem.setUseBaseItemButton(useBaseItemButton);
             editableBlueprintItem.setDecryptorTable(decryptorTable);
             editableBlueprintItem.setUseBaseItemButton(useBaseItemButton);
@@ -325,9 +382,9 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
 
         String blueprintUse = blueprintItem.getBlueprintUse();
         if ("ORIGINAL".equals(blueprintUse)) {
-            blueprintItemTable.setWidget(0, 3, originalTable);
+            blueprintItemTable.setWidget(index, 3, originalTable);
         } else if ("COPY".equals(blueprintUse)) {
-            blueprintItemTable.setWidget(0, 3, copyTable);
+            blueprintItemTable.setWidget(index, 3, copyTable);
         }
 
         blueprintItemTreeSectionHandlerRegistrations.add(blueprintUseButton.addClickHandler(new ClickHandler() {
@@ -357,11 +414,35 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
             }
         }));
 
+        editableBlueprintItem.setIndex(index);
         editableBlueprintItem.setBlueprintUseButton(blueprintUseButton);
         editableBlueprintItem.setUseOriginalAnchor(useOriginalAnchor);
         editableBlueprintItem.setUseCopyAnchor(useCopyAnchor);
         computableBlueprintItem.setBlueprintItem(blueprintItem);
         pathNodesStringToEditableBlueprintItemMap.put(pathNodesString, editableBlueprintItem);
         pathNodesStringToComputableBlueprintItemMap.put(pathNodesString, computableBlueprintItem);
+    }
+
+    private void drawChildBlueprintItem(FlexTable inventionBlueprintItemTable, BlueprintItemTreeNode childNode) {
+        final int index = inventionBlueprintItemTable.getRowCount();
+
+        BlueprintItemDto blueprintItem = childNode.getBlueprintItem();
+        Long itemCategoryID = blueprintItem.getItemCategoryID();
+        Long itemTypeID = blueprintItem.getItemTypeID();
+        if (itemCategoryID == 9L) { // Blueprint
+            String blueprintImageUrl = imageUrlProvider.getBlueprintImageUrl(itemTypeID);
+            Image blueprintImage = new Image(blueprintImageUrl);
+            blueprintImage.addStyleName(resources.css().image16());
+            inventionBlueprintItemTable.setWidget(index, 0, new EveItemInfoLink(ccpJsMessages, blueprintImage, itemTypeID));
+            inventionBlueprintItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, blueprintItem.getItemTypeName(), itemTypeID));
+            inventionBlueprintItemTable.setWidget(index, 2, new Label(blueprintItem.getBlueprintUse()));
+        } else {
+            String imageUrl = imageUrlProvider.getImage16Url(itemCategoryID, itemTypeID, blueprintItem.getItemTypeIcon());
+            Image image = new Image(imageUrl);
+            image.addStyleName(resources.css().image16());
+            inventionBlueprintItemTable.setWidget(index, 0, new EveItemInfoLink(ccpJsMessages, image, itemTypeID));
+            inventionBlueprintItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, blueprintItem.getItemTypeName(), itemTypeID));
+            inventionBlueprintItemTable.setWidget(index, 2, new Label(blueprintItem.getBlueprintUse()));
+        }
     }
 }
