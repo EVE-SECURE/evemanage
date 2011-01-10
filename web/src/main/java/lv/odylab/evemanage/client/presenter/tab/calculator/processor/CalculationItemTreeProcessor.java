@@ -2,6 +2,7 @@ package lv.odylab.evemanage.client.presenter.tab.calculator.processor;
 
 import com.google.inject.Inject;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNode;
+import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNodeSummary;
 import lv.odylab.evemanage.client.rpc.EveCalculator;
 import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.RationalNumber;
@@ -47,6 +48,14 @@ public class CalculationItemTreeProcessor {
             calculationItem.setTotalPrice(totalPrice);
             calculationItem.setTotalPriceForParent(totalPriceForParent);
             resultingSum = resultingSum.add(totalPrice);
+        }
+        if (calculationItems.size() > 1) {
+            CalculationItemTreeNodeSummary calculationItemTreeNodeSummary = calculationItemTreeNode.getSummary();
+            RationalNumber quantityMultiplier = calculationItemTreeNodeSummary.getQuantityMultiplier();
+            RationalNumber quantityAndParentQuantityMultiplierProduct = quantityMultiplier.multiply(parentQuantityMultiplier);
+            for (CalculationItemTreeNode node : calculationItemTreeNode.getNodeMap().values()) {
+                recursivelyApplyPrices(typeIdToCalculationPriceSetItemMap, existingTypeIdToCalculationPriceSetItemMap, calculationItemTreeNodeSummary.getQuantity() * calculationItemTreeNodeSummary.getParentQuantity(), quantityAndParentQuantityMultiplierProduct, productionEfficiencySkillLevel, node);
+            }
         }
         return resultingSum;
     }

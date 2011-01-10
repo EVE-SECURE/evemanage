@@ -88,7 +88,7 @@ public class CalculationServiceImpl implements CalculationService {
         List<CalculationItem> calculationItems = createCalculationItems(pathNodes, blueprintDetailsDto);
         calculation.setCalculationItems(calculationItems);
         List<BlueprintItem> blueprintItems = new ArrayList<BlueprintItem>();
-        PathExpression pathExpression = new PathExpression(new Long[]{blueprintTypeDto.getBlueprintTypeID()});
+        PathExpression pathExpression = new PathExpression(pathNodes, blueprintTypeDto.getProductTypeID());
         blueprintItems.add(createBlueprintItem(pathExpression, blueprintDetailsDto.getBlueprintTypeDto()));
         calculation.setBlueprintItems(blueprintItems);
         List<SkillLevel> skillLevels = new ArrayList<SkillLevel>();
@@ -104,7 +104,7 @@ public class CalculationServiceImpl implements CalculationService {
         List<CalculationItem> calculationItems = createCalculationItems(pathNodes, blueprintDetailsDto);
         usedBlueprint.setCalculationItems(calculationItems);
         BlueprintTypeDto blueprintTypeDto = blueprintDetailsDto.getBlueprintTypeDto();
-        PathExpression pathExpression = new PathExpression(new Long[]{blueprintTypeDto.getBlueprintTypeID()});
+        PathExpression pathExpression = new PathExpression(new Long[]{pathNodes[0], blueprintTypeDto.getProductTypeID()});
         usedBlueprint.setBlueprintItem(createBlueprintItem(pathExpression, blueprintTypeDto));
         return usedBlueprint;
     }
@@ -259,6 +259,7 @@ public class CalculationServiceImpl implements CalculationService {
         blueprintItem.setItemTypeID(typeRequirement.getRequiredTypeID());
         blueprintItem.setItemCategoryID(typeRequirement.getRequiredTypeCategoryID());
         blueprintItem.setItemTypeName(typeRequirement.getRequiredTypeName());
+        blueprintItem.setItemTypeIcon(typeRequirement.getRequiredTypeNameGraphicIcon());
         blueprintItem.setQuantity(typeRequirement.getQuantity());
         blueprintItem.setParentQuantity(1L);
         blueprintItem.setPrice("0.00");

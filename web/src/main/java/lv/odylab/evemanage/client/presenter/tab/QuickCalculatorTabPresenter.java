@@ -9,7 +9,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasText;
@@ -56,6 +55,7 @@ import lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorUsedSchem
 import lv.odylab.evemanage.client.presenter.AttachableDisplay;
 import lv.odylab.evemanage.client.presenter.Presenter;
 import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTree;
+import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTreeNode;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTree;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNodeSummary;
 import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableBlueprintInformation;
@@ -97,6 +97,7 @@ import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.PriceFetchOptionDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.tracking.TrackingManager;
+import lv.odylab.evemanage.client.widget.BlueprintUseButton;
 import lv.odylab.evemanage.client.widget.OnlyDigitsAndMinusChangeHandler;
 import lv.odylab.evemanage.client.widget.OnlyDigitsChangeHandler;
 import lv.odylab.evemanage.client.widget.OpaqueLoadableBlueprintImage;
@@ -231,11 +232,25 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
 
         void cleanBlueprintItemTree();
 
+        void showBlueprintItemDetails(EditableBlueprintItem editableBlueprintItem);
+
+        void hideBlueprintItemDetails(EditableBlueprintItem editableBlueprintItem);
+
+        void showBlueprintInventionItems(EditableBlueprintItem editableBlueprintItem);
+
+        void hideBlueprintInventionItems(EditableBlueprintItem editableBlueprintItem);
+
         void addBlueprintItemTreeNodes(Map<Long[], UsedBlueprintDto> pathNodesToUsedBlueprintMap);
+
+        void drawChildBlueprintItems(BlueprintItemTreeNode blueprintItemTreeNode);
 
         void drawDecryptors(FlexTable decryptorTable, List<DecryptorDto> decryptors);
 
         void drawBaseItems(FlexTable baseItemTable, List<ItemTypeDto> baseItems);
+
+        void excludeBlueprintItemTreeNodesFromCalculation(List<Long[]> pathNodesList);
+
+        void includeBlueprintItemTreeNodesInCalculation(List<Long[]> pathNodesList);
 
         Map<String, EditableBlueprintItem> getPathNodesStringToEditableBlueprintItemMap();
 
@@ -253,7 +268,7 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
 
         void drawCalculationPriceSetItems(Collection<CalculationPriceItemDto> calculationPriceItems);
 
-        void cleanPrices();
+        void cleanPricesSection();
 
         void setRegions(List<RegionDto> regions);
 
@@ -313,6 +328,7 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
     private HasWidgets displayContainer;
     private List<HandlerRegistration> staticHandlerRegistrations;
     private List<HandlerRegistration> dynamicHandlerRegistrations;
+    private List<HandlerRegistration> pricesSectionDynamicHandlerRegistrations;
 
     @Inject
     public QuickCalculatorTabPresenter(EventBus eventBus, TrackingManager trackingManager, EveManageRemoteServiceAsync rpcService, EveManageConstants constants, EveManageErrorConstants errorConstants, Display display) {
@@ -331,6 +347,7 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
 
         this.staticHandlerRegistrations = new ArrayList<HandlerRegistration>();
         this.dynamicHandlerRegistrations = new ArrayList<HandlerRegistration>();
+        this.pricesSectionDynamicHandlerRegistrations = new ArrayList<HandlerRegistration>();
 
         History.addValueChangeHandler(this);
         eventBus.addHandler(QuickCalculatorTabErrorEvent.TYPE, this);
@@ -493,16 +510,21 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
                 bindUseSchematicImage(computableCalculationItem.getCalculationItemTreeNodeSummary(), editableCalculationItem.getSchematicImage());
             }
         }
+        //EditableBlueprintItem editableBlueprintItem = blueprintItemTreeSectionDisplay.getPathNodesStringToEditableBlueprintItemMap().get(event.getPathNodesString());
+        //bindCopyPriceTextBox(editableBlueprintItem);
+        rebindPricesSectionDynamicHandlers();
     }
 
     @Override
     public void onStoppedUsingBlueprint(QuickCalculatorStoppedUsingBlueprintEvent event) {
         display.stopUsingBlueprint(event.getPathNodesString());
+        rebindPricesSectionDynamicHandlers();
     }
 
     @Override
     public void onReusedBlueprint(QuickCalculatorReusedBlueprintEvent event) {
         display.reuseBlueprint(event.getPathNodesString());
+        rebindPricesSectionDynamicHandlers();
     }
 
     @Override
@@ -518,21 +540,25 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
                 bindUseSchematicImage(computableCalculationItem.getCalculationItemTreeNodeSummary(), editableCalculationItem.getSchematicImage());
             }
         }
+        rebindPricesSectionDynamicHandlers();
     }
 
     @Override
     public void onStoppedUsingAllBlueprints(QuickCalculatorStoppedUsingAllBlueprintsEvent event) {
         display.stopUsingAllBlueprints();
+        rebindPricesSectionDynamicHandlers();
     }
 
     @Override
     public void onReusedAllBlueprints(QuickCalculatorReusedAllBlueprintsEvent event) {
         display.reuseAllBlueprints();
+        rebindPricesSectionDynamicHandlers();
     }
 
     @Override
     public void onInventedBlueprint(QuickCalculatorInventedBlueprintEvent event) {
         display.inventBlueprint(event.getPathNodes(), event.getInventedBlueprint());
+        rebindPricesSectionDynamicHandlers();
     }
 
     @Override
@@ -543,16 +569,19 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
             ComputableCalculationItem computableCalculationItem = calculationItemTreeSectionDisplay.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
             bindUseSchematicImage(computableCalculationItem.getCalculationItemTreeNodeSummary(), editableCalculationItem.getSchematicImage());
         }
+        rebindPricesSectionDynamicHandlers();
     }
 
     @Override
     public void onReusedSchematic(QuickCalculatorReusedSchematicEvent event) {
         display.reuseSchematics(event.getPathNodesString());
+        rebindPricesSectionDynamicHandlers();
     }
 
     @Override
     public void onStoppedUsingSchematic(QuickCalculatorStoppedUsingSchematicEvent event) {
         display.stopUsingSchematics(event.getPathNodesString());
+        rebindPricesSectionDynamicHandlers();
     }
 
     @Override
@@ -675,17 +704,6 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
                 bindUseSchematicImage(computableCalculationItem.getCalculationItemTreeNodeSummary(), editableCalculationItem.getSchematicImage());
             }
         }
-        for (EditableCalculationPriceSetItem editableCalculationPriceSetItem : pricesSectionDisplay.getTypeIdToEditableCalculationPriceSetItemMap().values()) {
-            final PriceTextBox priceTextBox = editableCalculationPriceSetItem.getPriceTextBox();
-            dynamicHandlerRegistrations.add(priceTextBox.addChangeHandler(new ChangeHandler() {
-                @Override
-                public void onChange(ChangeEvent event) {
-                    priceTextBox.setPrice(priceTextBox.getText());
-                    display.updatePrices();
-                }
-            }));
-            dynamicHandlerRegistrations.addAll(priceTextBox.getHandlerRegistrations());
-        }
         for (Map.Entry<String, EditableBlueprintItem> mapEntry : blueprintItemTreeSectionDisplay.getPathNodesStringToEditableBlueprintItemMap().entrySet()) {
             String pathNodesString = mapEntry.getKey();
             EditableBlueprintItem editableBlueprintItem = mapEntry.getValue();
@@ -693,10 +711,10 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
             FlexTable inventionTable = editableBlueprintItem.getInventionTable();
             BlueprintItemDto blueprintItem = computableBlueprintItem.getBlueprintItem();
             if (inventionTable != null) {
-                bindInventionAnchor(blueprintItem, editableBlueprintItem.getInventAnchor());
+                bindInventionAnchor(blueprintItem, editableBlueprintItem);
             }
-            bindUseOriginalAnchor(blueprintItem, editableBlueprintItem.getUseOriginalAnchor());
-            bindUseCopyAnchor(blueprintItem, editableBlueprintItem.getUseCopyAnchor());
+            bindUseOriginalAnchor(blueprintItem, editableBlueprintItem);
+            bindUseCopyAnchor(blueprintItem, editableBlueprintItem);
             final PriceTextBox priceTextBox = editableBlueprintItem.getCopyPriceTextBox();
             dynamicHandlerRegistrations.add(priceTextBox.addChangeHandler(new ChangeHandler() {
                 @Override
@@ -719,6 +737,7 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
                 }
             }));
         }
+        bindPricesSectionDynamicHandlers();
     }
 
     private void bindApplyButton(final EditableBlueprintInformation editableBlueprintInformation) {
@@ -859,37 +878,61 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
         }));
     }
 
-    private void bindInventionAnchor(final BlueprintItemDto blueprintItem, Anchor inventAnchor) {
-        dynamicHandlerRegistrations.add(inventAnchor.addClickHandler(new ClickHandler() {
+    private void bindCopyPriceTextBox(EditableBlueprintItem editableBlueprintItem) {
+        final PriceTextBox copyPriceTextBox = editableBlueprintItem.getCopyPriceTextBox();
+        dynamicHandlerRegistrations.add(copyPriceTextBox.addChangeHandler(new ChangeHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                QuickCalculatorInventBlueprintAction action = new QuickCalculatorInventBlueprintAction();
-                action.setPathNodes(blueprintItem.getPathExpression().getPathNodes());
-                action.setBlueprintName(blueprintItem.getParentBlueprintTypeName());
-                rpcService.execute(action, new QuickCalculatorTabActionCallback<QuickCalculatorInventBlueprintActionResponse>(eventBus, trackingManager, constants) {
-                    @Override
-                    public void onSuccess(QuickCalculatorInventBlueprintActionResponse response) {
-                        eventBus.fireEvent(new lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorInventedBlueprintEvent(trackingManager, constants, response, getExecutionDuration()));
-                    }
-                });
+            public void onChange(ChangeEvent event) {
+                copyPriceTextBox.setPrice(copyPriceTextBox.getText());
+                display.updatePrices();
             }
         }));
     }
 
-    private void bindUseOriginalAnchor(final BlueprintItemDto blueprintItem, Anchor useOriginalAnchor) {
-        dynamicHandlerRegistrations.add(useOriginalAnchor.addClickHandler(new ClickHandler() {
+    private void bindInventionAnchor(final BlueprintItemDto blueprintItem, final EditableBlueprintItem editableBlueprintItem) {
+        final BlueprintUseButton blueprintUseButton = editableBlueprintItem.getBlueprintUseButton();
+        dynamicHandlerRegistrations.add(editableBlueprintItem.getInventAnchor().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                if (editableBlueprintItem.getInventionBlueprintItemTable().getRowCount() == 0) {
+                    blueprintUseButton.setEnabled(false);
+                    QuickCalculatorInventBlueprintAction action = new QuickCalculatorInventBlueprintAction();
+                    action.setPathNodes(blueprintItem.getPathExpression().getPathNodes());
+                    action.setBlueprintName(blueprintItem.getParentBlueprintTypeName());
+                    rpcService.execute(action, new QuickCalculatorTabActionCallback<QuickCalculatorInventBlueprintActionResponse>(eventBus, trackingManager, constants) {
+                        @Override
+                        public void onSuccess(QuickCalculatorInventBlueprintActionResponse response) {
+                            blueprintUseButton.setEnabled(true);
+                            eventBus.fireEvent(new lv.odylab.evemanage.client.event.quickcalculator.QuickCalculatorInventedBlueprintEvent(trackingManager, constants, response, getExecutionDuration()));
+                        }
+                    });
+                } else {
+                    blueprintItemTreeSectionDisplay.showBlueprintInventionItems(editableBlueprintItem);
+                }
+            }
+        }));
+    }
+
+    private void bindUseOriginalAnchor(final BlueprintItemDto blueprintItem, final EditableBlueprintItem editableBlueprintItem) {
+        dynamicHandlerRegistrations.add(editableBlueprintItem.getUseOriginalAnchor().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (editableBlueprintItem.getInventionBlueprintItemTable() != null) {
+                    blueprintItemTreeSectionDisplay.hideBlueprintInventionItems(editableBlueprintItem);
+                }
                 blueprintItem.setBlueprintUse("ORIGINAL"); // TODO remove string constant usage
                 display.recalculate();
             }
         }));
     }
 
-    private void bindUseCopyAnchor(final BlueprintItemDto blueprintItem, Anchor useCopyAnchor) {
-        dynamicHandlerRegistrations.add(useCopyAnchor.addClickHandler(new ClickHandler() {
+    private void bindUseCopyAnchor(final BlueprintItemDto blueprintItem, final EditableBlueprintItem editableBlueprintItem) {
+        dynamicHandlerRegistrations.add(editableBlueprintItem.getUseCopyAnchor().addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                if (editableBlueprintItem.getInventionBlueprintItemTable() != null) {
+                    blueprintItemTreeSectionDisplay.hideBlueprintInventionItems(editableBlueprintItem);
+                }
                 blueprintItem.setBlueprintUse("COPY"); // TODO remove string constant usage
                 display.recalculate();
             }
@@ -945,9 +988,35 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
         }));
     }
 
+    private void bindPricesSectionDynamicHandlers() {
+        for (EditableCalculationPriceSetItem editableCalculationPriceSetItem : pricesSectionDisplay.getTypeIdToEditableCalculationPriceSetItemMap().values()) {
+            final PriceTextBox priceTextBox = editableCalculationPriceSetItem.getPriceTextBox();
+            pricesSectionDynamicHandlerRegistrations.add(priceTextBox.addChangeHandler(new ChangeHandler() {
+                @Override
+                public void onChange(ChangeEvent event) {
+                    priceTextBox.setPrice(priceTextBox.getText());
+                    display.updatePrices();
+                }
+            }));
+            pricesSectionDynamicHandlerRegistrations.addAll(priceTextBox.getHandlerRegistrations());
+        }
+    }
+
+    private void unbindPricesSectionDynamicHandlers() {
+        for (HandlerRegistration handlerRegistration : pricesSectionDynamicHandlerRegistrations) {
+            handlerRegistration.removeHandler();
+        }
+        pricesSectionDynamicHandlerRegistrations.clear();
+    }
+
+    private void rebindPricesSectionDynamicHandlers() {
+        unbindPricesSectionDynamicHandlers();
+        bindPricesSectionDynamicHandlers();
+    }
+
     private void unbindDynamic() {
         for (HandlerRegistration handlerRegistration : dynamicHandlerRegistrations) {
-            //handlerRegistration.removeHandler();
+            handlerRegistration.removeHandler();
         }
         dynamicHandlerRegistrations.clear();
 
@@ -956,6 +1025,7 @@ public class QuickCalculatorTabPresenter implements Presenter, ValueChangeHandle
             handlerRegistration.removeHandler();
         }
         calculationItemTreeSectionRegistrationHandlers.clear();
+        unbindPricesSectionDynamicHandlers();
     }
 
     private void showSpinner() {

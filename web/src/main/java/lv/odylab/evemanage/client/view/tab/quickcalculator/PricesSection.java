@@ -212,8 +212,10 @@ public class PricesSection implements QuickCalculatorTabPresenter.PricesSectionD
     }
 
     @Override
-    public void cleanPrices() {
+    public void cleanPricesSection() {
         priceSetItemTable.removeAllRows();
+        typeIdToEditableCalculationPriceSetItemMap.clear();
+        typeIdToComputableCalculationPriceSetItemMap.clear();
     }
 
     @Override
