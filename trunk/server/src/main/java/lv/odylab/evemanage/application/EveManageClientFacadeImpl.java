@@ -6,19 +6,17 @@ import lv.odylab.evemanage.application.exception.*;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.application.exception.validation.InvalidPriceException;
+import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDetailsDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.InventedBlueprintDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.*;
+import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
-import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
-import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDtoComparator;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
 import lv.odylab.evemanage.domain.calculation.Calculation;
@@ -27,16 +25,8 @@ import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
-import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
-import lv.odylab.evemanage.service.calculation.InventedBlueprint;
-import lv.odylab.evemanage.service.calculation.UsedBlueprint;
-import lv.odylab.evemanage.service.calculation.UsedSchematic;
-import lv.odylab.evemanage.shared.CalculationExpression;
-import lv.odylab.evemanage.shared.eve.PriceFetchOption;
-import lv.odylab.evemanage.shared.eve.Region;
-import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -76,7 +66,7 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public List<SharingLevel> getAvailableSharingLevels() {
+    public List<String> getAvailableSharingLevels() {
         return applicationFacade.getAvailableSharingLevels();
     }
 
@@ -88,68 +78,6 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
             fullApiKeyDtos.add(mapper.map(fullApiKey, ApiKeyDto.class));
         }
         return fullApiKeyDtos;
-    }
-
-    @Override
-    public List<SkillLevelDto> getSkillLevelsForCalculation() {
-        List<SkillLevel> skillLevelsForCalculation = applicationFacade.getSkillLevelsForCalculation();
-        List<SkillLevelDto> skillLevelDtosForCalculation = new ArrayList<SkillLevelDto>();
-        for (SkillLevel skillLevel : skillLevelsForCalculation) {
-            skillLevelDtosForCalculation.add(mapper.map(skillLevel, SkillLevelDto.class));
-        }
-        Collections.sort(skillLevelDtosForCalculation, new SkillLevelDtoComparator());
-        return skillLevelDtosForCalculation;
-    }
-
-    @Override
-    public void saveSkillLevelsForCalculation(List<SkillLevelDto> skillLevelDtosForCalculation) {
-        List<SkillLevel> skillLevelsForCalculation = new ArrayList<SkillLevel>();
-        for (SkillLevelDto skillLevelDto : skillLevelDtosForCalculation) {
-            skillLevelsForCalculation.add(mapper.map(skillLevelDto, SkillLevel.class));
-        }
-        applicationFacade.saveSkillLevelsForCalculation(skillLevelsForCalculation);
-    }
-
-    @Override
-    public List<SkillLevelDto> fetchCalculationSkillLevelsForMainCharacter() throws EveApiException {
-        List<SkillLevel> skillLevelsForCalculation = applicationFacade.fetchCalculationSkillLevelsForMainCharacter();
-        List<SkillLevelDto> skillLevelDtosForCalculation = new ArrayList<SkillLevelDto>();
-        for (SkillLevel skillLevel : skillLevelsForCalculation) {
-            skillLevelDtosForCalculation.add(mapper.map(skillLevel, SkillLevelDto.class));
-        }
-        return skillLevelDtosForCalculation;
-    }
-
-    @Override
-    public List<RegionDto> getRegions() {
-        List<Region> regions = applicationFacade.getRegions();
-        List<RegionDto> regionDtos = new ArrayList<RegionDto>();
-        for (Region region : regions) {
-            regionDtos.add(mapper.map(region, RegionDto.class));
-        }
-        Collections.sort(regionDtos, new RegionDtoComparator());
-        return regionDtos;
-    }
-
-    @Override
-    public RegionDto getPreferredRegion() {
-        Region preferredRegion = applicationFacade.getPreferredRegion();
-        return mapper.map(preferredRegion, RegionDto.class);
-    }
-
-    @Override
-    public List<PriceFetchOption> getPriceFetchOptions() {
-        return applicationFacade.getPriceFetchOptions();
-    }
-
-    @Override
-    public PriceFetchOption getPreferredPriceFetchOption() {
-        return applicationFacade.getPreferredPriceFetchOption();
-    }
-
-    @Override
-    public void savePriceFetchConfiguration(Region preferredRegion, String preferredPriceFetchOption) {
-        applicationFacade.savePriceFetchConfiguration(preferredRegion, PriceFetchOption.valueOf(preferredPriceFetchOption));
     }
 
     @Override
@@ -189,7 +117,7 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public BlueprintDto saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, SharingLevel sharingLevel) {
+    public BlueprintDto saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, String sharingLevel) {
         Blueprint blueprint = applicationFacade.saveBlueprint(blueprintID, itemID, meLevel, peLevel, attachedCharacterID, sharingLevel);
         return mapper.map(blueprint, BlueprintDto.class);
     }
@@ -207,25 +135,25 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
 
     @Override
     @Logging(logArguments = false)
-    public void importBlueprintsFromXml(String importXml, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException {
+    public void importBlueprintsFromXml(String importXml, Long attachedCharacterID, String sharingLevel) throws EveApiException {
         applicationFacade.importBlueprintsFromXml(importXml, attachedCharacterID, sharingLevel);
     }
 
     @Override
     @Logging(logArguments = false)
-    public void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, SharingLevel sharingLevel) {
+    public void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, String sharingLevel) {
         applicationFacade.importBlueprintsFromCsv(importCsv, attachedCharacterID, sharingLevel);
     }
 
     @Override
     @Logging(logArguments = false)
-    public void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException {
+    public void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException {
         applicationFacade.importBlueprintsUsingOneTimeFullApiKey(fullApiKey, userID, characterID, level, attachedCharacterID, sharingLevel);
     }
 
     @Override
     @Logging(logArguments = false)
-    public void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException {
+    public void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException {
         applicationFacade.importBlueprintsUsingFullApiKey(characterID, level, attachedCharacterID, sharingLevel);
     }
 
@@ -289,7 +217,7 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public void savePriceSet(Long priceSetID, List<PriceSetItemDto> priceSetItemDtos, SharingLevel sharingLevel, Long attachedCharacterID) throws InvalidPriceException {
+    public void savePriceSet(Long priceSetID, List<PriceSetItemDto> priceSetItemDtos, String sharingLevel, Long attachedCharacterID) throws InvalidPriceException {
         Set<PriceSetItem> priceSetItems = new HashSet<PriceSetItem>();
         for (PriceSetItemDto priceSetItemDto : priceSetItemDtos) {
             priceSetItems.add(mapper.map(priceSetItemDto, PriceSetItem.class));
@@ -313,8 +241,8 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveCentralApiException {
-        return applicationFacade.fetchPricesFromEveCentralForTypeIDs(typeIDs, regionID, priceFetchOption);
+    public Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs) throws EveCentralApiException {
+        return applicationFacade.fetchPricesFromEveCentralForTypeIDs(typeIDs);
     }
 
     @Override
@@ -333,8 +261,8 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveMetricsApiException {
-        return applicationFacade.fetchPricesFromEveMetricsForTypeIDs(typeIDs, regionID, priceFetchOption);
+    public Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs) throws EveMetricsApiException {
+        return applicationFacade.fetchPricesFromEveMetricsForTypeIDs(typeIDs);
     }
 
     @Override
@@ -425,8 +353,8 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public CalculationDto getNewCalculation(String blueprintName) throws EveDbException, InvalidNameException {
-        Calculation calculation = applicationFacade.getNewCalculation(blueprintName);
+    public CalculationDto getQuickCalculation(String blueprintName) throws EveDbException, InvalidNameException {
+        Calculation calculation = applicationFacade.getCalculation(blueprintName);
         return mapper.map(calculation, CalculationDto.class);
     }
 
@@ -437,27 +365,15 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     }
 
     @Override
-    public UsedBlueprintDto useBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
-        UsedBlueprint usedBlueprint = applicationFacade.useBlueprint(pathNodes, blueprintName);
-        return mapper.map(usedBlueprint, UsedBlueprintDto.class);
+    public CalculationDto getQuickCalculation(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
+        Calculation calculation = applicationFacade.getCalculation(pathNodes, blueprintName);
+        return mapper.map(calculation, CalculationDto.class);
     }
 
     @Override
-    public UsedBlueprintDto useBlueprint(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException {
-        UsedBlueprint usedBlueprint = applicationFacade.useBlueprint(pathNodes, blueprintProductTypeID);
-        return mapper.map(usedBlueprint, UsedBlueprintDto.class);
-    }
-
-    @Override
-    public InventedBlueprintDto inventBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
-        InventedBlueprint inventedBlueprint = applicationFacade.inventBlueprint(pathNodes, blueprintName);
-        return mapper.map(inventedBlueprint, InventedBlueprintDto.class);
-    }
-
-    @Override
-    public UsedSchematicDto useSchematic(Long[] pathNodes, String schematicName) throws InvalidItemTypeException, EveDbException {
-        UsedSchematic usedSchematic = applicationFacade.useSchematic(pathNodes, schematicName);
-        return mapper.map(usedSchematic, UsedSchematicDto.class);
+    public CalculationDto getQuickCalculation(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException {
+        Calculation calculation = applicationFacade.getCalculation(pathNodes, blueprintProductTypeID);
+        return mapper.map(calculation, CalculationDto.class);
     }
 
     @Override

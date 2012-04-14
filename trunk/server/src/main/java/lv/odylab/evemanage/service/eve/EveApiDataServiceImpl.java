@@ -7,20 +7,17 @@ import lv.odylab.appengine.repackaged.Base64;
 import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
 import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.application.exception.EveManageSecurityException;
+import lv.odylab.evemanage.domain.ApiKeyType;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.eve.ApiKeyCharacterInfo;
 import lv.odylab.evemanage.domain.eve.ApiKeyDao;
 import lv.odylab.evemanage.domain.eve.Character;
-import lv.odylab.evemanage.domain.user.CharacterInfo;
-import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.eveapi.EveApiGateway;
 import lv.odylab.evemanage.integration.eveapi.dto.AccountCharacterDto;
 import lv.odylab.evemanage.integration.eveapi.dto.CharacterSheetDto;
 import lv.odylab.evemanage.integration.eveapi.dto.CorporationSheetDto;
-import lv.odylab.evemanage.integration.eveapi.dto.SkillLevelDto;
 import lv.odylab.evemanage.security.EveManageSecurityManager;
 import lv.odylab.evemanage.security.HashCalculator;
-import lv.odylab.evemanage.shared.eve.ApiKeyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,15 +122,6 @@ public class EveApiDataServiceImpl implements EveApiDataService {
             logger.debug("Api key type is already set to: {}, not going to recheck", apiKey.getKeyType());
         }
         apiKey.setUpdatedDate(new Date());
-    }
-
-    @Override
-    public List<SkillLevelDto> getMainCharacterSkills(User user) throws EveApiException {
-        CharacterInfo mainCharacterInfo = user.getMainCharacterInfo();
-        Long mainCharacterID = mainCharacterInfo.getCharacterID();
-        ApiKey apiKey = apiKeyDao.getWithCharacterID(mainCharacterID, new Key<User>(User.class, user.getId()));
-        CharacterSheetDto characterSheetDto = eveApiGateway.getCharacterSheet(decodeApiKeyString(apiKey.getEncodedApiKeyString()), apiKey.getApiKeyUserID(), mainCharacterID);
-        return characterSheetDto.getSkillLevels();
     }
 
     private String encodeApiKeyString(String apiKeyString) {

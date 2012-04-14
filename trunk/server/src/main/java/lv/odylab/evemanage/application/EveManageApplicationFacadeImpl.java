@@ -6,14 +6,15 @@ import com.googlecode.objectify.Key;
 import lv.odylab.evemanage.application.exception.*;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
+import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
+import lv.odylab.evemanage.domain.SharingLevel;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
 import lv.odylab.evemanage.domain.calculation.Calculation;
 import lv.odylab.evemanage.domain.eve.ApiKey;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
-import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.EveDbGateway;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
@@ -21,16 +22,9 @@ import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
 import lv.odylab.evemanage.security.EveManageSecurityManager;
 import lv.odylab.evemanage.service.blueprint.BlueprintManagementService;
 import lv.odylab.evemanage.service.calculation.CalculationService;
-import lv.odylab.evemanage.service.calculation.InventedBlueprint;
-import lv.odylab.evemanage.service.calculation.UsedBlueprint;
-import lv.odylab.evemanage.service.calculation.UsedSchematic;
 import lv.odylab.evemanage.service.eve.EveManagementService;
 import lv.odylab.evemanage.service.priceset.PriceSetManagementService;
 import lv.odylab.evemanage.service.user.UserManagementService;
-import lv.odylab.evemanage.shared.CalculationExpression;
-import lv.odylab.evemanage.shared.eve.PriceFetchOption;
-import lv.odylab.evemanage.shared.eve.Region;
-import lv.odylab.evemanage.shared.eve.SharingLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,58 +72,17 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
 
     @Override
     public User getCurrentUser() {
-        Key<User> currentUserKey = getCurrentUserKey();
-        return currentUserKey == null ? null : userManagementService.getUser(currentUserKey);
+        return userManagementService.getUser(getCurrentUserKey());
     }
 
     @Override
-    public List<SharingLevel> getAvailableSharingLevels() {
-        return Arrays.asList(SharingLevel.PERSONAL, SharingLevel.CORPORATION, SharingLevel.ALLIANCE);
+    public List<String> getAvailableSharingLevels() {
+        return Arrays.asList(SharingLevel.PERSONAL.toString(), SharingLevel.CORPORATION.toString(), SharingLevel.ALLIANCE.toString());
     }
 
     @Override
     public List<ApiKey> getFullApiKeys() {
         return eveManagementService.getFullApiKeys(getCurrentUserKey());
-    }
-
-    @Override
-    public List<SkillLevel> getSkillLevelsForCalculation() {
-        return userManagementService.getSkillsForCalculation(getCurrentUser());
-    }
-
-    @Override
-    public void saveSkillLevelsForCalculation(List<SkillLevel> skillLevelsForCalculation) {
-        userManagementService.saveSkillLevelsForCalculation(skillLevelsForCalculation, getCurrentUser());
-    }
-
-    @Override
-    public List<SkillLevel> fetchCalculationSkillLevelsForMainCharacter() throws EveApiException {
-        return eveManagementService.fetchCalculationSkillLevelsForMainCharacter(getCurrentUser());
-    }
-
-    @Override
-    public List<Region> getRegions() {
-        return Arrays.asList(Region.values());
-    }
-
-    @Override
-    public Region getPreferredRegion() {
-        return userManagementService.getPreferredRegion(getCurrentUser());
-    }
-
-    @Override
-    public List<PriceFetchOption> getPriceFetchOptions() {
-        return Arrays.asList(PriceFetchOption.values());
-    }
-
-    @Override
-    public PriceFetchOption getPreferredPriceFetchOption() {
-        return userManagementService.getPreferredPriceFetchOption(getCurrentUser());
-    }
-
-    @Override
-    public void savePriceFetchConfiguration(Region preferredRegion, PriceFetchOption preferredPriceFetchOption) {
-        userManagementService.savePriceFetchConfiguration(preferredRegion, preferredPriceFetchOption, getCurrentUser());
     }
 
     @Override
@@ -153,7 +106,7 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public Blueprint saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, SharingLevel sharingLevel) {
+    public Blueprint saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, String sharingLevel) {
         return blueprintManagementService.saveBlueprint(blueprintID, itemID, meLevel, peLevel, attachedCharacterID, sharingLevel, getCurrentUserKey());
     }
 
@@ -168,22 +121,22 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public void importBlueprintsFromXml(String importXml, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException {
+    public void importBlueprintsFromXml(String importXml, Long attachedCharacterID, String sharingLevel) throws EveApiException {
         blueprintManagementService.importBlueprintsFromXml(importXml, attachedCharacterID, sharingLevel, getCurrentUserKey());
     }
 
     @Override
-    public void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, SharingLevel sharingLevel) {
+    public void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, String sharingLevel) {
         blueprintManagementService.importBlueprintsFromCsv(importCsv, attachedCharacterID, sharingLevel, getCurrentUserKey());
     }
 
     @Override
-    public void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException {
+    public void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException {
         blueprintManagementService.importBlueprintsUsingOneTimeFullApiKey(fullApiKey, userID, characterID, level, attachedCharacterID, sharingLevel, getCurrentUserKey());
     }
 
     @Override
-    public void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException {
+    public void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException {
         blueprintManagementService.importBlueprintsUsingFullApiKey(characterID, level, attachedCharacterID, sharingLevel, getCurrentUserKey());
     }
 
@@ -228,7 +181,7 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public void savePriceSet(Long priceSetID, Set<PriceSetItem> priceSetItems, SharingLevel sharingLevel, Long attachedCharacterID) {
+    public void savePriceSet(Long priceSetID, Set<PriceSetItem> priceSetItems, String sharingLevel, Long attachedCharacterID) {
         priceSetManagementService.savePriceSet(priceSetID, priceSetItems, sharingLevel, attachedCharacterID, getCurrentUserKey());
     }
 
@@ -238,8 +191,8 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveCentralApiException {
-        return priceSetManagementService.fetchPricesFromEveCentralForTypeIDs(typeIDs, regionID, priceFetchOption);
+    public Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs) throws EveCentralApiException {
+        return priceSetManagementService.fetchPricesFromEveCentralForTypeIDs(typeIDs);
     }
 
     @Override
@@ -248,8 +201,8 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveMetricsApiException {
-        return priceSetManagementService.fetchPricesFromEveMetricsForTypeIDs(typeIDs, regionID, priceFetchOption);
+    public Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs) throws EveMetricsApiException {
+        return priceSetManagementService.fetchPricesFromEveMetricsForTypeIDs(typeIDs);
     }
 
     @Override
@@ -318,8 +271,8 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public Calculation getNewCalculation(String blueprintName) throws EveDbException, InvalidNameException {
-        return calculationService.getNewCalculation(blueprintName);
+    public Calculation getCalculation(String blueprintName) throws EveDbException, InvalidNameException {
+        return calculationService.getCalculation(blueprintName);
     }
 
     @Override
@@ -328,23 +281,14 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     }
 
     @Override
-    public UsedBlueprint useBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
-        return calculationService.useBlueprint(pathNodes, blueprintName);
+    public Calculation getCalculation(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
+        return calculationService.getCalculation(pathNodes, blueprintName);
     }
 
     @Override
-    public UsedBlueprint useBlueprint(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException {
-        return calculationService.useBlueprint(pathNodes, blueprintProductTypeID);
-    }
-
-    @Override
-    public InventedBlueprint inventBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
-        return calculationService.inventBlueprint(pathNodes, blueprintName);
-    }
-
-    @Override
-    public UsedSchematic useSchematic(Long[] pathNodes, String schematicName) throws InvalidItemTypeException, EveDbException {
-        return calculationService.useSchematic(pathNodes, schematicName);
+    public Calculation getCalculation(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException {
+        String typeName = eveDbGateway.getTypeName(blueprintProductTypeID);
+        return getCalculation(pathNodes, typeName + " Blueprint");
     }
 
     @Override

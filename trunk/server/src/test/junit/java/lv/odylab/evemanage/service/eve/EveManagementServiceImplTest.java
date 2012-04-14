@@ -4,11 +4,8 @@ import com.googlecode.objectify.Key;
 import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
 import lv.odylab.evemanage.application.exception.EveApiException;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
-import lv.odylab.evemanage.domain.eve.ApiKey;
-import lv.odylab.evemanage.domain.eve.ApiKeyCharacterInfo;
-import lv.odylab.evemanage.domain.eve.ApiKeyDao;
+import lv.odylab.evemanage.domain.eve.*;
 import lv.odylab.evemanage.domain.eve.Character;
-import lv.odylab.evemanage.domain.eve.CharacterDao;
 import lv.odylab.evemanage.domain.user.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,9 +21,7 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EveManagementServiceImplTest {
@@ -116,7 +111,7 @@ public class EveManagementServiceImplTest {
         Key<User> userKey = new Key<User>(User.class, 1);
         Key<ApiKey> apiKeyKey = new Key<ApiKey>(ApiKey.class, 2);
 
-        when(apiKeyDao.getKeyWithCharacterID(1L, userKey)).thenReturn(apiKeyKey);
+        when(apiKeyDao.getWithCharacterID(1L, userKey)).thenReturn(apiKeyKey);
         eveManagementService.createCharacter(1L, userKey);
 
         verify(eveApiDataService, times(1)).populateCharacterData(characterCaptor.capture());

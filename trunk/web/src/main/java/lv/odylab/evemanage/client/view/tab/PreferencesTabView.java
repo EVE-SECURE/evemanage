@@ -1,40 +1,30 @@
 package lv.odylab.evemanage.client.view.tab;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import lv.odylab.evemanage.client.EveManageMessages;
-import lv.odylab.evemanage.client.EveManageResources;
+import lv.odylab.evemanage.client.*;
 import lv.odylab.evemanage.client.presenter.tab.PreferencesTabPresenter;
-import lv.odylab.evemanage.client.presenter.tab.preferences.EditablePreferenceSkillLevel;
-import lv.odylab.evemanage.client.presenter.tab.preferences.EditablePreferencesApiKey;
-import lv.odylab.evemanage.client.presenter.tab.preferences.EditablePreferencesCharacter;
+import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyCharacterInfoDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
-import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
-import lv.odylab.evemanage.client.view.tab.preferences.ApiKeysSection;
-import lv.odylab.evemanage.client.view.tab.preferences.CharactersSection;
-import lv.odylab.evemanage.client.view.tab.preferences.PriceFetchingSection;
-import lv.odylab.evemanage.client.view.tab.preferences.SkillsForCalculationSection;
-import lv.odylab.evemanage.client.widget.PriceFetchOptionListBox;
-import lv.odylab.evemanage.client.widget.RegionListBox;
-import lv.odylab.evemanage.shared.eve.PriceFetchOption;
+import lv.odylab.evemanage.client.widget.EveAllianceInfoLink;
+import lv.odylab.evemanage.client.widget.EveCharacterInfoLink;
+import lv.odylab.evemanage.client.widget.EveCorporationInfoLink;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class PreferencesTabView implements PreferencesTabPresenter.Display {
+    private EveManageConstants constants;
+    private EveManageResources resources;
+    private EveManageMessages messages;
+    private EveManageUrlMessages urlMessages;
+    private CcpJsMessages ccpJsMessages;
+
     private HorizontalPanel headerPanel;
     private Label headerLabel;
     private Image spinnerImage;
@@ -44,18 +34,37 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
     private Image errorImage;
 
     private Label hintOnlyForSharingLabel;
+    private Label charactersHeadingLabel;
+    private FlexTable charactersFlexTable;
+    private FlexTable newCharacterFlexTable;
+    private ListBox newCharacterListBox;
+    private Label addCharacterLabel;
+    private Button addNewCharacterButton;
+    private Label hintCharactersAreNeededLabel;
+    private Label hintSameSharingLevelLabel;
+    private Map<CharacterDto, Button> characterDeleteButtonMap;
+    private Map<String, Image> characterImageMap;
 
-    private CharactersSection charactersSection;
-    private ApiKeysSection apiKeysSection;
-    private SkillsForCalculationSection skillsForCalculationSection;
-    private PriceFetchingSection priceFetchingSection;
+    private Label apiKeysHeadingLabel;
+    private FlexTable apiKeysFlexTable;
+    private FlexTable newApiKeyFlexTable;
+    private TextBox newApiKeyUserIdTextBox;
+    private TextBox newApiKeyStringTextBox;
+    private Button addNewApiKeyButton;
+    private Label enterUserIdLabel;
+    private Label enterApiKeyLabel;
+    private Label noteKeysAreCheckedLabel;
+    private Label hintUseThisLinkLabel;
+    private DateTimeFormat dateTimeFormat;
+    private Map<ApiKeyDto, Button> apiKeyDeleteButtonMap;
 
     @Inject
-    public PreferencesTabView(EveManageResources resources, EveManageMessages messages, CharactersSection charactersSection, ApiKeysSection apiKeysSection, SkillsForCalculationSection skillsForCalculationSection, PriceFetchingSection priceFetchingSection) {
-        this.charactersSection = charactersSection;
-        this.apiKeysSection = apiKeysSection;
-        this.skillsForCalculationSection = skillsForCalculationSection;
-        this.priceFetchingSection = priceFetchingSection;
+    public PreferencesTabView(EveManageConstants constants, EveManageResources resources, EveManageMessages messages, EveManageUrlMessages urlMessages, CcpJsMessages ccpJsMessages) {
+        this.constants = constants;
+        this.resources = resources;
+        this.messages = messages;
+        this.urlMessages = urlMessages;
+        this.ccpJsMessages = ccpJsMessages;
 
         headerPanel = new HorizontalPanel();
         headerPanel.addStyleName(resources.css().tabHeaderPanel());
@@ -71,8 +80,52 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
         errorImage = new Image(resources.errorIcon());
         errorImage.setTitle(messages.error());
 
+        apiKeyDeleteButtonMap = new HashMap<ApiKeyDto, Button>();
+        characterDeleteButtonMap = new HashMap<CharacterDto, Button>();
+        characterImageMap = new HashMap<String, Image>();
+
         hintOnlyForSharingLabel = new Label(messages.hintOnlyForSharing() + ".");
         hintOnlyForSharingLabel.addStyleName(resources.css().hintLabel());
+
+        charactersHeadingLabel = new Label(messages.characters());
+        charactersHeadingLabel.addStyleName(resources.css().tabHeadingText());
+
+        newCharacterFlexTable = new FlexTable();
+        addCharacterLabel = new Label(messages.addCharacter() + ":");
+        newCharacterListBox = new ListBox();
+        newCharacterListBox.setEnabled(false);
+        addNewCharacterButton = new Button(messages.add());
+        addNewCharacterButton.setEnabled(false);
+
+        hintCharactersAreNeededLabel = new Label(messages.hintCharactersAreNeeded() + ".");
+        hintCharactersAreNeededLabel.addStyleName(resources.css().hintLabel());
+        hintSameSharingLevelLabel = new Label(messages.hintSameSharingLevel() + ".");
+        hintSameSharingLevelLabel.addStyleName(resources.css().hintLabel());
+
+        apiKeysHeadingLabel = new Label(messages.apiKeys());
+        apiKeysHeadingLabel.addStyleName(resources.css().tabHeadingText());
+
+        apiKeysFlexTable = new FlexTable();
+        newApiKeyFlexTable = new FlexTable();
+        newApiKeyUserIdTextBox = new TextBox();
+        newApiKeyUserIdTextBox.addStyleName(resources.css().apiKeyUserIdInput());
+        newApiKeyUserIdTextBox.setEnabled(false);
+        newApiKeyStringTextBox = new TextBox();
+        newApiKeyStringTextBox.addStyleName(resources.css().apiKeyStringInput());
+        newApiKeyStringTextBox.setEnabled(false);
+        enterUserIdLabel = new Label(messages.enterUserID() + ":");
+        enterApiKeyLabel = new Label(messages.enterApiKey() + ":");
+        addNewApiKeyButton = new Button(messages.add());
+        addNewApiKeyButton.setEnabled(false);
+
+        noteKeysAreCheckedLabel = new Label(messages.noteKeysAreChecked() + ".");
+        noteKeysAreCheckedLabel.addStyleName(resources.css().noteLabel());
+        Anchor anchor = new Anchor(messages.eveApiKeyManagement(), constants.eveApiKeyManagementPageUrl());
+        anchor.setTarget("_blank");
+        hintUseThisLinkLabel = new HTML(messages.hintUserThisLink(anchor.toString()) + ".");
+        hintUseThisLinkLabel.addStyleName(resources.css().hintLabel());
+
+        dateTimeFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_FULL);
     }
 
     @Override
@@ -87,12 +140,37 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
         errorMessageTable.setWidget(0, 0, errorImage);
         errorMessageTable.setWidget(0, 1, errorMessageLabel);
         container.add(errorMessageTable);
+
         container.add(hintOnlyForSharingLabel);
 
-        charactersSection.attach(container);
-        apiKeysSection.attach(container);
-        skillsForCalculationSection.attach(container);
-        priceFetchingSection.attach(container);
+        container.add(charactersHeadingLabel);
+
+        charactersFlexTable = new FlexTable();
+        container.add(charactersFlexTable);
+
+        newCharacterFlexTable.setWidget(0, 0, addCharacterLabel);
+        newCharacterFlexTable.setWidget(0, 1, newCharacterListBox);
+        newCharacterFlexTable.setWidget(0, 2, addNewCharacterButton);
+        container.add(newCharacterFlexTable);
+
+        container.add(hintCharactersAreNeededLabel);
+        container.add(hintSameSharingLevelLabel);
+
+        container.add(apiKeysHeadingLabel);
+
+        container.add(apiKeysFlexTable);
+
+        FlexTable.FlexCellFormatter newApiKeyFlexTableFormatter = newApiKeyFlexTable.getFlexCellFormatter();
+        newApiKeyFlexTable.setWidget(0, 0, enterUserIdLabel);
+        newApiKeyFlexTable.setWidget(0, 1, newApiKeyUserIdTextBox);
+        newApiKeyFlexTableFormatter.setColSpan(0, 1, 2);
+        newApiKeyFlexTable.setWidget(1, 0, enterApiKeyLabel);
+        newApiKeyFlexTable.setWidget(1, 1, newApiKeyStringTextBox);
+        newApiKeyFlexTable.setWidget(1, 2, addNewApiKeyButton);
+        container.add(newApiKeyFlexTable);
+
+        container.add(noteKeysAreCheckedLabel);
+        container.add(hintUseThisLinkLabel);
     }
 
     @Override
@@ -112,136 +190,190 @@ public class PreferencesTabView implements PreferencesTabPresenter.Display {
 
     @Override
     public void setCharacters(List<CharacterDto> characters) {
-        charactersSection.setCharacters(characters);
+        characterImageMap.clear();
+        charactersFlexTable.removeAllRows();
+        charactersFlexTable.clear();
+        for (CharacterDto character : characters) {
+            drawCharacter(character);
+        }
     }
 
     @Override
     public void setMainCharacter(CharacterDto mainCharacter) {
-        charactersSection.setMainCharacter(mainCharacter);
+        for (Map.Entry<String, Image> characterImageEntry : characterImageMap.entrySet()) {
+            String characterName = characterImageEntry.getKey();
+            Image characterImage = characterImageEntry.getValue();
+            if (!mainCharacter.getName().equals(characterName)) {
+                characterImage.addStyleName(resources.css().imageOpacity05());
+                characterImage.addStyleName(resources.css().cursorHand());
+                characterImage.setTitle(characterName + ", " + messages.clickToSetAsMainCharacter());
+            } else {
+                characterImage.removeStyleName(resources.css().imageOpacity05());
+                characterImage.removeStyleName(resources.css().cursorHand());
+                characterImage.setTitle(characterName + ", " + messages.currentMainCharacter());
+            }
+        }
     }
 
     @Override
-    public Map<CharacterDto, EditablePreferencesCharacter> getCharacterToEditablePreferencesCharacterMap() {
-        return charactersSection.getCharacterToEditablePreferencesCharacterMap();
+    public Map<String, Image> getCharacterImageMap() {
+        return characterImageMap;
+    }
+
+    @Override
+    public Map<CharacterDto, Button> getCharacterDeleteButtonMap() {
+        return characterDeleteButtonMap;
     }
 
     @Override
     public Long getSelectedNewCharacterID() {
-        return charactersSection.getSelectedNewCharacterID();
+        return Long.valueOf(newCharacterListBox.getValue(newCharacterListBox.getSelectedIndex()));
     }
 
     @Override
     public void setNewCharacterNames(List<CharacterNameDto> characterNames) {
-        charactersSection.setNewCharacterNames(characterNames);
+        newCharacterListBox.clear();
+        for (CharacterNameDto characterName : characterNames) {
+            newCharacterListBox.addItem(characterName.getName(), String.valueOf(characterName.getId()));
+        }
+        if (newCharacterListBox.getItemCount() > 0) {
+            newCharacterListBox.setSelectedIndex(0);
+        }
     }
 
     @Override
     public ListBox getNewCharacterNamesListBox() {
-        return charactersSection.getNewCharacterNamesListBox();
+        return newCharacterListBox;
     }
 
     @Override
     public Button getAddNewCharacterButton() {
-        return charactersSection.getAddNewCharacterButton();
+        return addNewCharacterButton;
     }
 
     @Override
     public void setApiKeys(List<ApiKeyDto> apiKeys) {
-        apiKeysSection.setApiKeys(apiKeys);
+        apiKeysFlexTable.removeAllRows();
+        apiKeysFlexTable.clear();
+        for (ApiKeyDto apiKey : apiKeys) {
+            drawApiKey(apiKey);
+        }
     }
 
     @Override
-    public Map<ApiKeyDto, EditablePreferencesApiKey> getApiKeyToEditablePreferencesApiKeyMap() {
-        return apiKeysSection.getApiKeyToEditablePreferencesApiKeyMap();
+    public Map<ApiKeyDto, Button> getApiKeyDeleteButtonMap() {
+        return apiKeyDeleteButtonMap;
     }
 
     @Override
     public TextBox getNewApiKeyUserIdTextBox() {
-        return apiKeysSection.getNewApiKeyUserIdTextBox();
+        return newApiKeyUserIdTextBox;
     }
 
     @Override
     public TextBox getNewApiKeyStringTextBox() {
-        return apiKeysSection.getNewApiKeyStringTextBox();
+        return newApiKeyStringTextBox;
     }
 
     @Override
     public Button getAddNewApiKeyButton() {
-        return apiKeysSection.getAddNewApiKeyButton();
+        return addNewApiKeyButton;
     }
 
-    @Override
-    public Widget getSkillsForCalculationSectionSpinnerImage() {
-        return skillsForCalculationSection.getSkillsForCalculationSectionSpinnerImage();
+    private void drawCharacter(CharacterDto character) {
+        int index = charactersFlexTable.getRowCount();
+        Image characterImage = new Image(urlMessages.imgEveCharacter50Url(constants.eveGateImagesUrl(), character.getCharacterID()));
+        characterImage.addStyleName(resources.css().image50());
+        Image corporationImage;
+        if (character.getCorporationID() != null) {
+            corporationImage = new Image(urlMessages.imgEveCorporation50Url(constants.eveGateImagesUrl(), character.getCorporationID()));
+            corporationImage.setTitle(character.getCorporationName());
+            corporationImage.addStyleName(resources.css().image50());
+        } else {
+            corporationImage = new Image(resources.nokIcon());
+        }
+        Image allianceImage;
+        if (character.getAllianceID() != null) {
+            allianceImage = new Image(urlMessages.imgEveAlliance50Url(constants.eveGateImagesUrl(), character.getAllianceID()));
+            allianceImage.setTitle(character.getAllianceName());
+            allianceImage.addStyleName(resources.css().image50());
+        } else {
+            allianceImage = new Image(resources.nokIcon());
+        }
+
+        charactersFlexTable.setWidget(index, 0, characterImage);
+        charactersFlexTable.setWidget(index, 1, new EveCorporationInfoLink(constants, urlMessages, ccpJsMessages, corporationImage, character.getCorporationID()));
+        charactersFlexTable.setWidget(index, 2, new EveAllianceInfoLink(constants, urlMessages, ccpJsMessages, allianceImage, character.getAllianceID()));
+        HTMLTable.CellFormatter characterFlexTableFormatter = charactersFlexTable.getCellFormatter();
+        characterFlexTableFormatter.setHorizontalAlignment(index, 1, HasHorizontalAlignment.ALIGN_CENTER);
+        characterFlexTableFormatter.setHorizontalAlignment(index, 2, HasHorizontalAlignment.ALIGN_CENTER);
+        VerticalPanel characterInfoPanel = new VerticalPanel();
+        EveCharacterInfoLink characterInfoLink = new EveCharacterInfoLink(ccpJsMessages, character.getName(), character.getCharacterID());
+        EveCorporationInfoLink corporationInfoLink = new EveCorporationInfoLink(constants, urlMessages, ccpJsMessages, character.getCorporationName(), character.getCorporationID());
+        EveAllianceInfoLink allianceInfoLink = new EveAllianceInfoLink(constants, urlMessages, ccpJsMessages, character.getAllianceName(), character.getAllianceID());
+        characterInfoPanel.add(characterInfoLink);
+        characterInfoPanel.add(corporationInfoLink);
+        characterInfoPanel.add(allianceInfoLink);
+        charactersFlexTable.setWidget(index, 3, characterInfoPanel);
+        FlowPanel corpTitlesPanel = new FlowPanel();
+        List<String> corpTitles = character.getCorporationTitles();
+        if (corpTitles != null) {
+            for (String title : corpTitles) {
+                InlineLabel corpTitleLabel = new InlineLabel(title);
+                corpTitleLabel.addStyleName(resources.css().corpTitle());
+                corpTitlesPanel.add(corpTitleLabel);
+            }
+        } else if (character.getCorporationID() == null && character.getAllianceID() == null) {
+            corpTitlesPanel.add(new Label(messages.noValidApiKeyFound()));
+        } else {
+            corpTitlesPanel.add(new Label(messages.noCorpTitles()));
+        }
+        charactersFlexTable.setWidget(index, 4, corpTitlesPanel);
+        Button deleteButton = new Button(messages.delete());
+        characterDeleteButtonMap.put(character, deleteButton);
+        characterImageMap.put(character.getName(), characterImage);
+        charactersFlexTable.setWidget(index, 5, deleteButton);
     }
 
-    @Override
-    public void setSkillLevelsForCalculation(List<SkillLevelDto> skillLevelsForCalculation) {
-        skillsForCalculationSection.setSkillLevelsForCalculation(skillLevelsForCalculation);
+    private void drawApiKey(ApiKeyDto apiKeyDto) {
+        int index = apiKeysFlexTable.getRowCount();
+        Image apiKeyImage;
+        if ("FULL".equals(apiKeyDto.getKeyType())) {
+            apiKeyImage = new Image(resources.fullKeyIcon());
+            apiKeyImage.setTitle(messages.fullApiKey());
+        } else {
+            apiKeyImage = new Image(resources.limitedKeyIcon());
+            apiKeyImage.setTitle(messages.limitedApiKey());
+        }
+        apiKeysFlexTable.setWidget(index, 0, apiKeyImage);
+        Image isValidIcon = new Image(getIsValidImageResources(apiKeyDto.isValid()));
+        isValidIcon.setTitle(messages.lastApiCheckDate() + ": " + dateTimeFormat.format(apiKeyDto.getLastCheckDate()));
+        apiKeysFlexTable.setWidget(index, 1, isValidIcon);
+        Panel characterPanel = new VerticalPanel();
+        apiKeysFlexTable.setWidget(index, 2, characterPanel);
+        List<ApiKeyCharacterInfoDto> keyCharacterInfos = apiKeyDto.getCharacterInfos();
+        for (ApiKeyCharacterInfoDto apiKeyCharacterInfo : keyCharacterInfos) {
+            EveCharacterInfoLink characterInfoLink = new EveCharacterInfoLink(ccpJsMessages, apiKeyCharacterInfo.getName(), apiKeyCharacterInfo.getCharacterID());
+            EveCorporationInfoLink corporationInfoLink = new EveCorporationInfoLink(constants, urlMessages, ccpJsMessages, apiKeyCharacterInfo.getCorporationName(), apiKeyCharacterInfo.getCorporationID());
+            characterPanel.add(new HTML(characterInfoLink + " (" + corporationInfoLink + ")"));
+        }
+        int column = 3;
+        for (ApiKeyCharacterInfoDto apiKeyCharacterInfo : keyCharacterInfos) {
+            Image characterImage = new Image(urlMessages.imgEveCharacter50Url(constants.eveGateImagesUrl(), apiKeyCharacterInfo.getCharacterID()));
+            characterImage.setTitle(apiKeyCharacterInfo.getName());
+            characterImage.addStyleName(resources.css().image50());
+            apiKeysFlexTable.setWidget(index, column++, new EveCharacterInfoLink(ccpJsMessages, characterImage, apiKeyCharacterInfo.getCharacterID()));
+        }
+        Button deleteButton = new Button(messages.delete());
+        apiKeyDeleteButtonMap.put(apiKeyDto, deleteButton);
+        apiKeysFlexTable.setWidget(index, 6, deleteButton);
     }
 
-    @Override
-    public void updateSkillLevelsForCalculation(List<SkillLevelDto> skillLevelsForCalculation) {
-        skillsForCalculationSection.updateSkillLevelsForCalculation(skillLevelsForCalculation);
-    }
-
-    @Override
-    public List<SkillLevelDto> getSkillLevelsForCalculationThatNotEqualTo5() {
-        return skillsForCalculationSection.getSkillLevelsForCalculationThatNotEqualTo5();
-    }
-
-    @Override
-    public Button getSaveSkillLevelsButton() {
-        return skillsForCalculationSection.getSaveSkillLevelsButton();
-    }
-
-    @Override
-    public Button getFetchSkillLevelsForCurrentCharacterButton() {
-        return skillsForCalculationSection.getFetchSkillLevelsForCurrentCharacterButton();
-    }
-
-    @Override
-    public Map<Long, EditablePreferenceSkillLevel> getTypeIdToEditablePreferenceSkillLevelMap() {
-        return skillsForCalculationSection.getTypeIdToEditablePreferenceSkillLevelMap();
-    }
-
-    @Override
-    public Widget getPriceFetchingSectionSpinnerImage() {
-        return priceFetchingSection.getPriceFetchingSectionSpinnerImage();
-    }
-
-    @Override
-    public void setRegions(List<RegionDto> regions) {
-        priceFetchingSection.setRegions(regions);
-    }
-
-    @Override
-    public void setPreferredRegion(RegionDto preferredRegion) {
-        priceFetchingSection.setPreferredRegion(preferredRegion);
-    }
-
-    @Override
-    public RegionListBox getPreferredRegionListBox() {
-        return priceFetchingSection.getPreferredRegionListBox();
-    }
-
-    @Override
-    public void setPriceFetchOptions(List<PriceFetchOption> priceFetchOptions) {
-        priceFetchingSection.setPriceFetchOptions(priceFetchOptions);
-    }
-
-    @Override
-    public void setPreferredPriceFetchOption(PriceFetchOption preferredPriceFetchOption) {
-        priceFetchingSection.setPreferredPriceFetchOption(preferredPriceFetchOption);
-    }
-
-    @Override
-    public PriceFetchOptionListBox getPreferredPriceFetchOption() {
-        return priceFetchingSection.getPreferredPriceFetchOption();
-    }
-
-    @Override
-    public Button getSavePriceFetchConfigurationButton() {
-        return priceFetchingSection.getSavePriceFetchConfigurationButton();
+    private ImageResource getIsValidImageResources(Boolean isValid) {
+        if (Boolean.TRUE.equals(isValid)) {
+            return resources.okIcon();
+        } else {
+            return resources.nokIcon();
+        }
     }
 }

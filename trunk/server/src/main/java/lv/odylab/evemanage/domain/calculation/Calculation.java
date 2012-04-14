@@ -4,7 +4,6 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.Unindexed;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
-import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 
 import javax.persistence.Embedded;
@@ -22,8 +21,6 @@ public class Calculation implements Serializable {
     @Indexed
     private String name;
     private String price;
-    private String pricePerUnit;
-    private Long quantity;
     private Long blueprintTypeID;
     private String blueprintTypeName;
     private Long productTypeID;
@@ -33,9 +30,6 @@ public class Calculation implements Serializable {
     private Integer productivityLevel;
     private Integer materialLevel;
     private Integer wasteFactor;
-    private Integer maxProductionLimit;
-    private String productVolume;
-    private Integer productPortionSize;
     @Embedded
     private CharacterInfo attachedCharacterInfo;
     @Indexed
@@ -45,11 +39,7 @@ public class Calculation implements Serializable {
     @Indexed
     private Date updatedDate;
     @Embedded
-    private List<CalculationItem> calculationItems;
-    @Embedded
-    private List<BlueprintItem> blueprintItems;
-    @Embedded
-    private List<SkillLevel> skillLevels;
+    private List<CalculationItem> items;
 
     public Long getId() {
         return id;
@@ -81,22 +71,6 @@ public class Calculation implements Serializable {
 
     public void setPrice(String price) {
         this.price = price;
-    }
-
-    public String getPricePerUnit() {
-        return pricePerUnit;
-    }
-
-    public void setPricePerUnit(String pricePerUnit) {
-        this.pricePerUnit = pricePerUnit;
-    }
-
-    public Long getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Long quantity) {
-        this.quantity = quantity;
     }
 
     public Long getBlueprintTypeID() {
@@ -171,30 +145,6 @@ public class Calculation implements Serializable {
         this.wasteFactor = wasteFactor;
     }
 
-    public Integer getMaxProductionLimit() {
-        return maxProductionLimit;
-    }
-
-    public void setMaxProductionLimit(Integer maxProductionLimit) {
-        this.maxProductionLimit = maxProductionLimit;
-    }
-
-    public String getProductVolume() {
-        return productVolume;
-    }
-
-    public void setProductVolume(String productVolume) {
-        this.productVolume = productVolume;
-    }
-
-    public Integer getProductPortionSize() {
-        return productPortionSize;
-    }
-
-    public void setProductPortionSize(Integer productPortionSize) {
-        this.productPortionSize = productPortionSize;
-    }
-
     public CharacterInfo getAttachedCharacterInfo() {
         return attachedCharacterInfo;
     }
@@ -227,27 +177,11 @@ public class Calculation implements Serializable {
         this.updatedDate = updatedDate;
     }
 
-    public List<CalculationItem> getCalculationItems() {
-        return calculationItems;
+    public List<CalculationItem> getItems() {
+        return items;
     }
 
-    public void setCalculationItems(List<CalculationItem> calculationItems) {
-        this.calculationItems = calculationItems;
-    }
-
-    public List<BlueprintItem> getBlueprintItems() {
-        return blueprintItems;
-    }
-
-    public void setBlueprintItems(List<BlueprintItem> blueprintItems) {
-        this.blueprintItems = blueprintItems;
-    }
-
-    public List<SkillLevel> getSkillLevels() {
-        return skillLevels;
-    }
-
-    public void setSkillLevels(List<SkillLevel> skillLevels) {
-        this.skillLevels = skillLevels;
+    public void setItems(List<CalculationItem> items) {
+        this.items = items;
     }
 }

@@ -1,46 +1,16 @@
 package lv.odylab.evemanage.client.view.tab;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DisclosurePanel;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import lv.odylab.evemanage.client.CcpJsMessages;
-import lv.odylab.evemanage.client.EveManageConstants;
-import lv.odylab.evemanage.client.EveManageMessages;
-import lv.odylab.evemanage.client.EveManageResources;
-import lv.odylab.evemanage.client.EveManageUrlMessages;
+import lv.odylab.evemanage.client.*;
 import lv.odylab.evemanage.client.oracle.TypeSuggestOracle;
 import lv.odylab.evemanage.client.presenter.tab.PriceSetTabPresenter;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.util.EveImageUrlProvider;
-import lv.odylab.evemanage.client.widget.AttachedCharacterListBox;
-import lv.odylab.evemanage.client.widget.EveCentralQuicklookLink;
-import lv.odylab.evemanage.client.widget.EveItemInfoLink;
-import lv.odylab.evemanage.client.widget.EveItemMarketDetailsLink;
-import lv.odylab.evemanage.client.widget.EveMetricsItemPriceLink;
-import lv.odylab.evemanage.client.widget.PriceLabel;
-import lv.odylab.evemanage.client.widget.PriceSetListBox;
-import lv.odylab.evemanage.client.widget.PriceTextBox;
-import lv.odylab.evemanage.client.widget.SharingLevelListBox;
-import lv.odylab.evemanage.shared.eve.SharingLevel;
+import lv.odylab.evemanage.client.widget.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PriceSetTabView implements PriceSetTabPresenter.Display {
     private EveManageConstants constants;
@@ -338,9 +308,9 @@ public class PriceSetTabView implements PriceSetTabPresenter.Display {
     }
 
     @Override
-    public void setSharingLevels(List<SharingLevel> sharingLevels) {
+    public void setSharingLevels(List<String> sharingLevels) {
         sharingLevelListBox.clear();
-        for (SharingLevel sharingLevel : sharingLevels) {
+        for (String sharingLevel : sharingLevels) {
             sharingLevelListBox.addItem(sharingLevel);
         }
     }
@@ -508,11 +478,11 @@ public class PriceSetTabView implements PriceSetTabPresenter.Display {
         priceSetItemsTable.setWidget(index, 2, priceTextBox);
         Button deleteButton = new Button(messages.delete());
         currentPriceSetItemDeleteButtons.put(priceSetItem, deleteButton);
-        Image eveCentralImage = new Image(resources.eveCentralIcon());
+        Image eveCentralImage = new Image(resources.eveCentralIcon16());
         priceSetItemsTable.setWidget(index, 3, deleteButton);
         eveCentralImage.setTitle(messages.eveCentralQuicklook());
         priceSetItemsTable.setWidget(index, 4, new EveCentralQuicklookLink(constants, urlMessages, eveCentralImage, itemTypeID));
-        Image eveMetricsImage = new Image(resources.eveMetricsIcon());
+        Image eveMetricsImage = new Image(resources.eveMetricsIcon16());
         eveMetricsImage.setTitle(messages.eveMetricsItemPrice());
         priceSetItemsTable.setWidget(index, 5, new EveMetricsItemPriceLink(constants, urlMessages, eveMetricsImage, itemCategoryID, itemTypeID));
 

@@ -5,31 +5,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DecoratedPopupPanel;
-import com.google.gwt.user.client.ui.DisclosurePanel;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import lv.odylab.evemanage.client.CcpJsMessages;
-import lv.odylab.evemanage.client.EveManageConstants;
-import lv.odylab.evemanage.client.EveManageMessages;
-import lv.odylab.evemanage.client.EveManageResources;
-import lv.odylab.evemanage.client.EveManageUrlMessages;
+import lv.odylab.evemanage.client.*;
 import lv.odylab.evemanage.client.oracle.BlueprintTypeSuggestOracle;
 import lv.odylab.evemanage.client.presenter.tab.BlueprintsTabPresenter;
 import lv.odylab.evemanage.client.presenter.tab.blueprint.EditableBlueprintDetails;
@@ -39,13 +17,7 @@ import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterInfoDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.util.EveImageUrlProvider;
-import lv.odylab.evemanage.client.widget.AttachedCharacterListBox;
-import lv.odylab.evemanage.client.widget.CharacterOrCorporationLevelListBox;
-import lv.odylab.evemanage.client.widget.EveCharacterInfoLink;
-import lv.odylab.evemanage.client.widget.EveCorporationInfoLink;
-import lv.odylab.evemanage.client.widget.EveItemInfoLink;
-import lv.odylab.evemanage.client.widget.SharingLevelListBox;
-import lv.odylab.evemanage.shared.eve.SharingLevel;
+import lv.odylab.evemanage.client.widget.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,7 +86,7 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
     private SharingLevelListBox sharingLevelListBox;
     private Button importButton;
     private List<CharacterNameDto> attachedCharacterNames;
-    private List<SharingLevel> sharingLevels;
+    private List<String> sharingLevels;
 
     private Label libraryTitleLabel;
     private FlexTable filterTable;
@@ -584,10 +556,10 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
     }
 
     @Override
-    public void setSharingLevels(List<SharingLevel> sharingLevels) {
+    public void setSharingLevels(List<String> sharingLevels) {
         this.sharingLevels = sharingLevels;
         sharingLevelListBox.clear();
-        for (SharingLevel sharingLevel : sharingLevels) {
+        for (String sharingLevel : sharingLevels) {
             sharingLevelListBox.addItem(sharingLevel);
         }
     }
@@ -932,7 +904,7 @@ public class BlueprintsTabView implements BlueprintsTabPresenter.Display {
         editPopupFlexTable.setWidget(2, 1, editAttachToCharacterListBox);
         editPopupFlexTable.setWidget(3, 0, new Label(messages.sharingLevel() + ":"));
         SharingLevelListBox editSharingLevelListBox = new SharingLevelListBox(messages);
-        for (SharingLevel sharingLevel : sharingLevels) {
+        for (String sharingLevel : sharingLevels) {
             editSharingLevelListBox.addItem(sharingLevel);
         }
         editSharingLevelListBox.setSharingLevel(blueprint.getSharingLevel());

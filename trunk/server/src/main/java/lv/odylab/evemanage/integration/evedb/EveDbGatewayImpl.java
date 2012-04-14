@@ -4,27 +4,17 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import lv.odylab.appengine.aspect.Caching;
 import lv.odylab.appengine.aspect.Logging;
-import lv.odylab.evedb.client.BadRequestException;
-import lv.odylab.evedb.client.EveDbWsClient;
-import lv.odylab.evedb.client.EveDbWsClientImpl;
-import lv.odylab.evedb.client.HttpRequestSenderImpl;
-import lv.odylab.evedb.client.HttpRequestSenderWithRetryImpl;
+import lv.odylab.evedb.client.*;
 import lv.odylab.evedb.rpc.dto.InvBlueprintTypeDto;
 import lv.odylab.evedb.rpc.dto.InvTypeBasicInfoDto;
 import lv.odylab.evedb.rpc.dto.InvTypeMaterialDto;
-import lv.odylab.evedb.rpc.dto.PlanetSchematicDto;
 import lv.odylab.evedb.rpc.dto.RamTypeRequirementDto;
 import lv.odylab.evemanage.application.EveManageDtoMapper;
 import lv.odylab.evemanage.application.exception.EveDbException;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.client.rpc.ErrorCode;
-import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
-import lv.odylab.evemanage.integration.evedb.dto.BlueprintTypeDto;
-import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
-import lv.odylab.evemanage.integration.evedb.dto.SchematicItemDto;
-import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
-import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
+import lv.odylab.evemanage.integration.evedb.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,21 +33,6 @@ public class EveDbGatewayImpl implements EveDbGateway {
                             @Named("eveDb.url") String eveDbUrl) {
         this.mapper = mapper;
         this.client = new EveDbWsClientImpl(eveDbUrl, new HttpRequestSenderWithRetryImpl(5, new HttpRequestSenderImpl()));
-    }
-
-    @Override
-    public List<ItemTypeDto> getBaseItemsForTypeID(Long typeID) throws EveDbException {
-        try {
-            List<InvTypeBasicInfoDto> invTypeBasicInfoDtoList = client.getBaseItemsForTypeID(typeID);
-            List<ItemTypeDto> itemTypeDtos = new ArrayList<ItemTypeDto>();
-            for (InvTypeBasicInfoDto invTypeBasicInfoDto : invTypeBasicInfoDtoList) {
-                itemTypeDtos.add(mapper.map(invTypeBasicInfoDto, ItemTypeDto.class));
-            }
-            return itemTypeDtos;
-        } catch (Exception e) {
-            logger.error("Caught Exception", e);
-            throw new EveDbException(e);
-        }
     }
 
     @Override
@@ -186,25 +161,6 @@ public class EveDbGatewayImpl implements EveDbGateway {
             return itemTypeDtos;
         } catch (Exception e) {
             logger.error("Caught Exception", e);
-            throw new EveDbException(e);
-        }
-    }
-
-    @Override
-    @Caching
-    public List<SchematicItemDto> getPlanetSchematicForTypeName(String typeName) throws EveDbException, InvalidItemTypeException {
-        try {
-            List<PlanetSchematicDto> planetSchematicDtos = client.getPlanetSchematicForTypeName(typeName);
-            List<SchematicItemDto> schematicItemDtos = new ArrayList<SchematicItemDto>();
-            for (PlanetSchematicDto planetSchematicDto : planetSchematicDtos) {
-                schematicItemDtos.add(mapper.map(planetSchematicDto, SchematicItemDto.class));
-            }
-            return schematicItemDtos;
-        } catch (BadRequestException e) {
-            logger.error("Caught BadRequestException", e.getMessage());
-            throw new InvalidItemTypeException(e.getMessage(), ErrorCode.INVALID_ITEM_TYPE);
-        } catch (RuntimeException e) {
-            logger.error("Caught RuntimeException", e);
             throw new EveDbException(e);
         }
     }

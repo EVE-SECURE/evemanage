@@ -47,9 +47,6 @@ public interface EveManageResources extends ClientBundle {
     @Source("images/nok.png")
     ImageResource nokIcon();
 
-    @Source("images/sortby.png")
-    ImageResource sortByIcon();
-
     @Source("images/lab.png")
     ImageResource lab();
 
@@ -63,49 +60,13 @@ public interface EveManageResources extends ClientBundle {
     ImageResource sharing();
 
     @Source("images/evecentral.png")
-    ImageResource eveCentralIcon();
+    ImageResource eveCentralIcon16();
 
     @Source("images/evemetrics.png")
-    ImageResource eveMetricsIcon();
+    ImageResource eveMetricsIcon16();
 
     @Source("images/blueprint.png")
-    ImageResource blueprintIcon();
-
-    @Source("images/blueprintnotused.png")
-    ImageResource blueprintNotUsedIcon();
-
-    @Source("images/schematic.png")
-    ImageResource schematicIcon();
-
-    @Source("images/schematicnotused.png")
-    ImageResource schematicNotUsedIcon();
-
-    @Source("images/skill.png")
-    ImageResource skill();
-
-    @Source("images/skillnotmaxed.png")
-    ImageResource skillNotMaxed();
-
-    @Source("images/level0.png")
-    ImageResource level0();
-
-    @Source("images/level1.png")
-    ImageResource level1();
-
-    @Source("images/level2.png")
-    ImageResource level2();
-
-    @Source("images/level3.png")
-    ImageResource level3();
-
-    @Source("images/level4.png")
-    ImageResource level4();
-
-    @Source("images/level5.png")
-    ImageResource level5();
-
-    @Source("images/decryptor.png")
-    ImageResource decryptorIcon();
+    ImageResource blueprintIcon16();
 
     @Source("images/dashboard/crystallineCarbonideArmorPlate.png")
     ImageResource dashboardCrystallineCarbonideArmorPlateImage();

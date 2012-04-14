@@ -9,7 +9,6 @@ public class CharacterSheetDto implements Serializable {
     private String corporationName;
     private Long corporationID;
     private List<String> corporationTitles;
-    private List<SkillLevelDto> skillLevels;
 
     public Long getCharacterID() {
         return characterID;
@@ -49,13 +48,5 @@ public class CharacterSheetDto implements Serializable {
 
     public void setCorporationTitles(List<String> corporationTitles) {
         this.corporationTitles = corporationTitles;
-    }
-
-    public List<SkillLevelDto> getSkillLevels() {
-        return skillLevels;
-    }
-
-    public void setSkillLevels(List<SkillLevelDto> skillLevels) {
-        this.skillLevels = skillLevels;
     }
 }

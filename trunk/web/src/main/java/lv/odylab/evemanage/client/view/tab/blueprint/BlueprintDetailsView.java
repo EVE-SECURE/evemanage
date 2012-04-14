@@ -1,18 +1,8 @@
 package lv.odylab.evemanage.client.view.tab.blueprint;
 
-import com.google.gwt.user.client.ui.DisclosurePanel;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import lv.odylab.evemanage.client.CcpJsMessages;
-import lv.odylab.evemanage.client.EveManageConstants;
-import lv.odylab.evemanage.client.EveManageMessages;
-import lv.odylab.evemanage.client.EveManageResources;
-import lv.odylab.evemanage.client.EveManageUrlMessages;
+import lv.odylab.evemanage.client.*;
 import lv.odylab.evemanage.client.presenter.tab.blueprint.BlueprintDetailsPresenter;
 import lv.odylab.evemanage.client.presenter.tab.blueprint.ComputableBlueprintDetails;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDetailsDto;
@@ -21,14 +11,7 @@ import lv.odylab.evemanage.client.rpc.dto.blueprint.MaterialDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.RequirementDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterInfoDto;
 import lv.odylab.evemanage.client.util.EveImageUrlProvider;
-import lv.odylab.evemanage.client.widget.AttachedCharacterLabel;
-import lv.odylab.evemanage.client.widget.DamagePerJobLabel;
-import lv.odylab.evemanage.client.widget.EveItemInfoLink;
-import lv.odylab.evemanage.client.widget.EveItemMarketDetailsLink;
-import lv.odylab.evemanage.client.widget.QuantityLabel;
-import lv.odylab.evemanage.client.widget.SharingLevelLabel;
-import lv.odylab.evemanage.client.widget.TimeLabel;
-import lv.odylab.evemanage.client.widget.WasteLabel;
+import lv.odylab.evemanage.client.widget.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -104,7 +87,7 @@ public class BlueprintDetailsView implements BlueprintDetailsPresenter.Display {
             BigDecimal damagePerJob = requirement.getDamagePerJob();
             if (BigDecimal.ONE.compareTo(damagePerJob) == 1 && BigDecimal.ZERO.compareTo(damagePerJob) != 0) {
                 DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
-                damagePerJobLabel.addStyleName(resources.css().damagePerJobLabel());
+                damagePerJobLabel.addStyleName(resources.css().damagePerJob());
                 quantityAndDamagePerJobPanel.add(damagePerJobLabel);
                 quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
             }
@@ -218,7 +201,7 @@ public class BlueprintDetailsView implements BlueprintDetailsPresenter.Display {
             BigDecimal damagePerJob = requirement.getDamagePerJob();
             if (BigDecimal.ONE.compareTo(damagePerJob) == 1 && BigDecimal.ZERO.compareTo(damagePerJob) != 0) {
                 DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
-                damagePerJobLabel.addStyleName(resources.css().damagePerJobLabel());
+                damagePerJobLabel.addStyleName(resources.css().damagePerJob());
                 quantityAndDamagePerJobPanel.add(damagePerJobLabel);
                 quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
             }

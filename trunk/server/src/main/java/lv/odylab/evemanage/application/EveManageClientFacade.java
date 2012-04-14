@@ -4,26 +4,18 @@ import lv.odylab.evemanage.application.exception.*;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.application.exception.validation.InvalidPriceException;
+import lv.odylab.evemanage.client.rpc.CalculationExpression;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDetailsDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.InventedBlueprintDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
-import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
-import lv.odylab.evemanage.shared.CalculationExpression;
-import lv.odylab.evemanage.shared.eve.PriceFetchOption;
-import lv.odylab.evemanage.shared.eve.Region;
-import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -37,25 +29,9 @@ public interface EveManageClientFacade {
 
     List<CharacterNameDto> getAvailableAttachedCharacterNames();
 
-    List<SharingLevel> getAvailableSharingLevels();
+    List<String> getAvailableSharingLevels();
 
     List<ApiKeyDto> getFullApiKeys();
-
-    List<SkillLevelDto> getSkillLevelsForCalculation();
-
-    void saveSkillLevelsForCalculation(List<SkillLevelDto> skillLevelsForCalculation);
-
-    List<SkillLevelDto> fetchCalculationSkillLevelsForMainCharacter() throws EveApiException;
-
-    List<RegionDto> getRegions();
-
-    RegionDto getPreferredRegion();
-
-    List<PriceFetchOption> getPriceFetchOptions();
-
-    PriceFetchOption getPreferredPriceFetchOption();
-
-    void savePriceFetchConfiguration(Region preferredRegion, String preferredPriceFetchOption);
 
     BlueprintDto createBlueprint(String blueprintTypeName, Integer meLevel, Integer peLevel) throws EveDbException, InvalidNameException;
 
@@ -65,19 +41,19 @@ public interface EveManageClientFacade {
 
     List<BlueprintDto> getAllianceBlueprints();
 
-    BlueprintDto saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, SharingLevel sharingLevel);
+    BlueprintDto saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, String sharingLevel);
 
     void deleteBlueprint(Long blueprintID);
 
     BlueprintDetailsDto getBlueprintDetails(Long blueprintTypeID) throws EveDbException;
 
-    void importBlueprintsFromXml(String importXml, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException;
+    void importBlueprintsFromXml(String importXml, Long attachedCharacterID, String sharingLevel) throws EveApiException;
 
-    void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, SharingLevel sharingLevel);
+    void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, String sharingLevel);
 
-    void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException;
+    void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException;
 
-    void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel) throws EveApiException;
+    void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, String sharingLevel) throws EveApiException;
 
     PriceSetDto getPriceSet(Long priceSetID);
 
@@ -95,15 +71,15 @@ public interface EveManageClientFacade {
 
     void renamePriceSet(Long priceSetID, String priceSetName) throws InvalidNameException;
 
-    void savePriceSet(Long priceSetID, List<PriceSetItemDto> priceSetItemDtos, SharingLevel sharingLevel, Long attachedCharacterID) throws InvalidPriceException;
+    void savePriceSet(Long priceSetID, List<PriceSetItemDto> priceSetItemDtos, String sharingLevel, Long attachedCharacterID) throws InvalidPriceException;
 
     List<PriceSetItemDto> fetchPricesFromEveCentral(List<PriceSetItemDto> priceSetItemDtos) throws InvalidPriceException, EveCentralApiException;
 
-    Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveCentralApiException;
+    Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs) throws EveCentralApiException;
 
     List<PriceSetItemDto> fetchPricesFromEveMetrics(List<PriceSetItemDto> priceSetItemDtos) throws InvalidPriceException, EveMetricsApiException;
 
-    Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveMetricsApiException;
+    Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs) throws EveMetricsApiException;
 
     void deletePriceSet(Long priceSetID);
 
@@ -131,17 +107,13 @@ public interface EveManageClientFacade {
 
     List<lv.odylab.evemanage.client.rpc.dto.ItemTypeDto> lookupBlueprintType(String query) throws EveDbException;
 
-    CalculationDto getNewCalculation(String blueprintName) throws EveDbException, InvalidNameException;
+    CalculationDto getQuickCalculation(String blueprintName) throws EveDbException, InvalidNameException;
 
     CalculationDto getQuickCalculationForExpression(CalculationExpression calculationExpression) throws EveDbException, InvalidNameException;
 
-    UsedBlueprintDto useBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException;
+    CalculationDto getQuickCalculation(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException;
 
-    UsedBlueprintDto useBlueprint(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException;
-
-    InventedBlueprintDto inventBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException;
-
-    UsedSchematicDto useSchematic(Long[] pathNodes, String schematicName) throws InvalidItemTypeException, EveDbException;
+    CalculationDto getQuickCalculation(Long[] pathNodes, Long blueprintProductTypeID) throws EveDbException, InvalidNameException, InvalidItemTypeException;
 
     String getEveManageVersion();
 

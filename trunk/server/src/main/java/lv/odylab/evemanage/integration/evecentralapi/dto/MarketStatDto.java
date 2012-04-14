@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 
 public class MarketStatDto implements Serializable {
     private Long typeID;
-    private BigDecimal medianBuySell;
-    private BigDecimal medianBuy;
-    private BigDecimal medianSell;
+    private BigDecimal median;
+    private BigDecimal buyMedian;
+    private BigDecimal sellMedian;
 
     public Long getTypeID() {
         return typeID;
@@ -17,27 +17,27 @@ public class MarketStatDto implements Serializable {
         this.typeID = typeID;
     }
 
-    public BigDecimal getMedianBuySell() {
-        return medianBuySell;
+    public BigDecimal getMedian() {
+        return median;
     }
 
-    public void setMedianBuySell(BigDecimal medianBuySell) {
-        this.medianBuySell = medianBuySell;
+    public void setMedian(BigDecimal median) {
+        this.median = median;
     }
 
-    public BigDecimal getMedianBuy() {
-        return medianBuy;
+    public BigDecimal getBuyMedian() {
+        return buyMedian;
     }
 
-    public void setMedianBuy(BigDecimal medianBuy) {
-        this.medianBuy = medianBuy;
+    public void setBuyMedian(BigDecimal buyMedian) {
+        this.buyMedian = buyMedian;
     }
 
-    public BigDecimal getMedianSell() {
-        return medianSell;
+    public BigDecimal getSellMedian() {
+        return sellMedian;
     }
 
-    public void setMedianSell(BigDecimal medianSell) {
-        this.medianSell = medianSell;
+    public void setSellMedian(BigDecimal sellMedian) {
+        this.sellMedian = sellMedian;
     }
 }
