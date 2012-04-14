@@ -6,6 +6,7 @@ import lv.odylab.evemanage.application.exception.EveCentralApiException;
 import lv.odylab.evemanage.application.exception.EveMetricsApiException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.client.rpc.ErrorCode;
+import lv.odylab.evemanage.domain.SharingLevel;
 import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.eve.CharacterDao;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
@@ -18,17 +19,9 @@ import lv.odylab.evemanage.integration.evecentralapi.EveCentralApiGateway;
 import lv.odylab.evemanage.integration.evecentralapi.dto.MarketStatDto;
 import lv.odylab.evemanage.integration.evemetricsapi.EveMetricsApiGateway;
 import lv.odylab.evemanage.integration.evemetricsapi.dto.ItemPriceDto;
-import lv.odylab.evemanage.shared.eve.PriceFetchOption;
-import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PriceSetManagementServiceImpl implements PriceSetManagementService {
     private final EveCentralApiGateway eveCentralApiGateway;
@@ -135,10 +128,10 @@ public class PriceSetManagementServiceImpl implements PriceSetManagementService 
     }
 
     @Override
-    public void savePriceSet(Long priceSetID, Set<PriceSetItem> priceSetItems, SharingLevel sharingLevel, Long attachedCharacterID, Key<User> userKey) {
+    public void savePriceSet(Long priceSetID, Set<PriceSetItem> priceSetItems, String sharingLevel, Long attachedCharacterID, Key<User> userKey) {
         PriceSet priceSet = priceSetDao.get(priceSetID, userKey);
         priceSet.setItems(priceSetItems);
-        priceSet.setSharingLevel(sharingLevel.toString());
+        priceSet.setSharingLevel(sharingLevel);
         if (attachedCharacterID != null) {
             Character character = characterDao.getByCharacterID(attachedCharacterID, userKey);
             CharacterInfo characterInfo = new CharacterInfo();
@@ -176,25 +169,17 @@ public class PriceSetManagementServiceImpl implements PriceSetManagementService 
         }
         for (PriceSetItem priceSetItem : priceSetItems) {
             MarketStatDto marketStatDto = typeIdToMarketStatMap.get(priceSetItem.getItemTypeID());
-            priceSetItem.setPrice(String.valueOf(marketStatDto.getMedianBuySell()));
+            priceSetItem.setPrice(String.valueOf(marketStatDto.getMedian()));
         }
         return priceSetItems;
     }
 
     @Override
-    public Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveCentralApiException {
-        List<MarketStatDto> marketStatDtos = eveCentralApiGateway.getMarketStatInRegion(regionID, typeIDs.toArray(new Long[0]));
+    public Map<Long, BigDecimal> fetchPricesFromEveCentralForTypeIDs(List<Long> typeIDs) throws EveCentralApiException {
+        List<MarketStatDto> marketStatDtos = eveCentralApiGateway.getMarketStatInRegion(10000002L, typeIDs.toArray(new Long[0]));
         Map<Long, BigDecimal> typeIdToPriceMap = new HashMap<Long, BigDecimal>();
         for (MarketStatDto marketStatDto : marketStatDtos) {
-            BigDecimal price = BigDecimal.ZERO;
-            if (PriceFetchOption.MEDIAN_BUY_SELL.equals(priceFetchOption)) {
-                price = marketStatDto.getMedianBuySell();
-            } else if (PriceFetchOption.MEDIAN_BUY.equals(priceFetchOption)) {
-                price = marketStatDto.getMedianBuy();
-            } else if (PriceFetchOption.MEDIAN_SELL.equals(priceFetchOption)) {
-                price = marketStatDto.getMedianSell();
-            }
-            typeIdToPriceMap.put(marketStatDto.getTypeID(), price);
+            typeIdToPriceMap.put(marketStatDto.getTypeID(), marketStatDto.getMedian());
         }
         return typeIdToPriceMap;
     }
@@ -212,25 +197,17 @@ public class PriceSetManagementServiceImpl implements PriceSetManagementService 
         }
         for (PriceSetItem priceSetItem : priceSetItems) {
             ItemPriceDto itemPriceDto = typeIdToPriceMap.get(priceSetItem.getItemTypeID());
-            priceSetItem.setPrice(String.valueOf(itemPriceDto.getMedianBuySell()));
+            priceSetItem.setPrice(String.valueOf(itemPriceDto.getMedian()));
         }
         return priceSetItems;
     }
 
     @Override
-    public Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs, Long regionID, PriceFetchOption priceFetchOption) throws EveMetricsApiException {
-        List<ItemPriceDto> itemPriceDtos = eveMetricsApiGateway.getSafeItemPrice(regionID, typeIDs.toArray(new Long[0]));
+    public Map<Long, BigDecimal> fetchPricesFromEveMetricsForTypeIDs(List<Long> typeIDs) throws EveMetricsApiException {
+        List<ItemPriceDto> itemPriceDtos = eveMetricsApiGateway.getSafeItemPrice(10000002L, typeIDs.toArray(new Long[0]));
         Map<Long, BigDecimal> typeIdToPriceMap = new HashMap<Long, BigDecimal>();
         for (ItemPriceDto itemPriceDto : itemPriceDtos) {
-            BigDecimal price = BigDecimal.ZERO;
-            if (PriceFetchOption.MEDIAN_BUY_SELL.equals(priceFetchOption)) {
-                price = itemPriceDto.getMedianBuySell();
-            } else if (PriceFetchOption.MEDIAN_BUY.equals(priceFetchOption)) {
-                price = itemPriceDto.getMedianBuy();
-            } else if (PriceFetchOption.MEDIAN_SELL.equals(priceFetchOption)) {
-                price = itemPriceDto.getMedianSell();
-            }
-            typeIdToPriceMap.put(itemPriceDto.getTypeID(), price);
+            typeIdToPriceMap.put(itemPriceDto.getTypeID(), itemPriceDto.getMedian());
         }
         return typeIdToPriceMap;
     }

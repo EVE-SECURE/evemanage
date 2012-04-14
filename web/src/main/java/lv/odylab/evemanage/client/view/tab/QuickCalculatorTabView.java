@@ -1,56 +1,34 @@
 package lv.odylab.evemanage.client.view.tab;
 
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import lv.odylab.evemanage.client.EveManageMessages;
-import lv.odylab.evemanage.client.EveManageResources;
+import lv.odylab.evemanage.client.*;
+import lv.odylab.evemanage.client.oracle.BlueprintTypeSuggestOracle;
 import lv.odylab.evemanage.client.presenter.tab.QuickCalculatorTabPresenter;
-import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTree;
-import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTreeNode;
-import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTree;
-import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNode;
-import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationProcessor;
-import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationProcessorResult;
-import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableBlueprintInformation;
-import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableBlueprintItem;
-import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableCalculationItem;
-import lv.odylab.evemanage.client.presenter.tab.quickcalculator.ComputableCalculationPriceSetItem;
-import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableBlueprintInformation;
-import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableBlueprintItem;
-import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationItem;
-import lv.odylab.evemanage.client.presenter.tab.quickcalculator.EditableCalculationPriceSetItem;
-import lv.odylab.evemanage.client.rpc.dto.ItemTypeDto;
+import lv.odylab.evemanage.client.presenter.tab.calculator.*;
+import lv.odylab.evemanage.client.rpc.CalculationExpression;
+import lv.odylab.evemanage.client.rpc.EveCalculator;
+import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceItemDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.InventedBlueprintDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
-import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
-import lv.odylab.evemanage.client.view.tab.quickcalculator.BlueprintInformationSection;
-import lv.odylab.evemanage.client.view.tab.quickcalculator.BlueprintItemTreeSection;
-import lv.odylab.evemanage.client.view.tab.quickcalculator.CalculationItemTreeSection;
-import lv.odylab.evemanage.client.view.tab.quickcalculator.DirectLinkSection;
-import lv.odylab.evemanage.client.view.tab.quickcalculator.PricesSection;
-import lv.odylab.evemanage.client.view.tab.quickcalculator.SkillsForCalculationSection;
-import lv.odylab.evemanage.client.widget.OpaqueLoadableBlueprintImage;
-import lv.odylab.evemanage.client.widget.PriceTextBox;
-import lv.odylab.evemanage.shared.EveCalculator;
+import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceSetItemDto;
+import lv.odylab.evemanage.client.util.EveImageUrlProvider;
+import lv.odylab.evemanage.client.widget.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Display {
-    private CalculationProcessor calculationProcessor;
+    private EveManageConstants constants;
+    private EveManageResources resources;
+    private EveManageMessages messages;
+    private EveManageUrlMessages urlMessages;
+    private CcpJsMessages ccpJsMessages;
+    private EveImageUrlProvider imageUrlProvider;
+    private PricingProcessor pricingProcessor;
     private EveCalculator calculator;
 
     private HorizontalPanel headerPanel;
@@ -61,23 +39,58 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     private Label errorMessageLabel;
     private Image errorImage;
 
-    private QuickCalculatorTabPresenter.BlueprintInformationSectionDisplay blueprintInformationSection;
-    private QuickCalculatorTabPresenter.CalculationItemTreeSectionDisplay calculationItemTreeSection;
-    private QuickCalculatorTabPresenter.BlueprintItemTreeSectionDisplay blueprintItemTreeSection;
-    private QuickCalculatorTabPresenter.PricesSectionDisplay pricesSection;
-    private QuickCalculatorTabPresenter.SkillsForCalculationSectionDisplay skillsForCalculationSection;
-    private QuickCalculatorTabPresenter.DirectLinkSectionDisplay directLinkSection;
+    private FlexTable enterBlueprintTable;
+    private Label enterBlueprintNameLabel;
+    private SuggestBox enterBlueprintSuggestBox;
+    private Button setButton;
+
+    private FlexTable blueprintInfoTable;
+    private FlexTable rootCalculationItemTable;
+    private FlexTable.FlexCellFormatter rootCalculationItemTableFlexFormatter;
+    private HTMLTable.RowFormatter rootCalculationItemTableRowFormatter;
+
+    private Label blueprintCostLabel;
+    private FlexTable blueprintCostItemTable;
+
+    private Label priceSetLabel;
+    private FlexTable priceSetItemTable;
+
+    private FlexTable applyAndFetchPricesTable;
+    private Button applyButton;
+    private Button fetchEveCentralPricesButton;
+    private Button fetchEveMetricsPricesButton;
+    private Label notePricesAreTakenFrom;
+    private Label noteQuickCalculatorIsIntended;
+
+    private FlexTable directLinkTable;
+    private VerticalPanel directLinkPanel;
+    private Button createDirectLinkButton;
+
+    private CalculationDto calculation;
+    private CalculationTree calculationTree;
+
+    private EditableCalculation editableCalculation;
+    private ComputableCalculation computableCalculation;
+    private Map<String, EditableCalculationItem> pathNodesStringToEditableCalculationItemMap;
+    private Map<String, ComputableCalculationItem> pathNodesStringToComputableCalculationItemMap;
+    private Map<String, CalculationDto> pathNodesStringToUsedCalculationMap;
+    private Map<Long, EditableCalculationPriceSetItem> typeIdToEditableCalculationPriceSetItemMap;
+    private Map<Long, ComputableCalculationPriceSetItem> typeIdToComputableCalculationPriceSetItemMap;
+    private Map<Long, CalculationPriceSetItemDto> existingTypeIdToCalculationPriceSetItemMap;
+    private Map<CalculationDto, Integer> calculationToBlueprintCostRowMap;
+
+    private List<HandlerRegistration> handlerRegistrations;
 
     @Inject
-    public QuickCalculatorTabView(CalculationProcessor calculationProcessor, EveCalculator calculator, EveManageResources resources, EveManageMessages messages, BlueprintInformationSection blueprintInformationSection, CalculationItemTreeSection calculationItemTreeSection, BlueprintItemTreeSection blueprintItemTreeSection, PricesSection pricesSection, SkillsForCalculationSection skillsForCalculationSection, DirectLinkSection directLinkSection) {
-        this.calculationProcessor = calculationProcessor;
+    public QuickCalculatorTabView(EveManageConstants constants, EveManageResources resources, EveManageMessages messages, EveManageUrlMessages urlMessages, CcpJsMessages ccpJsMessages, EveImageUrlProvider imageUrlProvider, PricingProcessor pricingProcessor, EveCalculator calculator, BlueprintTypeSuggestOracle blueprintTypeSuggestOracle) {
+        this.constants = constants;
+        this.resources = resources;
+        this.messages = messages;
+        this.urlMessages = urlMessages;
+        this.ccpJsMessages = ccpJsMessages;
+        this.imageUrlProvider = imageUrlProvider;
+        this.pricingProcessor = pricingProcessor;
         this.calculator = calculator;
-        this.blueprintInformationSection = blueprintInformationSection;
-        this.calculationItemTreeSection = calculationItemTreeSection;
-        this.blueprintItemTreeSection = blueprintItemTreeSection;
-        this.pricesSection = pricesSection;
-        this.skillsForCalculationSection = skillsForCalculationSection;
-        this.directLinkSection = directLinkSection;
 
         headerPanel = new HorizontalPanel();
         headerPanel.addStyleName(resources.css().tabHeaderPanel());
@@ -92,6 +105,57 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         errorMessageLabel.addStyleName(resources.css().errorLabel());
         errorImage = new Image(resources.errorIcon());
         errorImage.setTitle(messages.error());
+
+        enterBlueprintTable = new FlexTable();
+        enterBlueprintSuggestBox = new SuggestBox(blueprintTypeSuggestOracle);
+        enterBlueprintSuggestBox.addStyleName(resources.css().blueprintNameInput());
+        enterBlueprintSuggestBox.getTextBox().setEnabled(false);
+        enterBlueprintNameLabel = new Label(messages.enterBlueprintName() + ":");
+        setButton = new Button(messages.set());
+        setButton.setEnabled(false);
+
+        blueprintInfoTable = new FlexTable();
+        rootCalculationItemTable = new FlexTable();
+        rootCalculationItemTableFlexFormatter = rootCalculationItemTable.getFlexCellFormatter();
+        rootCalculationItemTableRowFormatter = rootCalculationItemTable.getRowFormatter();
+
+        blueprintCostLabel = new Label(messages.blueprintCost());
+        blueprintCostLabel.addStyleName(resources.css().tabHeadingText());
+        blueprintCostItemTable = new FlexTable();
+
+        priceSetLabel = new Label(messages.prices());
+        priceSetLabel.addStyleName(resources.css().tabHeadingText());
+        priceSetItemTable = new FlexTable();
+
+        applyAndFetchPricesTable = new FlexTable();
+        applyButton = new Button(messages.apply());
+        applyButton.setEnabled(false);
+        fetchEveCentralPricesButton = new Button(messages.fetchPricesFromEveCentral());
+        fetchEveCentralPricesButton.setEnabled(false);
+        fetchEveMetricsPricesButton = new Button(messages.orEveMetrics());
+        fetchEveMetricsPricesButton.setEnabled(false);
+        notePricesAreTakenFrom = new Label(messages.notePricesAreTakenFrom() + ".");
+        notePricesAreTakenFrom.addStyleName(resources.css().noteLabel());
+        noteQuickCalculatorIsIntended = new Label(messages.noteQuickCalculatorIsIntended() + ".");
+        noteQuickCalculatorIsIntended.addStyleName(resources.css().noteLabel());
+
+        directLinkTable = new FlexTable();
+        directLinkPanel = new VerticalPanel();
+        createDirectLinkButton = new Button(messages.createDirectLink());
+        createDirectLinkButton.setEnabled(false);
+
+        calculationTree = new CalculationTree();
+        computableCalculation = new ComputableCalculation();
+        editableCalculation = new EditableCalculation();
+        pathNodesStringToEditableCalculationItemMap = new HashMap<String, EditableCalculationItem>();
+        pathNodesStringToComputableCalculationItemMap = new HashMap<String, ComputableCalculationItem>();
+        pathNodesStringToUsedCalculationMap = new HashMap<String, CalculationDto>();
+        typeIdToEditableCalculationPriceSetItemMap = new HashMap<Long, EditableCalculationPriceSetItem>();
+        typeIdToComputableCalculationPriceSetItemMap = new HashMap<Long, ComputableCalculationPriceSetItem>();
+        existingTypeIdToCalculationPriceSetItemMap = new TreeMap<Long, CalculationPriceSetItemDto>();
+        calculationToBlueprintCostRowMap = new HashMap<CalculationDto, Integer>();
+
+        handlerRegistrations = new ArrayList<HandlerRegistration>();
     }
 
     @Override
@@ -107,12 +171,32 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         errorMessageTable.setWidget(0, 1, errorMessageLabel);
         container.add(errorMessageTable);
 
-        blueprintInformationSection.attach(container);
-        calculationItemTreeSection.attach(container);
-        blueprintItemTreeSection.attach(container);
-        pricesSection.attach(container);
-        skillsForCalculationSection.attach(container);
-        directLinkSection.attach(container);
+        enterBlueprintTable.setWidget(0, 0, enterBlueprintNameLabel);
+        enterBlueprintTable.setWidget(0, 1, enterBlueprintSuggestBox);
+        enterBlueprintTable.setWidget(0, 2, setButton);
+
+        container.add(enterBlueprintTable);
+
+        container.add(blueprintInfoTable);
+        container.add(rootCalculationItemTable);
+
+        //container.add(blueprintCostLabel);
+        //container.add(blueprintCostItemTable);
+
+        container.add(priceSetLabel);
+        container.add(priceSetItemTable);
+
+        applyAndFetchPricesTable.setWidget(0, 0, applyButton);
+        applyAndFetchPricesTable.setWidget(0, 1, fetchEveCentralPricesButton);
+        applyAndFetchPricesTable.setWidget(0, 2, fetchEveMetricsPricesButton);
+        container.add(applyAndFetchPricesTable);
+        container.add(notePricesAreTakenFrom);
+        container.add(noteQuickCalculatorIsIntended);
+
+        directLinkTable.setWidget(0, 0, createDirectLinkButton);
+        directLinkTable.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
+        directLinkTable.setWidget(0, 1, directLinkPanel);
+        container.add(directLinkTable);
     }
 
     @Override
@@ -131,197 +215,290 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
     }
 
     @Override
+    public SuggestBox getBlueprintSuggestBox() {
+        return enterBlueprintSuggestBox;
+    }
+
+    @Override
+    public Button getSetButton() {
+        return setButton;
+    }
+
+    @Override
+    public Button getApplyButton() {
+        return applyButton;
+    }
+
+    @Override
+    public Button getFetchEveCentralPricesButton() {
+        return fetchEveCentralPricesButton;
+    }
+
+    @Override
+    public Button getFetchEveMetricsPricesButton() {
+        return fetchEveMetricsPricesButton;
+    }
+
+    @Override
+    public Button getCreateDirectLinkButton() {
+        return createDirectLinkButton;
+    }
+
+    @Override
+    public void createDirectLink() {
+        String blueprintTypeName = enterBlueprintSuggestBox.getText();
+        String meLevel = editableCalculation.getMeTextBox().getText();
+        String peLevel = editableCalculation.getPeTextBox().getText();
+        String quantity = editableCalculation.getQuantityTextBox().getText();
+        StringBuilder directUrlNameStringBuilder = new StringBuilder(blueprintTypeName);
+        directUrlNameStringBuilder.append(", ME:").append(meLevel).append(", PE:").append(peLevel).append(", Q:").append(quantity);
+
+        CalculationExpression calculationExpression = new CalculationExpression();
+        calculationExpression.setBlueprintTypeName(blueprintTypeName);
+        calculationExpression.setMeLevel(Integer.valueOf(meLevel));
+        calculationExpression.setPeLevel(Integer.valueOf(peLevel));
+        calculationExpression.setQuantity(Long.valueOf(quantity));
+        calculationTree.populateCalculationExpressionWithBlueprintInformation(calculationExpression);
+        calculationTree.populateCalculationExpressionWithPriceInformation(calculationExpression);
+        String url = "#" + constants.quickCalculatorToken() + calculationExpression.getExpression();
+        directLinkPanel.insert(new Anchor(directUrlNameStringBuilder.toString(), url), 0);
+    }
+
+    @Override
+    public void showBlueprintDetails(EditableCalculationItem editableCalculationItem) {
+        FlexTable calculationItemTable = editableCalculationItem.getCalculationItemTable();
+        Integer index = editableCalculationItem.getIndex();
+        if (calculationItemTable == null) {
+            rootCalculationItemTableFlexFormatter.setVisible(index, 9, true);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 10, true);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 11, true);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 12, true);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 13, true);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 14, true);
+        } else {
+            FlexTable.FlexCellFormatter calculationItemTableFlexCellFormatter = calculationItemTable.getFlexCellFormatter();
+            calculationItemTableFlexCellFormatter.setVisible(index, 13, true);
+            calculationItemTableFlexCellFormatter.setVisible(index, 14, true);
+            calculationItemTableFlexCellFormatter.setVisible(index, 15, true);
+            calculationItemTableFlexCellFormatter.setVisible(index, 16, true);
+            calculationItemTableFlexCellFormatter.setVisible(index, 17, true);
+            calculationItemTableFlexCellFormatter.setVisible(index, 18, true);
+        }
+    }
+
+    @Override
+    public void hideBlueprintDetails(EditableCalculationItem editableCalculationItem) {
+        FlexTable calculationItemTable = editableCalculationItem.getCalculationItemTable();
+        Integer index = editableCalculationItem.getIndex();
+        if (calculationItemTable == null) {
+            rootCalculationItemTableFlexFormatter.setVisible(index, 9, false);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 10, false);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 11, false);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 12, false);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 13, false);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 14, false);
+        } else {
+            FlexTable.FlexCellFormatter calculationItemTableFlexCellFormatter = calculationItemTable.getFlexCellFormatter();
+            calculationItemTableFlexCellFormatter.setVisible(index, 13, false);
+            calculationItemTableFlexCellFormatter.setVisible(index, 14, false);
+            calculationItemTableFlexCellFormatter.setVisible(index, 15, false);
+            calculationItemTableFlexCellFormatter.setVisible(index, 16, false);
+            calculationItemTableFlexCellFormatter.setVisible(index, 17, false);
+            calculationItemTableFlexCellFormatter.setVisible(index, 18, false);
+        }
+    }
+
+    @Override
+    public void hideDetailsTable(EditableCalculationItem editableCalculationItem) {
+        FlexTable calculationItemTable = editableCalculationItem.getCalculationItemTable();
+        Integer index = editableCalculationItem.getIndex();
+        if (calculationItemTable == null) {
+            rootCalculationItemTableRowFormatter.setVisible(index + 1, false);
+        } else {
+            calculationItemTable.getRowFormatter().setVisible(index + 1, false);
+        }
+    }
+
+    @Override
+    public EditableCalculation getEditableCalculation() {
+        return editableCalculation;
+    }
+
+    @Override
+    public Map<String, EditableCalculationItem> getPathNodesStringToEditableCalculationItemMap() {
+        return pathNodesStringToEditableCalculationItemMap;
+    }
+
+    @Override
+    public Map<String, ComputableCalculationItem> getPathNodesStringToComputableCalculationItemMap() {
+        return pathNodesStringToComputableCalculationItemMap;
+    }
+
+    @Override
+    public Map<String, CalculationDto> getPathNodesStringToUsedCalculationMap() {
+        return pathNodesStringToUsedCalculationMap;
+    }
+
+    @Override
+    public Map<Long, EditableCalculationPriceSetItem> getTypeIdToEditableCalculationPriceSetItemMap() {
+        return typeIdToEditableCalculationPriceSetItemMap;
+    }
+
+    @Override
+    public Map<Long, CalculationPriceSetItemDto> getExistingTypeIdToCalculationPriceSetItemMap() {
+        return existingTypeIdToCalculationPriceSetItemMap;
+    }
+
+    @Override
     public void setNewCalculation(CalculationDto calculation) {
-        blueprintInformationSection.cleanBlueprintInformation();
-        calculationItemTreeSection.cleanCalculationItemTree();
-        blueprintItemTreeSection.cleanBlueprintItemTree();
-        Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap = pricesSection.getTypeIdToCalculationPriceSetItemMap();
-        pricesSection.cleanPricesSection();
-        skillsForCalculationSection.cleanSkillsForCalculation();
+        this.calculation = calculation;
+        Map<Long, CalculationPriceSetItemDto> existingCalculationPriceSetItemDtoMap = createExistingTypeIdToCalculationPriceSetItemMap();
+        blueprintInfoTable.removeAllRows();
+        rootCalculationItemTable.removeAllRows();
+        //blueprintCostItemTable.removeAllRows();
+        priceSetItemTable.removeAllRows();
+        pathNodesStringToEditableCalculationItemMap.clear();
+        pathNodesStringToComputableCalculationItemMap.clear();
+        pathNodesStringToUsedCalculationMap.clear();
+        typeIdToEditableCalculationPriceSetItemMap.clear();
+        typeIdToComputableCalculationPriceSetItemMap.clear();
+        calculationTree.removeAllNodes();
+        calculationTree.build(calculation);
 
-        CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
-        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
-        calculationItemTree.build(calculation);
-        blueprintItemTree.build(calculation);
+        computableCalculation.setCalculation(calculation);
 
-        CalculationProcessorResult calculationProcessorResult = calculationProcessor.process(calculation.getQuantity(), calculationItemTree, blueprintItemTree, existingTypeIdToCalculationPriceSetItemMap, createTypeIdToSkillLevelMap(calculation.getSkillLevels()));
-        blueprintInformationSection.drawBlueprintInformation(calculation);
-        calculationItemTreeSection.drawCalculationItemTree(calculationItemTree);
-        blueprintItemTreeSection.drawBlueprintItemTree(blueprintItemTree);
-        pricesSection.drawCalculationPriceSetItems(calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap().values());
-        skillsForCalculationSection.drawSkillsForCalculation(calculation.getSkillLevels());
-        recalculate(existingTypeIdToCalculationPriceSetItemMap);
+        PricingProcessorResult pricingProcessorResult = pricingProcessor.process(1L, calculationTree, existingCalculationPriceSetItemDtoMap);
+        Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap = pricingProcessorResult.getTypeIdToCalculationPriceSetItemMap();
+        drawCalculationTree();
+        //drawBlueprintCostItem(calculation);
+        drawCalculationPriceSetItems(new ArrayList<CalculationPriceSetItemDto>(typeIdToCalculationPriceSetItemMap.values()));
+        recalculate();
     }
 
     @Override
-    public List<String> useBlueprint(Long[] pathNodes, UsedBlueprintDto usedBlueprint) {
-        Map<Long[], UsedBlueprintDto> pathNodesToUsedBlueprintMap = new HashMap<Long[], UsedBlueprintDto>();
-        pathNodesToUsedBlueprintMap.put(pathNodes, usedBlueprint);
-        List<String> pathNodesStringsWithBlueprintOrSchematic = calculationItemTreeSection.addCalculationItemTreeNodes(pathNodesToUsedBlueprintMap);
-        blueprintItemTreeSection.addBlueprintItemTreeNodes(pathNodesToUsedBlueprintMap);
-        redrawPricesAndRecalculate();
-        return pathNodesStringsWithBlueprintOrSchematic;
+    public List<String> addCalculationTreeNode(Long[] pathNodes, CalculationDto calculation) {
+        Map<Long[], CalculationDto> pathNodesToCalculationMap = new HashMap<Long[], CalculationDto>();
+        pathNodesToCalculationMap.put(pathNodes, calculation);
+        drawBlueprintCostItem(calculation);
+        return addCalculationTreeNodes(pathNodesToCalculationMap);
     }
 
     @Override
-    public void stopUsingBlueprint(String pathNodesString) {
-        ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-        List<Long[]> pathNodesList = new ArrayList<Long[]>();
-        pathNodesList.add(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes());
-        calculationItemTreeSection.excludeCalculationItemTreeNodesFromCalculation(pathNodesList);
-        blueprintItemTreeSection.excludeBlueprintItemTreeNodesFromCalculation(pathNodesList);
-        EditableCalculationItem editableCalculationItem = calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
-        calculationItemTreeSection.hideCalculationItemDetails(editableCalculationItem);
-        calculationItemTreeSection.hideDetailsTable(editableCalculationItem);
-        EditableBlueprintItem editableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().get(pathNodesString);
-        blueprintItemTreeSection.hideBlueprintItemDetails(editableBlueprintItem);
-        redrawPricesAndRecalculate();
-    }
+    public List<String> addCalculationTreeNodes(Map<Long[], CalculationDto> pathNodesToCalculationMap) {
+        List<String> pathNodesStringsWithBlueprint = new ArrayList<String>();
+        for (Map.Entry<Long[], CalculationDto> mapEntry : pathNodesToCalculationMap.entrySet()) {
+            Long[] pathNodes = mapEntry.getKey();
+            CalculationDto calculation = mapEntry.getValue();
+            String pathNodesString = PathExpression.createPathNodesStringFromPathNodes(pathNodes);
 
-    @Override
-    public void reuseBlueprint(String pathNodesString) {
-        ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-        List<Long[]> pathNodesList = new ArrayList<Long[]>();
-        pathNodesList.add(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes());
-        calculationItemTreeSection.includeCalculationItemTreeNodesInCalculation(pathNodesList);
-        blueprintItemTreeSection.includeBlueprintItemTreeNodesInCalculation(pathNodesList);
-        EditableCalculationItem editableCalculationItem = calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
-        calculationItemTreeSection.showCalculationItemDetails(editableCalculationItem);
-        EditableBlueprintItem editableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().get(pathNodesString);
-        blueprintItemTreeSection.showBlueprintItemDetails(editableBlueprintItem);
-        redrawPricesAndRecalculate();
-    }
-
-    @Override
-    public List<String> useAllBlueprints(Map<Long[], UsedBlueprintDto> pathNodesToUsedBlueprintMap) {
-        for (Map.Entry<String, EditableCalculationItem> mapEntry : calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().entrySet()) {
-            OpaqueLoadableBlueprintImage blueprintImage = mapEntry.getValue().getBlueprintImage();
-            if (blueprintImage != null && !calculationItemTreeSection.getPathNodeStringsWithUsedBlueprint().contains(mapEntry.getKey())) {
-                blueprintImage.stopLoading();
-                blueprintImage.removeOpacity();
+            pathNodesStringToUsedCalculationMap.put(pathNodesString, calculation);
+            EditableCalculationItem editableCalculationItem = pathNodesStringToEditableCalculationItemMap.get(pathNodesString);
+            String meString = String.valueOf(calculation.getMaterialLevel());
+            String peString = String.valueOf(calculation.getProductivityLevel());
+            editableCalculationItem.getMeLabel().setText(meString);
+            editableCalculationItem.getPeLabel().setText(peString);
+            editableCalculationItem.getMeTextBox().setText(meString);
+            editableCalculationItem.getPeTextBox().setText(peString);
+            FlexTable table = editableCalculationItem.getCalculationItemDetailsTable();
+            for (CalculationItemDto calculationItem : calculation.getItems()) {
+                calculationTree.createNode(calculationItem);
+                if (hasBlueprint(calculationItem.getItemCategoryID(), calculationItem.getItemTypeID())) {
+                    pathNodesStringsWithBlueprint.add(calculationItem.getPathExpression().getPathNodesString());
+                }
             }
-        }
-        List<String> pathNodesStringsWithBlueprintOrSchematic = calculationItemTreeSection.addCalculationItemTreeNodes(pathNodesToUsedBlueprintMap);
-        blueprintItemTreeSection.addBlueprintItemTreeNodes(pathNodesToUsedBlueprintMap);
-        redrawPricesAndRecalculate();
-        return pathNodesStringsWithBlueprintOrSchematic;
-    }
-
-    @Override
-    public void stopUsingAllBlueprints() {
-        List<Long[]> pathNodesList = new ArrayList<Long[]>();
-        for (Map.Entry<String, EditableCalculationItem> mapEntry : calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().entrySet()) {
-            String pathNodesString = mapEntry.getKey();
-            EditableCalculationItem editableCalculationItem = mapEntry.getValue();
-            EditableBlueprintItem editableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().get(pathNodesString);
-            ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-            OpaqueLoadableBlueprintImage blueprintImage = editableCalculationItem.getBlueprintImage();
-            if (blueprintImage != null && !blueprintImage.hasOpacity()) {
-                blueprintImage.setOpacity();
-                calculationItemTreeSection.hideCalculationItemDetails(editableCalculationItem);
-                calculationItemTreeSection.hideDetailsTable(editableCalculationItem);
-                blueprintItemTreeSection.hideBlueprintItemDetails(editableBlueprintItem);
-                pathNodesList.add(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes());
+            CalculationTreeNode node = calculationTree.getNodeByPathNodes(pathNodes);
+            for (CalculationTreeNode calculationTreeNode : node.getNodeMap().values()) {
+                //for (CalculationTreeNode treeNode : calculationTreeNode.getNodeMap().values()) {
+                calculationTreeNode.changeMePe(calculation.getMaterialLevel(), calculation.getProductivityLevel());
+                //}
+                drawCalculationItem(table, calculationTreeNode);
             }
+            showBlueprintDetails(editableCalculationItem);
         }
-        calculationItemTreeSection.excludeCalculationItemTreeNodesFromCalculation(pathNodesList);
-        blueprintItemTreeSection.excludeBlueprintItemTreeNodesFromCalculation(pathNodesList);
-        redrawPricesAndRecalculate();
+
+        PricingProcessorResult pricingProcessorResult = pricingProcessor.process(1L, calculationTree, createExistingTypeIdToCalculationPriceSetItemMap());
+        Map<Long, CalculationPriceSetItemDto> typeIdToCalculationPriceSetItemMap = pricingProcessorResult.getTypeIdToCalculationPriceSetItemMap();
+        priceSetItemTable.removeAllRows();
+        drawCalculationPriceSetItems(new ArrayList<CalculationPriceSetItemDto>(typeIdToCalculationPriceSetItemMap.values()));
+        recalculate();
+
+        return pathNodesStringsWithBlueprint;
     }
 
     @Override
-    public void reuseAllBlueprints() {
-        List<Long[]> pathNodesList = new ArrayList<Long[]>();
-        for (Map.Entry<String, EditableCalculationItem> mapEntry : calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().entrySet()) {
-            String pathNodesString = mapEntry.getKey();
-            EditableCalculationItem editableCalculationItem = mapEntry.getValue();
-            EditableBlueprintItem editableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().get(pathNodesString);
-            ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-            OpaqueLoadableBlueprintImage blueprintImage = editableCalculationItem.getBlueprintImage();
-            if (blueprintImage != null && blueprintImage.hasOpacity()) {
-                blueprintImage.removeOpacity();
-                calculationItemTreeSection.showCalculationItemDetails(editableCalculationItem);
-                blueprintItemTreeSection.showBlueprintItemDetails(editableBlueprintItem);
-                pathNodesList.add(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes());
-            }
+    public void excludeCalculationTreeNodeFromCalculation(Long[] pathNodes) {
+        CalculationTreeNode calculationTreeNode = calculationTree.getNodeByPathNodes(pathNodes);
+        calculationTreeNode.setExcludeChildNodesFromCalculation(true);
+        PricingProcessorResult pricingProcessorResult = recalculate(createExistingTypeIdToCalculationPriceSetItemMap());
+        priceSetItemTable.removeAllRows();
+        drawCalculationPriceSetItems(new ArrayList<CalculationPriceSetItemDto>(pricingProcessorResult.getTypeIdToCalculationPriceSetItemMap().values()));
+    }
+
+    @Override
+    public void excludeCalculationTreeNodesFromCalculation(List<Long[]> pathNodesList) {
+        for (Long[] pathNodes : pathNodesList) {
+            CalculationTreeNode calculationTreeNode = calculationTree.getNodeByPathNodes(pathNodes);
+            calculationTreeNode.setExcludeChildNodesFromCalculation(true);
         }
-        calculationItemTreeSection.includeCalculationItemTreeNodesInCalculation(pathNodesList);
-        blueprintItemTreeSection.includeBlueprintItemTreeNodesInCalculation(pathNodesList);
-        redrawPricesAndRecalculate();
+        PricingProcessorResult pricingProcessorResult = recalculate(createExistingTypeIdToCalculationPriceSetItemMap());
+        priceSetItemTable.removeAllRows();
+        drawCalculationPriceSetItems(new ArrayList<CalculationPriceSetItemDto>(pricingProcessorResult.getTypeIdToCalculationPriceSetItemMap().values()));
     }
 
     @Override
-    public void inventBlueprint(Long[] pathNodes, InventedBlueprintDto inventedBlueprint) {
-        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
-        blueprintItemTree.addInventedBlueprintNodes(inventedBlueprint.getBlueprintItems());
-        BlueprintItemTreeNode blueprintItemTreeNode = blueprintItemTree.getNodeByPathNodes(pathNodes);
-        String pathNodesString = blueprintItemTreeNode.getBlueprintItem().getPathExpression().getPathNodesString();
-        EditableBlueprintItem editableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().get(pathNodesString);
-        editableBlueprintItem.getInventionTable().setWidget(0, 0, editableBlueprintItem.getUseDecryptorButton());
-        editableBlueprintItem.getBlueprintUseButton().setEnabled(true);
-        blueprintItemTreeSection.drawDecryptors(editableBlueprintItem.getDecryptorTable(), inventedBlueprint.getDecryptors());
-        List<ItemTypeDto> baseItems = inventedBlueprint.getBaseItems();
-        if (baseItems.size() > 0) {
-            editableBlueprintItem.getInventionTable().setWidget(0, 1, editableBlueprintItem.getUseBaseItemButton());
-            blueprintItemTreeSection.drawBaseItems(editableBlueprintItem.getBaseItemTable(), baseItems);
+    public void includeCalculationTreeNodeInCalculation(Long[] pathNodes) {
+        CalculationTreeNode calculationTreeNode = calculationTree.getNodeByPathNodes(pathNodes);
+        calculationTreeNode.setExcludeChildNodesFromCalculation(false);
+        PricingProcessorResult pricingProcessorResult = recalculate();
+        priceSetItemTable.removeAllRows();
+        drawCalculationPriceSetItems(new ArrayList<CalculationPriceSetItemDto>(pricingProcessorResult.getTypeIdToCalculationPriceSetItemMap().values()));
+    }
+
+    @Override
+    public void includeCalculationTreeNodesInCalculation(List<Long[]> pathNodesList) {
+        for (Long[] pathNodes : pathNodesList) {
+            CalculationTreeNode calculationTreeNode = calculationTree.getNodeByPathNodes(pathNodes);
+            calculationTreeNode.setExcludeChildNodesFromCalculation(false);
         }
-        blueprintItemTreeSection.drawChildBlueprintItems(blueprintItemTreeNode);
-        skillsForCalculationSection.drawSkillsForCalculation(inventedBlueprint.getSkillLevels());
-        redrawPricesAndRecalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
+        PricingProcessorResult pricingProcessorResult = recalculate(createExistingTypeIdToCalculationPriceSetItemMap());
+        priceSetItemTable.removeAllRows();
+        drawCalculationPriceSetItems(new ArrayList<CalculationPriceSetItemDto>(pricingProcessorResult.getTypeIdToCalculationPriceSetItemMap().values()));
     }
 
     @Override
-    public List<String> useSchematic(Long[] pathNodes, UsedSchematicDto schematic) {
-        Map<Long[], UsedSchematicDto> pathNodesToSchematicMap = new HashMap<Long[], UsedSchematicDto>();
-        pathNodesToSchematicMap.put(pathNodes, schematic);
-        List<String> pathNodesStringsWithSchematic = calculationItemTreeSection.addCalculationItemTreeNodesForSchematic(pathNodesToSchematicMap);
-        redrawPricesAndRecalculate();
-        return pathNodesStringsWithSchematic;
+    public void changeMePeQuantity(Integer meLevel, Integer peLevel, Long quantity) {
+        editableCalculation.getMeLabel().setText(String.valueOf(meLevel));
+        editableCalculation.getPeLabel().setText(String.valueOf(peLevel));
+        editableCalculation.getQuantityLabel().setText(String.valueOf(quantity));
+        editableCalculation.getMeTextBox().setText(String.valueOf(meLevel));
+        editableCalculation.getPeTextBox().setText(String.valueOf(peLevel));
+        editableCalculation.getQuantityTextBox().setText(String.valueOf(quantity));
+        calculationTree.changeRootNodesMePeQuantity(meLevel, peLevel, quantity);
+        computableCalculation.getCalculation().setMaterialLevel(meLevel);
+        computableCalculation.getCalculation().setProductivityLevel(peLevel);
+        recalculate();
     }
 
     @Override
-    public void stopUsingSchematics(String pathNodesString) {
-        ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-        List<Long[]> pathNodesList = new ArrayList<Long[]>();
-        pathNodesList.add(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes());
-        calculationItemTreeSection.excludeCalculationItemTreeNodesFromCalculation(pathNodesList);
-        EditableCalculationItem editableCalculationItem = calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
-        calculationItemTreeSection.hideCalculationItemDetails(editableCalculationItem);
-        calculationItemTreeSection.hideDetailsTable(editableCalculationItem);
-        redrawPricesAndRecalculate();
-    }
-
-    @Override
-    public void reuseSchematics(String pathNodesString) {
-        ComputableCalculationItem computableCalculationItem = calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().get(pathNodesString);
-        List<Long[]> pathNodesList = new ArrayList<Long[]>();
-        pathNodesList.add(computableCalculationItem.getCalculationItemTreeNodeSummary().getPathNodes());
-        calculationItemTreeSection.includeCalculationItemTreeNodesInCalculation(pathNodesList);
-        EditableCalculationItem editableCalculationItem = calculationItemTreeSection.getPathNodesStringToEditableCalculationItemMap().get(pathNodesString);
-        calculationItemTreeSection.showCalculationItemDetails(editableCalculationItem);
-        redrawPricesAndRecalculate();
+    public void changeMePe(Long[] pathNodes, Integer meLevel, Integer peLevel) {
+        CalculationTreeNode calculationTreeNode = calculationTree.getNodeByPathNodes(pathNodes);
+        for (CalculationTreeNode node : calculationTreeNode.getNodeMap().values()) {
+            node.changeMePe(meLevel, peLevel);
+        }
+        recalculate();
     }
 
     @Override
     public void updatePrices() {
         Map<Long, BigDecimal> typeIdToPriceMap = new HashMap<Long, BigDecimal>();
-        for (Map.Entry<Long, EditableCalculationPriceSetItem> mapEntry : pricesSection.getTypeIdToEditableCalculationPriceSetItemMap().entrySet()) {
+        for (Map.Entry<Long, EditableCalculationPriceSetItem> mapEntry : typeIdToEditableCalculationPriceSetItemMap.entrySet()) {
             Long typeID = mapEntry.getKey();
             BigDecimal price = mapEntry.getValue().getPriceTextBox().getPrice();
-            ComputableCalculationPriceSetItem computableCalculationPriceSetItem = pricesSection.getTypeIdToComputableCalculationPriceSetItemMap().get(typeID);
-            computableCalculationPriceSetItem.getCalculationPriceItem().setPrice(price);
+            ComputableCalculationPriceSetItem computableCalculationPriceSetItem = typeIdToComputableCalculationPriceSetItemMap.get(typeID);
+            computableCalculationPriceSetItem.getCalculationPriceSetItem().setPrice(price);
             typeIdToPriceMap.put(typeID, price);
         }
-        for (Map.Entry<String, EditableBlueprintItem> mapEntry : blueprintItemTreeSection.getPathNodesStringToEditableBlueprintItemMap().entrySet()) {
-            String pathNodesString = mapEntry.getKey();
-            PriceTextBox copyPriceTextBox = mapEntry.getValue().getCopyPriceTextBox();
-            if (copyPriceTextBox != null) {
-                BigDecimal price = copyPriceTextBox.getPrice();
-                ComputableBlueprintItem computableBlueprintItem = blueprintItemTreeSection.getPathNodesStringToComputableBlueprintItemMap().get(pathNodesString);
-                computableBlueprintItem.getBlueprintItem().setPrice(price);
-            }
-        }
-        calculationItemTreeSection.getCalculationItemTree().setPrices(typeIdToPriceMap);
+        calculationTree.setPrices(typeIdToPriceMap);
         recalculate();
     }
 
@@ -330,120 +507,511 @@ public class QuickCalculatorTabView implements QuickCalculatorTabPresenter.Displ
         for (Map.Entry<Long, BigDecimal> mapEntry : typeIdToPriceMap.entrySet()) {
             Long typeID = mapEntry.getKey();
             BigDecimal price = mapEntry.getValue();
-            pricesSection.getTypeIdToEditableCalculationPriceSetItemMap().get(typeID).getPriceTextBox().setPrice(price);
-            pricesSection.getTypeIdToComputableCalculationPriceSetItemMap().get(typeID).getCalculationPriceItem().setPrice(price);
+            typeIdToEditableCalculationPriceSetItemMap.get(typeID).getPriceTextBox().setPrice(price);
+            typeIdToComputableCalculationPriceSetItemMap.get(typeID).getCalculationPriceSetItem().setPrice(price);
         }
-        calculationItemTreeSection.getCalculationItemTree().setPrices(typeIdToPriceMap);
+        calculationTree.setPrices(typeIdToPriceMap);
         recalculate();
     }
 
-    @Override
-    public void changeBlueprintMePeQuantity(Integer meLevel, Integer peLevel, Long quantity) {
-        EditableBlueprintInformation editableBlueprintInformation = blueprintInformationSection.getEditableBlueprintInformation();
-        ComputableBlueprintInformation computableBlueprintInformation = blueprintInformationSection.getComputableBlueprintInformation();
-        editableBlueprintInformation.getMeLabel().setText(String.valueOf(meLevel));
-        editableBlueprintInformation.getPeLabel().setText(String.valueOf(peLevel));
-        editableBlueprintInformation.getQuantityLabel().setQuantity(quantity);
-        editableBlueprintInformation.getMeTextBox().setText(String.valueOf(meLevel));
-        editableBlueprintInformation.getPeTextBox().setText(String.valueOf(peLevel));
-        editableBlueprintInformation.getQuantityTextBox().setText(String.valueOf(quantity));
-        computableBlueprintInformation.getCalculation().setMaterialLevel(meLevel);
-        computableBlueprintInformation.getCalculation().setProductivityLevel(peLevel);
-        calculationItemTreeSection.getCalculationItemTree().changeRootNodesMePeQuantity(meLevel, peLevel, quantity);
-        recalculate();
+    private PricingProcessorResult recalculate() {
+        return recalculate(null);
     }
 
-    @Override
-    public void changeCalculationItemMePe(Long[] pathNodes, Integer meLevel, Integer peLevel) {
-        CalculationItemTreeNode calculationItemTreeNode = calculationItemTreeSection.getCalculationItemTree().getNodeByPathNodes(pathNodes);
-        for (CalculationItemTreeNode node : calculationItemTreeNode.getNodeMap().values()) {
-            node.changeMePe(meLevel, peLevel);
-        }
-        recalculate();
-    }
-
-    @Override
-    public void recalculate() {
-        recalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
-    }
-
-    @Override
-    public QuickCalculatorTabPresenter.BlueprintInformationSectionDisplay getBlueprintInformationSectionDisplay() {
-        return blueprintInformationSection;
-    }
-
-    @Override
-    public QuickCalculatorTabPresenter.CalculationItemTreeSectionDisplay getCalculationTreeSectionDisplay() {
-        return calculationItemTreeSection;
-    }
-
-    @Override
-    public QuickCalculatorTabPresenter.BlueprintItemTreeSectionDisplay getBlueprintUsageSectionDisplay() {
-        return blueprintItemTreeSection;
-    }
-
-    @Override
-    public QuickCalculatorTabPresenter.PricesSectionDisplay getPricesSectionDisplay() {
-        return pricesSection;
-    }
-
-    @Override
-    public QuickCalculatorTabPresenter.SkillsForCalculationSectionDisplay getSkillsForCalculationSectionDisplay() {
-        return skillsForCalculationSection;
-    }
-
-    @Override
-    public QuickCalculatorTabPresenter.DirectLinkSectionDisplay getDirectLinkSectionDisplay() {
-        return directLinkSection;
-    }
-
-    private CalculationProcessorResult recalculate(Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap) {
-        return recalculate(processAndGetCalculationProcessorResult(existingTypeIdToCalculationPriceSetItemMap));
-    }
-
-    private CalculationProcessorResult recalculate(CalculationProcessorResult calculationProcessorResult) {
-        for (ComputableCalculationItem computableCalculationItem : calculationItemTreeSection.getPathNodesStringToComputableCalculationItemMap().values()) {
+    private PricingProcessorResult recalculate(Map<Long, CalculationPriceSetItemDto> existingTypeIdToCalculationPriceSetItemMap) {
+        Long quantity = Long.valueOf(editableCalculation.getQuantityTextBox().getText());
+        PricingProcessorResult pricingProcessorResult = pricingProcessor.process(quantity, calculationTree, existingTypeIdToCalculationPriceSetItemMap);
+        for (Map.Entry<String, ComputableCalculationItem> mapEntry : pathNodesStringToComputableCalculationItemMap.entrySet()) {
+            ComputableCalculationItem computableCalculationItem = mapEntry.getValue();
             computableCalculationItem.recalculate();
         }
-        for (ComputableBlueprintItem computableBlueprintItem : blueprintItemTreeSection.getPathNodesStringToComputableBlueprintItemMap().values()) {
-            computableBlueprintItem.recalculate();
-        }
-        for (Map.Entry<Long, CalculationPriceItemDto> mapEntry : calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap().entrySet()) {
-            CalculationPriceItemDto calculationPriceSetItemDto = mapEntry.getValue();
-            ComputableCalculationPriceSetItem computableCalculationPriceSetItem = pricesSection.getTypeIdToComputableCalculationPriceSetItemMap().get(mapEntry.getKey());
-            computableCalculationPriceSetItem.setCalculationPriceItem(calculationPriceSetItemDto);
+        for (Map.Entry<Long, CalculationPriceSetItemDto> mapEntry : pricingProcessorResult.getTypeIdToCalculationPriceSetItemMap().entrySet()) {
+            CalculationPriceSetItemDto calculationPriceSetItemDto = mapEntry.getValue();
+            ComputableCalculationPriceSetItem computableCalculationPriceSetItem = typeIdToComputableCalculationPriceSetItemMap.get(mapEntry.getKey());
+            computableCalculationPriceSetItem.setCalculationPriceSetItem(calculationPriceSetItemDto);
             computableCalculationPriceSetItem.recalculate();
         }
-        ComputableBlueprintInformation computableBlueprintInformation = blueprintInformationSection.getComputableBlueprintInformation();
-        computableBlueprintInformation.getCalculation().setPrice(calculationProcessorResult.getTotalPrice());
-        computableBlueprintInformation.recalculate(calculator);
-        return calculationProcessorResult;
+        computableCalculation.getCalculation().setPrice(pricingProcessorResult.getTotalPrice());
+        computableCalculation.recalculate(calculator);
+        return pricingProcessorResult;
     }
 
-    private CalculationProcessorResult processAndGetCalculationProcessorResult(Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap) {
-        Long quantity = Long.valueOf(blueprintInformationSection.getEditableBlueprintInformation().getQuantityTextBox().getText());
-        CalculationItemTree calculationItemTree = calculationItemTreeSection.getCalculationItemTree();
-        BlueprintItemTree blueprintItemTree = blueprintItemTreeSection.getBlueprintItemTree();
-        Map<Long, Integer> typeIdToSkillLevelMap = skillsForCalculationSection.getTypeIdToSkillLevelMap();
-        return calculationProcessor.process(quantity, calculationItemTree, blueprintItemTree, existingTypeIdToCalculationPriceSetItemMap, typeIdToSkillLevelMap);
+    @Override
+    public List<HandlerRegistration> getHandlerRegistrations() {
+        return handlerRegistrations;
     }
 
-    private void redrawPricesAndRecalculate() {
-        redrawPricesAndRecalculate(pricesSection.getTypeIdToCalculationPriceSetItemMap());
-    }
+    private void drawCalculationTree() {
+        CalculationDto calculation = computableCalculation.getCalculation();
+        drawBlueprintInformation(calculation);
 
-    private void redrawPricesAndRecalculate(Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap) {
-        CalculationProcessorResult calculationProcessorResult = processAndGetCalculationProcessorResult(existingTypeIdToCalculationPriceSetItemMap);
-        pricesSection.cleanPricesSection();
-        pricesSection.drawCalculationPriceSetItems(calculationProcessorResult.getTypeIdToCalculationPriceSetItemMap().values());
-        recalculate(calculationProcessorResult);
-    }
-
-    private Map<Long, Integer> createTypeIdToSkillLevelMap(List<SkillLevelDto> skillLevels) {
-        Map<Long, Integer> typeIdToSkillLevelMap = new HashMap<Long, Integer>();
-        for (SkillLevelDto skillLevel : skillLevels) {
-            typeIdToSkillLevelMap.put(skillLevel.getTypeID(), skillLevel.getLevel());
+        for (CalculationTreeNode calculationTreeNode : calculationTree.getNodeMap().values()) {
+            drawRootCalculationItem(calculationTreeNode);
         }
-        return typeIdToSkillLevelMap;
+    }
+
+    private void drawBlueprintCostItems() {
+        drawBlueprintCostItem(calculation);
+        for (CalculationDto calculation : pathNodesStringToUsedCalculationMap.values()) {
+            drawBlueprintCostItem(calculation);
+        }
+    }
+
+    private void drawCalculationPriceSetItems(List<CalculationPriceSetItemDto> calculationPriceSetItems) {
+        for (CalculationPriceSetItemDto calculationPriceSetItemDto : calculationPriceSetItems) {
+            drawCalculationPriceSetItem(calculationPriceSetItemDto);
+        }
+    }
+
+    private void drawBlueprintInformation(CalculationDto calculation) {
+        String blueprintImageUrl = imageUrlProvider.getBlueprintImageUrl(calculation.getBlueprintTypeID());
+        Image blueprintImage = new Image(blueprintImageUrl);
+        blueprintImage.addStyleName(resources.css().image64());
+        EveItemInfoLink blueprintImageItemInfoLink = new EveItemInfoLink(ccpJsMessages, blueprintImage, calculation.getBlueprintTypeID());
+        blueprintInfoTable.setWidget(0, 0, blueprintImageItemInfoLink);
+        String productImageUrl = imageUrlProvider.getImage64Url(calculation.getProductTypeCategoryID(), calculation.getProductTypeID(), calculation.getProductGraphicIcon());
+        Image productImage = new Image(productImageUrl);
+        productImage.addStyleName(resources.css().image64());
+        EveItemInfoLink productImageItemInfoLink = new EveItemInfoLink(ccpJsMessages, productImage, calculation.getProductTypeID());
+        blueprintInfoTable.setWidget(0, 1, productImageItemInfoLink);
+
+        FlexTable blueprintTable = new FlexTable();
+        blueprintTable.setWidget(0, 0, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, calculation.getBlueprintTypeName(), calculation.getBlueprintTypeID()));
+        blueprintTable.setWidget(0, 1, new Label(messages.me() + ":"));
+        Label meLabel = new Label(String.valueOf(calculation.getMaterialLevel()));
+        blueprintTable.setWidget(0, 2, meLabel);
+        blueprintTable.setWidget(0, 3, new Label(messages.pe() + ":"));
+        Label peLabel = new Label(String.valueOf(calculation.getProductivityLevel()));
+        blueprintTable.setWidget(0, 4, peLabel);
+        WasteLabel wasteLabel = new WasteLabel(messages);
+        blueprintTable.setWidget(0, 5, wasteLabel);
+        Button editButton = new Button(messages.edit());
+        blueprintTable.setWidget(0, 6, editButton);
+        OpaqueLoadableBlueprintImage useAllBlueprintsImage = new OpaqueLoadableBlueprintImage(resources, messages, messages.useAllBlueprints(), messages.stopUsingAllBlueprints());
+        useAllBlueprintsImage.addStyleName(resources.css().image16());
+        useAllBlueprintsImage.addStyleName(resources.css().cursorHand());
+        useAllBlueprintsImage.setOpacity();
+        blueprintTable.setWidget(0, 7, useAllBlueprintsImage);
+        blueprintInfoTable.setWidget(0, 2, blueprintTable);
+
+        FlexTable productTable = new FlexTable();
+        QuantityLabel quantityLabel = new QuantityLabel(1L);
+        productTable.setWidget(0, 0, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, calculation.getProductTypeName(), calculation.getProductTypeID()));
+        productTable.setWidget(0, 1, new Label("x"));
+        productTable.setWidget(0, 2, quantityLabel);
+        productTable.setWidget(0, 3, new Label("="));
+        PriceLabel totalPriceLabel = new PriceLabel(calculation.getPrice());
+        totalPriceLabel.addStyleName(resources.css().totalPriceLabel());
+        productTable.setWidget(0, 4, totalPriceLabel);
+        Image eveCentralImage = new Image(resources.eveCentralIcon16());
+        eveCentralImage.setTitle(messages.eveCentralQuicklook());
+        Image eveMetricsImage = new Image(resources.eveMetricsIcon16());
+        eveMetricsImage.setTitle(messages.eveMetricsItemPrice());
+        productTable.setWidget(0, 5, new EveCentralQuicklookLink(constants, urlMessages, eveCentralImage, calculation.getProductTypeID()));
+        productTable.setWidget(0, 6, new EveMetricsItemPriceLink(constants, urlMessages, eveMetricsImage, calculation.getProductTypeCategoryID(), calculation.getProductTypeID()));
+        blueprintInfoTable.setWidget(1, 0, productTable);
+
+        FlexTable.FlexCellFormatter imageTableCellFormatter = blueprintInfoTable.getFlexCellFormatter();
+        imageTableCellFormatter.setRowSpan(0, 0, 3);
+        imageTableCellFormatter.setRowSpan(0, 1, 3);
+        imageTableCellFormatter.setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
+        imageTableCellFormatter.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
+        imageTableCellFormatter.setVerticalAlignment(0, 2, HasVerticalAlignment.ALIGN_TOP);
+        imageTableCellFormatter.setVerticalAlignment(1, 0, HasVerticalAlignment.ALIGN_TOP);
+
+        TextBox meTextBox = new TextBox();
+        meTextBox.setValue(meLabel.getText());
+        meTextBox.addStyleName(resources.css().mePeInput());
+        TextBox peTextBox = new TextBox();
+        peTextBox.setValue(peLabel.getText());
+        peTextBox.addStyleName(resources.css().mePeInput());
+        final DecoratedPopupPanel editBlueprintInfoPopup = new DecoratedPopupPanel(true);
+        FlexTable editBlueprintInfoPopupFlexTable = new FlexTable();
+        editBlueprintInfoPopupFlexTable.setWidget(0, 0, new Label(messages.materialLevel() + ":"));
+        editBlueprintInfoPopupFlexTable.setWidget(0, 1, meTextBox);
+        editBlueprintInfoPopupFlexTable.setWidget(1, 0, new Label(messages.productivityLevel() + ":"));
+        editBlueprintInfoPopupFlexTable.setWidget(1, 1, peTextBox);
+        TextBox quantityTextBox = new TextBox();
+        quantityTextBox.setValue("1");
+        quantityTextBox.addStyleName(resources.css().quantityInput());
+        editBlueprintInfoPopupFlexTable.setWidget(2, 0, new Label(messages.quantity() + ":"));
+        editBlueprintInfoPopupFlexTable.setWidget(2, 1, quantityTextBox);
+        Button applyButton = new Button(messages.apply());
+        editBlueprintInfoPopupFlexTable.setWidget(3, 0, applyButton);
+        editBlueprintInfoPopupFlexTable.getFlexCellFormatter().setColSpan(3, 0, 2);
+        editBlueprintInfoPopup.setWidget(editBlueprintInfoPopupFlexTable);
+
+        handlerRegistrations.add(editButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Widget source = (Widget) event.getSource();
+                int left = source.getAbsoluteLeft() + 10;
+                int top = source.getAbsoluteTop() + 10;
+                editBlueprintInfoPopup.setPopupPosition(left, top);
+                editBlueprintInfoPopup.show();
+            }
+        }));
+        handlerRegistrations.add(applyButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                editBlueprintInfoPopup.hide();
+            }
+        }));
+
+        editableCalculation.setUseAllBlueprintsImage(useAllBlueprintsImage);
+        editableCalculation.setMeLabel(meLabel);
+        editableCalculation.setPeLabel(peLabel);
+        editableCalculation.setQuantityLabel(quantityLabel);
+        editableCalculation.setMeTextBox(meTextBox);
+        editableCalculation.setPeTextBox(peTextBox);
+        editableCalculation.setQuantityTextBox(quantityTextBox);
+        editableCalculation.setApplyButton(applyButton);
+        computableCalculation.setWasteLabel(wasteLabel);
+        computableCalculation.setTotalPriceLabel(totalPriceLabel);
+    }
+
+    private void drawRootCalculationItem(CalculationTreeNode calculationTreeNode) {
+        CalculationTreeNodeSummary calculationTreeNodeSummary = calculationTreeNode.getSummary();
+        String pathNodesString = calculationTreeNodeSummary.getPathNodesString();
+        EditableCalculationItem editableCalculationItem = new EditableCalculationItem();
+        pathNodesStringToEditableCalculationItemMap.put(pathNodesString, editableCalculationItem);
+        ComputableCalculationItem computableCalculationItem = new ComputableCalculationItem();
+        computableCalculationItem.setCalculationItems(calculationTreeNode.getCalculationItems());
+        computableCalculationItem.setCalculationTreeNodeSummary(calculationTreeNodeSummary);
+        pathNodesStringToComputableCalculationItemMap.put(pathNodesString, computableCalculationItem);
+
+        final int index = rootCalculationItemTable.getRowCount();
+        String imageUrl = imageUrlProvider.getImage32Url(calculationTreeNodeSummary.getItemCategoryID(), calculationTreeNodeSummary.getItemTypeID(), calculationTreeNodeSummary.getItemTypeIcon());
+        Image image = new Image(imageUrl);
+        image.setTitle(calculationTreeNodeSummary.getItemTypeName());
+        image.addStyleName(resources.css().image32());
+        EveItemInfoLink imageItemInfoLink = new EveItemInfoLink(ccpJsMessages, image, calculationTreeNodeSummary.getItemTypeID());
+        rootCalculationItemTable.setWidget(index, 0, imageItemInfoLink);
+        rootCalculationItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, calculationTreeNodeSummary.getItemTypeName(), calculationTreeNodeSummary.getItemTypeID()));
+        rootCalculationItemTable.setWidget(index, 2, new Label("x"));
+        QuantityLabel quantityForParentLabel = new QuantityLabel(calculationTreeNodeSummary.getParentQuantity() * calculationTreeNodeSummary.getQuantity());
+        HorizontalPanel quantityAndDamagePerJobPanel = new HorizontalPanel();
+        quantityAndDamagePerJobPanel.add(quantityForParentLabel);
+        BigDecimal damagePerJob = calculationTreeNodeSummary.getDamagePerJob();
+        if (BigDecimal.ONE.compareTo(damagePerJob) == 1) {
+            DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
+            damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+            quantityAndDamagePerJobPanel.add(damagePerJobLabel);
+            quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
+        }
+        rootCalculationItemTable.setWidget(index, 3, quantityAndDamagePerJobPanel);
+        rootCalculationItemTable.setWidget(index, 4, new Label("x"));
+        PriceLabel priceLabel = new PriceLabel(calculationTreeNodeSummary.getPrice());
+        rootCalculationItemTable.setWidget(index, 5, priceLabel);
+        rootCalculationItemTable.setWidget(index, 6, new Label("="));
+        PriceLabel totalPriceForParentLabel = new PriceLabel(calculationTreeNodeSummary.getTotalPriceForParent());
+        rootCalculationItemTable.setWidget(index, 7, totalPriceForParentLabel);
+
+        if (hasBlueprint(calculationTreeNodeSummary.getItemCategoryID(), calculationTreeNodeSummary.getItemTypeID())) {
+            OpaqueLoadableBlueprintImage blueprintImage = new OpaqueLoadableBlueprintImage(resources, messages, messages.useBlueprint(), messages.stopUsingBlueprint());
+            blueprintImage.addStyleName(resources.css().image16());
+            blueprintImage.addStyleName(resources.css().cursorHand());
+            blueprintImage.setOpacity();
+            rootCalculationItemTable.setWidget(index, 8, blueprintImage);
+            rootCalculationItemTable.setWidget(index, 9, new Label(messages.me() + ":"));
+            Label meLabel = new Label();
+            rootCalculationItemTable.setWidget(index, 10, meLabel);
+            Label peLabel = new Label();
+            rootCalculationItemTable.setWidget(index, 11, new Label(messages.pe() + ":"));
+            rootCalculationItemTable.setWidget(index, 12, peLabel);
+            Button editBlueprintButton = new Button(messages.edit());
+            rootCalculationItemTable.setWidget(index, 13, editBlueprintButton);
+            Button detailsBlueprintButton = new Button(messages.details());
+            rootCalculationItemTable.setWidget(index, 14, detailsBlueprintButton);
+
+            FlexTable calculationItemDetailsTable = new FlexTable();
+            rootCalculationItemTable.setWidget(index + 1, 0, null);
+            rootCalculationItemTable.setWidget(index + 1, 1, calculationItemDetailsTable);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 9, false);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 10, false);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 11, false);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 12, false);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 13, false);
+            rootCalculationItemTableFlexFormatter.setVisible(index, 14, false);
+            rootCalculationItemTableFlexFormatter.setColSpan(index + 1, 1, 14);
+            rootCalculationItemTableRowFormatter.setVisible(index + 1, false);
+
+            handlerRegistrations.add(detailsBlueprintButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    if (rootCalculationItemTableRowFormatter.isVisible(index + 1)) {
+                        rootCalculationItemTableRowFormatter.setVisible(index + 1, false);
+                    } else {
+                        rootCalculationItemTableRowFormatter.setVisible(index + 1, true);
+                    }
+                }
+            }));
+
+            TextBox meTextBox = new TextBox();
+            meTextBox.setValue(meLabel.getText());
+            meTextBox.addStyleName(resources.css().mePeInput());
+            TextBox peTextBox = new TextBox();
+            peTextBox.setValue(peLabel.getText());
+            peTextBox.addStyleName(resources.css().mePeInput());
+            final DecoratedPopupPanel editCalculationItemPopup = new DecoratedPopupPanel(true);
+            FlexTable editCalculationItemPopupFlexTable = new FlexTable();
+            editCalculationItemPopupFlexTable.setWidget(0, 0, new Label(messages.materialLevel() + ":"));
+            editCalculationItemPopupFlexTable.setWidget(0, 1, meTextBox);
+            editCalculationItemPopupFlexTable.setWidget(1, 0, new Label(messages.productivityLevel() + ":"));
+            editCalculationItemPopupFlexTable.setWidget(1, 1, peTextBox);
+            Button applyButton = new Button(messages.apply());
+            editCalculationItemPopupFlexTable.setWidget(3, 0, applyButton);
+            editCalculationItemPopupFlexTable.getFlexCellFormatter().setColSpan(3, 0, 2);
+            editCalculationItemPopup.setWidget(editCalculationItemPopupFlexTable);
+
+            handlerRegistrations.add(editBlueprintButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    Widget source = (Widget) event.getSource();
+                    int left = source.getAbsoluteLeft() + 10;
+                    int top = source.getAbsoluteTop() + 10;
+                    editCalculationItemPopup.setPopupPosition(left, top);
+                    editCalculationItemPopup.show();
+                }
+            }));
+            handlerRegistrations.add(applyButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    editCalculationItemPopup.hide();
+                }
+            }));
+
+            editableCalculationItem.setIndex(index);
+            editableCalculationItem.setBlueprintImage(blueprintImage);
+            editableCalculationItem.setMeLabel(meLabel);
+            editableCalculationItem.setPeLabel(peLabel);
+            editableCalculationItem.setMeTextBox(meTextBox);
+            editableCalculationItem.setPeTextBox(peTextBox);
+            editableCalculationItem.setApplyButton(applyButton);
+            editableCalculationItem.setCalculationItemDetailsTable(calculationItemDetailsTable);
+        }
+
+        computableCalculationItem.setQuantityForParentLabel(quantityForParentLabel);
+        computableCalculationItem.setPriceLabel(priceLabel);
+        computableCalculationItem.setTotalPriceForParentLabel(totalPriceForParentLabel);
+    }
+
+    private void drawCalculationItem(FlexTable calculationItemTable, CalculationTreeNode calculationTreeNode) {
+        CalculationTreeNodeSummary calculationTreeNodeSummary = calculationTreeNode.getSummary();
+        String pathNodesString = calculationTreeNodeSummary.getPathNodesString();
+        EditableCalculationItem editableCalculationItem = new EditableCalculationItem();
+        pathNodesStringToEditableCalculationItemMap.put(pathNodesString, editableCalculationItem);
+        ComputableCalculationItem computableCalculationItem = new ComputableCalculationItem();
+        computableCalculationItem.setCalculationItems(calculationTreeNode.getCalculationItems());
+        computableCalculationItem.setCalculationTreeNodeSummary(calculationTreeNodeSummary);
+        pathNodesStringToComputableCalculationItemMap.put(pathNodesString, computableCalculationItem);
+
+        final int index = calculationItemTable.getRowCount();
+        String imageUrl = imageUrlProvider.getImage16Url(calculationTreeNodeSummary.getItemCategoryID(), calculationTreeNodeSummary.getItemTypeID(), calculationTreeNodeSummary.getItemTypeIcon());
+        Image image = new Image(imageUrl);
+        image.setTitle(calculationTreeNodeSummary.getItemTypeName());
+        image.addStyleName(resources.css().image16());
+        EveItemInfoLink imageItemInfoLink = new EveItemInfoLink(ccpJsMessages, image, calculationTreeNodeSummary.getItemTypeID());
+        calculationItemTable.setWidget(index, 0, imageItemInfoLink);
+        calculationItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, calculationTreeNodeSummary.getItemTypeName(), calculationTreeNodeSummary.getItemTypeID()));
+        calculationItemTable.setWidget(index, 2, new Label("x"));
+        QuantityLabel quantityLabel = new QuantityLabel(calculationTreeNodeSummary.getQuantity());
+        HorizontalPanel quantityAndDamagePerJobPanel = new HorizontalPanel();
+        quantityAndDamagePerJobPanel.add(quantityLabel);
+        BigDecimal damagePerJob = calculationTreeNodeSummary.getDamagePerJob();
+        if (BigDecimal.ONE.compareTo(damagePerJob) == 1) {
+            DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
+            damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+            quantityAndDamagePerJobPanel.add(damagePerJobLabel);
+            quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
+        }
+        calculationItemTable.setWidget(index, 3, quantityAndDamagePerJobPanel);
+        calculationItemTable.setWidget(index, 4, new Label("x"));
+        PriceLabel priceLabel = new PriceLabel(calculationTreeNodeSummary.getPrice());
+        calculationItemTable.setWidget(index, 5, priceLabel);
+        calculationItemTable.setWidget(index, 6, new Label("="));
+        PriceLabel totalPriceLabel = new PriceLabel(calculationTreeNodeSummary.getTotalPrice());
+        calculationItemTable.setWidget(index, 7, totalPriceLabel);
+        calculationItemTable.setWidget(index, 8, new Label("x"));
+        QuantityLabel parentQuantityLabel = new QuantityLabel(calculationTreeNodeSummary.getParentQuantity());
+        calculationItemTable.setWidget(index, 9, parentQuantityLabel);
+        calculationItemTable.setWidget(index, 10, new Label("="));
+        PriceLabel totalPriceForParentLabel = new PriceLabel(calculationTreeNodeSummary.getTotalPriceForParent());
+        calculationItemTable.setWidget(index, 11, totalPriceForParentLabel);
+
+
+        if (hasBlueprint(calculationTreeNodeSummary.getItemCategoryID(), calculationTreeNodeSummary.getItemTypeID())) {
+            OpaqueLoadableBlueprintImage blueprintImage = new OpaqueLoadableBlueprintImage(resources, messages, messages.useBlueprint(), messages.stopUsingBlueprint());
+            blueprintImage.addStyleName(resources.css().image16());
+            blueprintImage.addStyleName(resources.css().cursorHand());
+            blueprintImage.setOpacity();
+            calculationItemTable.setWidget(index, 12, blueprintImage);
+            calculationItemTable.setWidget(index, 13, new Label(messages.me() + ":"));
+            Label meLabel = new Label();
+            calculationItemTable.setWidget(index, 14, meLabel);
+            Label peLabel = new Label();
+            calculationItemTable.setWidget(index, 15, new Label(messages.pe() + ":"));
+            calculationItemTable.setWidget(index, 16, peLabel);
+            Button editBlueprintButton = new Button(messages.edit());
+            calculationItemTable.setWidget(index, 17, editBlueprintButton);
+            Button detailsBlueprintButton = new Button(messages.details());
+            calculationItemTable.setWidget(index, 18, detailsBlueprintButton);
+
+            FlexTable calculationItemDetailsTable = new FlexTable();
+            calculationItemTable.setWidget(index + 1, 0, null);
+            calculationItemTable.setWidget(index + 1, 1, calculationItemDetailsTable);
+            FlexTable.FlexCellFormatter tableFlexFormatter = calculationItemTable.getFlexCellFormatter();
+            final HTMLTable.RowFormatter tableRowFormatter = calculationItemTable.getRowFormatter();
+            tableFlexFormatter.setVisible(index, 13, false);
+            tableFlexFormatter.setVisible(index, 14, false);
+            tableFlexFormatter.setVisible(index, 15, false);
+            tableFlexFormatter.setVisible(index, 16, false);
+            tableFlexFormatter.setVisible(index, 17, false);
+            tableFlexFormatter.setVisible(index, 18, false);
+            tableFlexFormatter.setColSpan(index + 1, 1, 18);
+            tableRowFormatter.setVisible(index + 1, false);
+
+            handlerRegistrations.add(detailsBlueprintButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    if (tableRowFormatter.isVisible(index + 1)) {
+                        tableRowFormatter.setVisible(index + 1, false);
+                    } else {
+                        tableRowFormatter.setVisible(index + 1, true);
+                    }
+                }
+            }));
+
+            TextBox meTextBox = new TextBox();
+            meTextBox.setValue(meLabel.getText());
+            meTextBox.addStyleName(resources.css().mePeInput());
+            TextBox peTextBox = new TextBox();
+            peTextBox.setValue(peLabel.getText());
+            peTextBox.addStyleName(resources.css().mePeInput());
+            final DecoratedPopupPanel editCalculationItemPopup = new DecoratedPopupPanel(true);
+            FlexTable editCalculationItemPopupFlexTable = new FlexTable();
+            editCalculationItemPopupFlexTable.setWidget(0, 0, new Label(messages.materialLevel() + ":"));
+            editCalculationItemPopupFlexTable.setWidget(0, 1, meTextBox);
+            editCalculationItemPopupFlexTable.setWidget(1, 0, new Label(messages.productivityLevel() + ":"));
+            editCalculationItemPopupFlexTable.setWidget(1, 1, peTextBox);
+            Button applyButton = new Button(messages.apply());
+            editCalculationItemPopupFlexTable.setWidget(3, 0, applyButton);
+            editCalculationItemPopupFlexTable.getFlexCellFormatter().setColSpan(3, 0, 2);
+            editCalculationItemPopup.setWidget(editCalculationItemPopupFlexTable);
+
+            handlerRegistrations.add(editBlueprintButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    Widget source = (Widget) event.getSource();
+                    int left = source.getAbsoluteLeft() + 10;
+                    int top = source.getAbsoluteTop() + 10;
+                    editCalculationItemPopup.setPopupPosition(left, top);
+                    editCalculationItemPopup.show();
+                }
+            }));
+            handlerRegistrations.add(applyButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    editCalculationItemPopup.hide();
+                }
+            }));
+
+            editableCalculationItem.setIndex(index);
+            editableCalculationItem.setBlueprintImage(blueprintImage);
+            editableCalculationItem.setMeLabel(meLabel);
+            editableCalculationItem.setPeLabel(peLabel);
+            editableCalculationItem.setMeTextBox(meTextBox);
+            editableCalculationItem.setPeTextBox(peTextBox);
+            editableCalculationItem.setApplyButton(applyButton);
+            editableCalculationItem.setCalculationItemDetailsTable(calculationItemDetailsTable);
+            editableCalculationItem.setCalculationItemTable(calculationItemTable);
+        }
+
+        computableCalculationItem.setQuantityLabel(quantityLabel);
+        computableCalculationItem.setPriceLabel(priceLabel);
+        computableCalculationItem.setTotalPriceLabel(totalPriceLabel);
+        computableCalculationItem.setParentQuantityLabel(parentQuantityLabel);
+        computableCalculationItem.setTotalPriceForParentLabel(totalPriceForParentLabel);
+
+    }
+    
+    private void drawBlueprintCostItem(CalculationDto calculation) {
+        int index = blueprintCostItemTable.getRowCount();
+        calculationToBlueprintCostRowMap.put(calculation, index);
+
+        String blueprintImageUrl = imageUrlProvider.getBlueprintImageUrl(calculation.getBlueprintTypeID());
+        Image blueprintImage = new Image(blueprintImageUrl);
+        blueprintImage.addStyleName(resources.css().image32());
+        EveItemInfoLink blueprintImageItemInfoLink = new EveItemInfoLink(ccpJsMessages, blueprintImage, calculation.getBlueprintTypeID());
+        blueprintCostItemTable.setWidget(index, 0, blueprintImageItemInfoLink);
+        blueprintCostItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, calculation.getBlueprintTypeName(), calculation.getBlueprintTypeID()));
+    }
+
+    private void drawCalculationPriceSetItem(CalculationPriceSetItemDto calculationPriceSetItem) {
+        EditableCalculationPriceSetItem editableCalculationPriceSetItem = new EditableCalculationPriceSetItem();
+        Long typeID = calculationPriceSetItem.getItemTypeID();
+        typeIdToEditableCalculationPriceSetItemMap.put(typeID, editableCalculationPriceSetItem);
+        ComputableCalculationPriceSetItem computableCalculationPriceSetItem = new ComputableCalculationPriceSetItem();
+        computableCalculationPriceSetItem.setCalculationPriceSetItem(calculationPriceSetItem);
+        typeIdToComputableCalculationPriceSetItemMap.put(typeID, computableCalculationPriceSetItem);
+
+        int index = priceSetItemTable.getRowCount();
+        String imageUrl = imageUrlProvider.getImage32Url(calculationPriceSetItem.getItemCategoryID(), typeID, calculationPriceSetItem.getItemTypeIcon());
+        Image image = new Image(imageUrl);
+        image.setTitle(calculationPriceSetItem.getItemTypeName());
+        image.addStyleName(resources.css().image32());
+        EveItemInfoLink imageItemInfoLink = new EveItemInfoLink(ccpJsMessages, image, typeID);
+        priceSetItemTable.setWidget(index, 0, imageItemInfoLink);
+        priceSetItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, calculationPriceSetItem.getItemTypeName(), typeID));
+        PriceTextBox priceTextBox = new PriceTextBox();
+        priceTextBox.setPrice(calculationPriceSetItem.getPrice());
+        priceTextBox.addStyleName(resources.css().priceInput());
+        priceSetItemTable.setWidget(index, 2, priceTextBox);
+        Image eveCentralImage = new Image(resources.eveCentralIcon16());
+        eveCentralImage.setTitle(messages.eveCentralQuicklook());
+        priceSetItemTable.setWidget(index, 3, new EveCentralQuicklookLink(constants, urlMessages, eveCentralImage, typeID));
+        Image eveMetricsImage = new Image(resources.eveMetricsIcon16());
+        eveMetricsImage.setTitle(messages.eveMetricsItemPrice());
+        priceSetItemTable.setWidget(index, 4, new EveMetricsItemPriceLink(constants, urlMessages, eveMetricsImage, calculationPriceSetItem.getItemCategoryID(), typeID));
+        priceSetItemTable.setWidget(index, 5, new Label("x"));
+        QuantityLabel quantityLabel = new QuantityLabel(calculationPriceSetItem.getQuantity());
+        HorizontalPanel quantityAndDamagePerJobPanel = new HorizontalPanel();
+        quantityAndDamagePerJobPanel.add(quantityLabel);
+        BigDecimal damagePerJob = calculationPriceSetItem.getDamagePerJob();
+        if (BigDecimal.ONE.compareTo(damagePerJob) == 1) {
+            DamagePerJobLabel damagePerJobLabel = new DamagePerJobLabel(damagePerJob);
+            damagePerJobLabel.addStyleName(resources.css().damagePerJob());
+            quantityAndDamagePerJobPanel.add(damagePerJobLabel);
+            quantityAndDamagePerJobPanel.setCellVerticalAlignment(damagePerJobLabel, HasVerticalAlignment.ALIGN_BOTTOM);
+        }
+        priceSetItemTable.setWidget(index, 6, quantityAndDamagePerJobPanel);
+        priceSetItemTable.setWidget(index, 7, new Label("="));
+        PriceLabel totalPriceLabel = new PriceLabel(calculationPriceSetItem.getTotalPrice());
+        priceSetItemTable.setWidget(index, 8, totalPriceLabel);
+
+        editableCalculationPriceSetItem.setPriceTextBox(priceTextBox);
+        computableCalculationPriceSetItem.setQuantityLabel(quantityLabel);
+        computableCalculationPriceSetItem.setTotalPriceLabel(totalPriceLabel);
+    }
+
+    private Map<Long, CalculationPriceSetItemDto> createExistingTypeIdToCalculationPriceSetItemMap() {
+        for (Map.Entry<Long, EditableCalculationPriceSetItem> mapEntry : typeIdToEditableCalculationPriceSetItemMap.entrySet()) {
+            ComputableCalculationPriceSetItem computableCalculationPriceSetItem = typeIdToComputableCalculationPriceSetItemMap.get(mapEntry.getKey());
+            computableCalculationPriceSetItem.getCalculationPriceSetItem();
+            existingTypeIdToCalculationPriceSetItemMap.put(mapEntry.getKey(), computableCalculationPriceSetItem.getCalculationPriceSetItem());
+        }
+        return existingTypeIdToCalculationPriceSetItemMap;
+    }
+
+    // TODO this is workaround
+    private Boolean hasBlueprint(Long categoryID, Long typeID) {
+        return (categoryID == 6L // Ship
+                || categoryID == 7L // Module
+                || categoryID == 8L // Charge
+                || categoryID == 17L // Commodity
+                || categoryID == 18L // Drone
+                || categoryID == 23L // Structure
+                || categoryID == 32L) // Subsystem
+                && (typeID != 3687L); // Electronic Parts
     }
 }

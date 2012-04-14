@@ -6,7 +6,6 @@ import com.googlecode.objectify.annotation.Unindexed;
 import javax.persistence.Embedded;
 import javax.persistence.Id;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -34,10 +33,6 @@ public class User implements Serializable {
     @Indexed
     private Date lastLoginDate;
     private Set<String> roles = new HashSet<String>();
-    @Embedded
-    private List<SkillLevel> skillLevelsForCalculation = new ArrayList<SkillLevel>();
-    private String preferredRegion;
-    private String preferredPriceFetchOption;
 
     public Long getId() {
         return id;
@@ -125,29 +120,5 @@ public class User implements Serializable {
 
     public void setRoles(Set<String> roles) {
         this.roles = roles;
-    }
-
-    public List<SkillLevel> getSkillLevelsForCalculation() {
-        return skillLevelsForCalculation;
-    }
-
-    public void setSkillLevelsForCalculation(List<SkillLevel> skillLevelsForCalculation) {
-        this.skillLevelsForCalculation = skillLevelsForCalculation;
-    }
-
-    public String getPreferredRegion() {
-        return preferredRegion;
-    }
-
-    public void setPreferredRegion(String preferredRegion) {
-        this.preferredRegion = preferredRegion;
-    }
-
-    public String getPreferredPriceFetchOption() {
-        return preferredPriceFetchOption;
-    }
-
-    public void setPreferredPriceFetchOption(String preferredPriceFetchOption) {
-        this.preferredPriceFetchOption = preferredPriceFetchOption;
     }
 }

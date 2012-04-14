@@ -3,18 +3,11 @@ package lv.odylab.evemanage.integration.evedb;
 import lv.odylab.evemanage.application.exception.EveDbException;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
-import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
-import lv.odylab.evemanage.integration.evedb.dto.BlueprintTypeDto;
-import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
-import lv.odylab.evemanage.integration.evedb.dto.SchematicItemDto;
-import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
-import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
+import lv.odylab.evemanage.integration.evedb.dto.*;
 
 import java.util.List;
 
 public interface EveDbGateway {
-
-    List<ItemTypeDto> getBaseItemsForTypeID(Long typeID) throws EveDbException;
 
     BlueprintTypeDto getBlueprintTypeByTypeID(Long typeID) throws EveDbException;
 
@@ -31,8 +24,6 @@ public interface EveDbGateway {
     List<ItemTypeDto> lookupType(String query) throws EveDbException;
 
     List<ItemTypeDto> lookupBlueprintType(String query) throws EveDbException;
-
-    List<SchematicItemDto> getPlanetSchematicForTypeName(String typeName) throws EveDbException, InvalidItemTypeException;
 
     Long getTypeID(String typeName) throws EveDbException, InvalidNameException;
 

@@ -6,31 +6,17 @@ import lv.odylab.eveapi.parser.method.common.accbalance.ApiAccountBalanceRow;
 import lv.odylab.eveapi.parser.method.common.industryjob.ApiIndustryJobRow;
 import lv.odylab.eveapi.parser.method.corporation.sheet.ApiCorporationSheetResult;
 import lv.odylab.evecentralapi.parser.method.marketstat.MarketStatType;
-import lv.odylab.evedb.rpc.dto.BlueprintDetailsDto;
-import lv.odylab.evedb.rpc.dto.InvBlueprintTypeDto;
-import lv.odylab.evedb.rpc.dto.InvTypeBasicInfoDto;
-import lv.odylab.evedb.rpc.dto.InvTypeMaterialDto;
-import lv.odylab.evedb.rpc.dto.PlanetSchematicDto;
-import lv.odylab.evedb.rpc.dto.RamTypeRequirementDto;
+import lv.odylab.evedb.rpc.dto.*;
 import lv.odylab.evemanage.application.exception.validation.InvalidPriceException;
 import lv.odylab.evemanage.client.rpc.dto.ItemTypeDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.MaterialDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.RequirementDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.InventedBlueprintDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyCharacterInfoDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.CharacterInfoDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.*;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
-import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
 import lv.odylab.evemanage.domain.calculation.Calculation;
@@ -40,34 +26,18 @@ import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
-import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
-import lv.odylab.evemanage.integration.eveapi.dto.AccountBalanceDto;
-import lv.odylab.evemanage.integration.eveapi.dto.AccountCharacterDto;
-import lv.odylab.evemanage.integration.eveapi.dto.CharacterSheetDto;
-import lv.odylab.evemanage.integration.eveapi.dto.CorporationSheetDto;
-import lv.odylab.evemanage.integration.eveapi.dto.IndustryJobDto;
+import lv.odylab.evemanage.integration.eveapi.dto.*;
 import lv.odylab.evemanage.integration.evecentralapi.dto.MarketStatDto;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintTypeDto;
-import lv.odylab.evemanage.integration.evedb.dto.SchematicItemDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
 import lv.odylab.evemanage.integration.evemetricsapi.dto.ItemPriceDto;
-import lv.odylab.evemanage.service.calculation.InventedBlueprint;
-import lv.odylab.evemanage.service.calculation.UsedBlueprint;
-import lv.odylab.evemanage.service.calculation.UsedSchematic;
-import lv.odylab.evemanage.shared.eve.Region;
 import lv.odylab.evemetricsapi.parser.method.itemprice.ItemPriceType;
 
 public interface EveManageDtoMapper {
 
     UserDto map(User user, Class<UserDto> userDtoClass);
-
-    SkillLevelDto map(SkillLevel skillLevel, Class<SkillLevelDto> skillLevelDtoClass);
-
-    SkillLevel map(SkillLevelDto skillLevelDto, Class<SkillLevel> skillLevelClass);
-
-    RegionDto map(Region region, Class<RegionDto> regionDtoClass);
 
     BlueprintDto map(Blueprint blueprint, Class<BlueprintDto> blueprintDtoClass);
 
@@ -132,13 +102,5 @@ public interface EveManageDtoMapper {
     ItemPriceDto map(ItemPriceType itemPriceType, Class<ItemPriceDto> itemPriceDtoClass);
 
     CalculationDto map(Calculation calculation, Class<CalculationDto> calculationDtoClass);
-
-    SchematicItemDto map(PlanetSchematicDto planetSchematicDto, Class<SchematicItemDto> schematicItemDtoClass);
-
-    UsedBlueprintDto map(UsedBlueprint usedBlueprint, Class<UsedBlueprintDto> usedBlueprintDtoClass);
-
-    InventedBlueprintDto map(InventedBlueprint inventedBlueprint, Class<InventedBlueprintDto> inventedBlueprintDtoClass);
-
-    UsedSchematicDto map(UsedSchematic usedSchematic, Class<UsedSchematicDto> usedSchematicDtoClass);
 
 }

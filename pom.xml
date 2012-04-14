@@ -33,7 +33,7 @@
     </properties>
 
     <modules>
-        <module>shared</module>
+        <module>rpc</module>
         <module>server</module>
         <module>web</module>
         <module>web-mainten</module>
@@ -77,7 +77,7 @@
         </repository>
     </repositories>
 
-    <distributionManagement>
+    <distributionManagement>       
         <repository>
             <id>evemanage.googlecode.com</id>
             <url>dav:https://evemanage.googlecode.com/svn/mvnrepo</url>

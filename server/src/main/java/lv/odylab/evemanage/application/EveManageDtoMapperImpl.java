@@ -2,27 +2,29 @@ package lv.odylab.evemanage.application;
 
 import lv.odylab.eveapi.parser.method.account.character.ApiAccountCharacterRow;
 import lv.odylab.eveapi.parser.method.character.sheet.ApiCharacterGenericRow;
-import lv.odylab.eveapi.parser.method.character.sheet.ApiCharacterGenericRowset;
 import lv.odylab.eveapi.parser.method.character.sheet.ApiCharacterSheetResult;
 import lv.odylab.eveapi.parser.method.common.accbalance.ApiAccountBalanceRow;
 import lv.odylab.eveapi.parser.method.common.industryjob.ApiIndustryJobRow;
 import lv.odylab.eveapi.parser.method.corporation.sheet.ApiCorporationSheetResult;
 import lv.odylab.evecentralapi.parser.method.marketstat.MarketStatType;
-import lv.odylab.evedb.rpc.dto.*;
+import lv.odylab.evedb.rpc.dto.InvBlueprintTypeDto;
+import lv.odylab.evedb.rpc.dto.InvTypeBasicInfoDto;
+import lv.odylab.evedb.rpc.dto.InvTypeMaterialDto;
+import lv.odylab.evedb.rpc.dto.RamTypeRequirementDto;
 import lv.odylab.evemanage.application.exception.validation.InvalidPriceException;
+import lv.odylab.evemanage.client.rpc.PathExpression;
 import lv.odylab.evemanage.client.rpc.dto.ItemTypeDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.MaterialDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.RequirementDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.*;
+import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
+import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 import lv.odylab.evemanage.client.rpc.dto.eve.*;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
-import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
 import lv.odylab.evemanage.domain.blueprint.Blueprint;
-import lv.odylab.evemanage.domain.calculation.BlueprintItem;
 import lv.odylab.evemanage.domain.calculation.Calculation;
 import lv.odylab.evemanage.domain.calculation.CalculationItem;
 import lv.odylab.evemanage.domain.eve.ApiKey;
@@ -31,20 +33,15 @@ import lv.odylab.evemanage.domain.eve.Character;
 import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
-import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.eveapi.dto.*;
 import lv.odylab.evemanage.integration.evecentralapi.dto.MarketStatDto;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
-import lv.odylab.evemanage.integration.evedb.dto.*;
+import lv.odylab.evemanage.integration.evedb.dto.BlueprintTypeDto;
+import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
+import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
 import lv.odylab.evemanage.integration.evemetricsapi.dto.ItemPriceDto;
-import lv.odylab.evemanage.service.calculation.InventedBlueprint;
-import lv.odylab.evemanage.service.calculation.UsedBlueprint;
-import lv.odylab.evemanage.service.calculation.UsedSchematic;
 import lv.odylab.evemanage.service.priceset.PriceSetItemDtoComparator;
-import lv.odylab.evemanage.shared.PathExpression;
-import lv.odylab.evemanage.shared.RationalNumber;
-import lv.odylab.evemanage.shared.eve.*;
 import lv.odylab.evemetricsapi.parser.method.itemprice.ItemPriceType;
 
 import java.math.BigDecimal;
@@ -53,7 +50,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-// TODO this needs revamp
 public class EveManageDtoMapperImpl implements EveManageDtoMapper {
 
     @Override
@@ -66,32 +62,6 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
             userDto.setMainCharacter(mainCharacter);
         }
         return userDto;
-    }
-
-    @Override
-    public SkillLevelDto map(SkillLevel skillLevel, Class<SkillLevelDto> skillLevelDtoClass) {
-        SkillLevelDto skillLevelDto = new SkillLevelDto();
-        skillLevelDto.setTypeID(skillLevel.getTypeID());
-        SkillForCalculation skillForCalculation = SkillForCalculation.getByTypeID(skillLevel.getTypeID());
-        skillLevelDto.setName(skillForCalculation.getName());
-        skillLevelDto.setLevel(skillLevel.getLevel());
-        return skillLevelDto;
-    }
-
-    @Override
-    public SkillLevel map(SkillLevelDto skillLevelDto, Class<SkillLevel> skillLevelClass) {
-        SkillLevel skillLevel = new SkillLevel();
-        skillLevel.setTypeID(skillLevelDto.getTypeID());
-        skillLevel.setLevel(skillLevelDto.getLevel());
-        return skillLevel;
-    }
-
-    @Override
-    public RegionDto map(Region region, Class<RegionDto> regionDtoClass) {
-        RegionDto regionDto = new RegionDto();
-        regionDto.setRegionID(region.getRegionID());
-        regionDto.setRegionName(region.getName());
-        return regionDto;
     }
 
     @Override
@@ -110,7 +80,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         if (blueprint.getAttachedCharacterInfo() != null) {
             blueprintDto.setAttachedCharacterInfo(mapForCharacterInfo(blueprint.getAttachedCharacterInfo(), CharacterInfoDto.class));
         }
-        blueprintDto.setSharingLevel(SharingLevel.valueOf(blueprint.getSharingLevel()));
+        blueprintDto.setSharingLevel(blueprint.getSharingLevel());
         return blueprintDto;
     }
 
@@ -329,7 +299,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         if (priceSet.getAttachedCharacterInfo() != null) {
             priceSetDto.setAttachedCharacterName(map(priceSet.getAttachedCharacterInfo(), CharacterNameDto.class));
         }
-        priceSetDto.setSharingLevel(SharingLevel.valueOf(priceSet.getSharingLevel()));
+        priceSetDto.setSharingLevel(priceSet.getSharingLevel());
         priceSetDto.setCreatedDate(priceSet.getCreatedDate());
         priceSetDto.setUpdatedDate(priceSet.getUpdatedDate());
         List<PriceSetItemDto> priceSetItemDtoList = new ArrayList<PriceSetItemDto>();
@@ -413,7 +383,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         }
         apiKeyDto.setCharacterInfos(characterInfoDtos);
         apiKeyDto.setLastCheckDate(apiKey.getLastCheckDate());
-        apiKeyDto.setKeyType(ApiKeyType.valueOf(apiKey.getKeyType()));
+        apiKeyDto.setKeyType(apiKey.getKeyType());
         apiKeyDto.setValid(apiKey.isValid());
         return apiKeyDto;
     }
@@ -435,7 +405,6 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         itemTypeDto.setItemCategoryID(invTypeBasicInfoDto.getItemCategoryID());
         itemTypeDto.setName(invTypeBasicInfoDto.getName());
         itemTypeDto.setGraphicIcon(invTypeBasicInfoDto.getIcon());
-        itemTypeDto.setMetaLevel(invTypeBasicInfoDto.getMetaLevel());
         return itemTypeDto;
     }
 
@@ -446,7 +415,6 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         itemTypeDtoToMap.setItemCategoryID(itemTypeDto.getItemCategoryID());
         itemTypeDtoToMap.setName(itemTypeDto.getName());
         itemTypeDtoToMap.setGraphicIcon(itemTypeDto.getGraphicIcon());
-        itemTypeDtoToMap.setMetaLevel(itemTypeDto.getMetaLevel());
         return itemTypeDtoToMap;
     }
 
@@ -459,10 +427,6 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         blueprintTypeDto.setProductTypeName(invBlueprintTypeDto.getProductTypeName());
         blueprintTypeDto.setProductCategoryID(invBlueprintTypeDto.getProductCategoryID());
         blueprintTypeDto.setProductGraphicIcon(invBlueprintTypeDto.getProductIcon());
-        blueprintTypeDto.setParentBlueprintTypeID(invBlueprintTypeDto.getParentBlueprintTypeID());
-        blueprintTypeDto.setParentBlueprintTypeName(invBlueprintTypeDto.getParentBlueprintTypeName());
-        blueprintTypeDto.setParentProductTypeID(invBlueprintTypeDto.getParentProductTypeID());
-        blueprintTypeDto.setParentProductTypeName(invBlueprintTypeDto.getParentProductTypeName());
         blueprintTypeDto.setTechLevel(invBlueprintTypeDto.getTechLevel());
         blueprintTypeDto.setProductionTime(invBlueprintTypeDto.getProductionTime());
         blueprintTypeDto.setResearchProductivityTime(invBlueprintTypeDto.getResearchProductivityTime());
@@ -472,8 +436,6 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         blueprintTypeDto.setProductivityModifier(invBlueprintTypeDto.getProductivityModifier());
         blueprintTypeDto.setWasteFactor(invBlueprintTypeDto.getWasteFactor());
         blueprintTypeDto.setMaxProductionLimit(invBlueprintTypeDto.getMaxProductionLimit());
-        blueprintTypeDto.setProductVolume(invBlueprintTypeDto.getProductVolume());
-        blueprintTypeDto.setProductPortionSize(invBlueprintTypeDto.getProductPortionSize());
         return blueprintTypeDto;
     }
 
@@ -484,7 +446,6 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         itemTypeDto.setItemCategoryID(invTypeBasicInfoDto.getItemCategoryID());
         itemTypeDto.setName(invTypeBasicInfoDto.getName());
         itemTypeDto.setGraphicIcon(invTypeBasicInfoDto.getIcon());
-        itemTypeDto.setMetaLevel(invTypeBasicInfoDto.getMetaLevel());
         return itemTypeDto;
     }
 
@@ -504,19 +465,6 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
             }
         }
         characterSheetDto.setCorporationTitles(corporationTitles);
-        List<ApiCharacterGenericRowset> apiCharacterSheetResultRowsets = apiCharacterSheetResult.getRowsets();
-
-        List<ApiCharacterGenericRow> skillRows = apiCharacterSheetResult.getSkills();
-        List<lv.odylab.evemanage.integration.eveapi.dto.SkillLevelDto> skillLevelDtos = new ArrayList<lv.odylab.evemanage.integration.eveapi.dto.SkillLevelDto>();
-        if (skillRows != null) {
-            for (ApiCharacterGenericRow skillRow : skillRows) {
-                lv.odylab.evemanage.integration.eveapi.dto.SkillLevelDto skillLevelDto = new lv.odylab.evemanage.integration.eveapi.dto.SkillLevelDto();
-                skillLevelDto.setTypeID(skillRow.getTypeID());
-                skillLevelDto.setLevel(skillRow.getLevel());
-                skillLevelDtos.add(skillLevelDto);
-            }
-        }
-        characterSheetDto.setSkillLevels(skillLevelDtos);
         return characterSheetDto;
     }
 
@@ -565,9 +513,9 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
     public MarketStatDto map(MarketStatType marketStatType, Class<MarketStatDto> marketStatDtoClass) {
         MarketStatDto marketStatDto = new MarketStatDto();
         marketStatDto.setTypeID(marketStatType.getTypeID());
-        marketStatDto.setMedianBuySell(marketStatType.getAll().getMedian());
-        marketStatDto.setMedianBuy(marketStatType.getBuy().getMedian());
-        marketStatDto.setMedianSell(marketStatType.getSell().getMedian());
+        marketStatDto.setMedian(marketStatType.getAll().getMedian());
+        marketStatDto.setBuyMedian(marketStatType.getBuy().getMedian());
+        marketStatDto.setSellMedian(marketStatType.getSell().getMedian());
         return marketStatDto;
     }
 
@@ -575,12 +523,10 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
     public ItemPriceDto map(ItemPriceType itemPriceType, Class<ItemPriceDto> itemPriceDtoClass) {
         ItemPriceDto itemPriceDto = new ItemPriceDto();
         itemPriceDto.setTypeID(itemPriceType.getId());
-        BigDecimal medianBuy = itemPriceType.getRegionsTypeData().get(0).getBuyPrices().getMedian();
-        BigDecimal medianSell = itemPriceType.getRegionsTypeData().get(0).getSellPrices().getMedian();
-        BigDecimal medianBuySell = medianBuy.add(medianSell).divide(new BigDecimal(2)).setScale(2, RoundingMode.HALF_UP);
-        itemPriceDto.setMedianBuySell(medianBuySell);
-        itemPriceDto.setMedianBuy(medianBuy);
-        itemPriceDto.setMedianSell(medianSell);
+        BigDecimal medianBuyPrice = itemPriceType.getRegionsTypeData().get(0).getBuyPrices().getMedian();
+        BigDecimal medianSellPrice = itemPriceType.getRegionsTypeData().get(0).getSellPrices().getMedian();
+        BigDecimal medianPrice = medianBuyPrice.add(medianSellPrice).divide(new BigDecimal(2)).setScale(2, RoundingMode.HALF_UP);
+        itemPriceDto.setMedian(medianPrice);
         return itemPriceDto;
     }
 
@@ -590,8 +536,6 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         calculationDto.setId(calculation.getId());
         calculationDto.setName(calculation.getName());
         calculationDto.setPrice(new BigDecimal(calculation.getPrice()));
-        calculationDto.setPricePerUnit(new BigDecimal(calculation.getPricePerUnit()));
-        calculationDto.setQuantity(calculation.getQuantity());
         calculationDto.setBlueprintTypeID(calculation.getBlueprintTypeID());
         calculationDto.setBlueprintTypeName(calculation.getBlueprintTypeName());
         calculationDto.setProductTypeName(calculation.getProductTypeName());
@@ -601,108 +545,23 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         calculationDto.setProductivityLevel(calculation.getProductivityLevel());
         calculationDto.setMaterialLevel(calculation.getMaterialLevel());
         calculationDto.setWasteFactor(calculation.getWasteFactor());
-        calculationDto.setMaxProductionLimit(calculation.getMaxProductionLimit());
-        calculationDto.setProductVolume(new BigDecimal(calculation.getProductVolume()));
-        calculationDto.setProductPortionSize(calculation.getProductPortionSize());
         List<CalculationItemDto> calculationItemDtos = new ArrayList<CalculationItemDto>();
-        for (CalculationItem calculationItem : calculation.getCalculationItems()) {
+        for (CalculationItem calculationItem : calculation.getItems()) {
             calculationItemDtos.add(map(calculationItem, CalculationItemDto.class));
         }
-        calculationDto.setCalculationItems(calculationItemDtos);
-        List<BlueprintItemDto> blueprintItemDtos = new ArrayList<BlueprintItemDto>();
-        for (BlueprintItem blueprintItem : calculation.getBlueprintItems()) {
-            blueprintItemDtos.add(map(blueprintItem, BlueprintItemDto.class));
-        }
-        calculationDto.setBlueprintItems(blueprintItemDtos);
-        List<SkillLevelDto> skillLevelDtos = new ArrayList<SkillLevelDto>();
-        for (SkillLevel skillLevel : calculation.getSkillLevels()) {
-            skillLevelDtos.add(map(skillLevel, SkillLevelDto.class));
-        }
-        calculationDto.setSkillLevels(skillLevelDtos);
+        calculationDto.setItems(calculationItemDtos);
         return calculationDto;
-    }
-
-    @Override
-    public SchematicItemDto map(PlanetSchematicDto planetSchematicDto, Class<SchematicItemDto> schematicItemDtoClass) {
-        SchematicItemDto schematicItemDto = new SchematicItemDto();
-        schematicItemDto.setRequiredTypeID(planetSchematicDto.getRequiredTypeID());
-        schematicItemDto.setRequiredTypeName(planetSchematicDto.getRequiredTypeName());
-        schematicItemDto.setRequiredGroupID(planetSchematicDto.getRequiredGroupID());
-        schematicItemDto.setRequiredGroupName(planetSchematicDto.getRequiredGroupName());
-        schematicItemDto.setRequiredIcon(planetSchematicDto.getRequiredIcon());
-        schematicItemDto.setRequiredQuantity(planetSchematicDto.getRequiredQuantity());
-        schematicItemDto.setSchematicQuantity(planetSchematicDto.getSchematicQuantity());
-        return schematicItemDto;
-    }
-
-    @Override
-    public UsedBlueprintDto map(UsedBlueprint usedBlueprint, Class<UsedBlueprintDto> usedBlueprintDtoClass) {
-        UsedBlueprintDto usedBlueprintDto = new UsedBlueprintDto();
-        usedBlueprintDto.setMaterialLevel(usedBlueprint.getMaterialLevel());
-        usedBlueprintDto.setProductivityLevel(usedBlueprint.getProductivityLevel());
-        List<CalculationItemDto> calculationItemDtos = new ArrayList<CalculationItemDto>();
-        for (CalculationItem calculationItem : usedBlueprint.getCalculationItems()) {
-            calculationItemDtos.add(map(calculationItem, CalculationItemDto.class));
-        }
-        usedBlueprintDto.setCalculationItems(calculationItemDtos);
-        usedBlueprintDto.setBlueprintItem(map(usedBlueprint.getBlueprintItem(), BlueprintItemDto.class));
-        return usedBlueprintDto;
-    }
-
-    @Override
-    public InventedBlueprintDto map(InventedBlueprint inventedBlueprint, Class<InventedBlueprintDto> inventedBlueprintDtoClass) {
-        InventedBlueprintDto inventedBlueprintDto = new InventedBlueprintDto();
-        List<BlueprintItemDto> blueprintItemDtos = new ArrayList<BlueprintItemDto>();
-        for (BlueprintItem blueprintItem : inventedBlueprint.getBlueprintItems()) {
-            blueprintItemDtos.add(map(blueprintItem, BlueprintItemDto.class));
-        }
-        inventedBlueprintDto.setBlueprintItems(blueprintItemDtos);
-        List<DecryptorDto> decryptorDtos = new ArrayList<DecryptorDto>();
-        for (Decryptor decryptor : inventedBlueprint.getDecryptors()) {
-            decryptorDtos.add(map(decryptor, DecryptorDto.class));
-        }
-        inventedBlueprintDto.setDecryptors(decryptorDtos);
-        List<SkillLevelDto> skillLevelDtos = new ArrayList<SkillLevelDto>();
-        for (SkillLevel skillLevel : inventedBlueprint.getSkillLevels()) {
-            skillLevelDtos.add(map(skillLevel, SkillLevelDto.class));
-        }
-        inventedBlueprintDto.setSkillLevels(skillLevelDtos);
-        List<ItemTypeDto> baseItemTypes = new ArrayList<ItemTypeDto>();
-        for (lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto baseItem : inventedBlueprint.getBaseItems()) {
-            baseItemTypes.add(map(baseItem, ItemTypeDto.class));
-        }
-        inventedBlueprintDto.setBaseItems(baseItemTypes);
-        return inventedBlueprintDto;
-    }
-
-    @Override
-    public UsedSchematicDto map(UsedSchematic usedSchematic, Class<UsedSchematicDto> usedSchematicDtoClass) {
-        UsedSchematicDto usedSchematicDto = new UsedSchematicDto();
-        List<CalculationItemDto> calculationItemDtos = new ArrayList<CalculationItemDto>();
-        for (CalculationItem calculationItem : usedSchematic.getCalculationItems()) {
-            calculationItemDtos.add(map(calculationItem, CalculationItemDto.class));
-        }
-        usedSchematicDto.setCalculationItems(calculationItemDtos);
-        return usedSchematicDto;
     }
 
     private CalculationItemDto map(CalculationItem calculationItem, Class<CalculationItemDto> calculationItemDtoClass) {
         CalculationItemDto calculationItemDto = new CalculationItemDto();
-        calculationItemDto.setPathExpression(PathExpression.parseExpression(calculationItem.getPath()));
+        calculationItemDto.setPathExpression(PathExpression.parsePath(calculationItem.getPath()));
         calculationItemDto.setItemTypeID(calculationItem.getItemTypeID());
         calculationItemDto.setItemCategoryID(calculationItem.getItemCategoryID());
         calculationItemDto.setItemTypeName(calculationItem.getItemTypeName());
         calculationItemDto.setItemTypeIcon(calculationItem.getItemTypeIcon());
         calculationItemDto.setQuantity(calculationItem.getQuantity());
-        String quantityMultiplier = calculationItem.getQuantityMultiplier();
-        if (quantityMultiplier != null) {
-            calculationItemDto.setQuantityMultiplier(RationalNumber.parse(quantityMultiplier));
-        }
         calculationItemDto.setParentQuantity(calculationItem.getParentQuantity());
-        String parentQuantityMultiplier = calculationItem.getParentQuantityMultiplier();
-        if (parentQuantityMultiplier != null) {
-            calculationItemDto.setParentQuantityMultiplier(RationalNumber.parse(parentQuantityMultiplier));
-        }
         calculationItemDto.setPerfectQuantity(calculationItem.getPerfectQuantity());
         calculationItemDto.setWasteFactor(calculationItem.getWasteFactor());
         calculationItemDto.setDamagePerJob(new BigDecimal(calculationItem.getDamagePerJob()));
@@ -710,43 +569,5 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         calculationItemDto.setTotalPrice(new BigDecimal(calculationItem.getTotalPrice()));
         calculationItemDto.setTotalPriceForParent(new BigDecimal(calculationItem.getTotalPriceForParent()));
         return calculationItemDto;
-    }
-
-    private BlueprintItemDto map(BlueprintItem blueprintItem, Class<BlueprintItemDto> blueprintItemDtoClass) {
-        BlueprintItemDto blueprintItemDto = new BlueprintItemDto();
-        blueprintItemDto.setPathExpression(PathExpression.parseExpression(blueprintItem.getPath()));
-        String blueprintUse = blueprintItem.getBlueprintUse();
-        if (blueprintUse != null) {
-            blueprintItemDto.setBlueprintUse(BlueprintUse.valueOf(blueprintUse));
-        }
-        blueprintItemDto.setItemTypeID(blueprintItem.getItemTypeID());
-        blueprintItemDto.setItemCategoryID(blueprintItem.getItemCategoryID());
-        blueprintItemDto.setItemTypeName(blueprintItem.getItemTypeName());
-        blueprintItemDto.setItemTypeIcon(blueprintItem.getItemTypeIcon());
-        blueprintItemDto.setParentBlueprintTypeID(blueprintItem.getParentBlueprintTypeID());
-        blueprintItemDto.setParentBlueprintTypeName(blueprintItem.getParentBlueprintTypeName());
-        blueprintItemDto.setParentProductTypeID(blueprintItem.getParentProductTypeID());
-        blueprintItemDto.setParentProductTypeName(blueprintItem.getParentProductTypeName());
-        blueprintItemDto.setQuantity(blueprintItem.getQuantity());
-        blueprintItemDto.setParentQuantity(blueprintItem.getParentQuantity());
-        blueprintItemDto.setPrice(new BigDecimal(blueprintItem.getPrice()));
-        blueprintItemDto.setTotalPrice(new BigDecimal(blueprintItem.getTotalPrice()));
-        blueprintItemDto.setTotalPriceForParent(new BigDecimal(blueprintItem.getTotalPriceForParent()));
-        blueprintItemDto.setMaxProductionLimit(blueprintItem.getMaxProductionLimit());
-        blueprintItemDto.setRuns(blueprintItem.getRuns());
-        blueprintItemDto.setChance(new BigDecimal(blueprintItem.getChance()));
-        return blueprintItemDto;
-    }
-
-    private DecryptorDto map(Decryptor decryptor, Class<DecryptorDto> decryptorDtoClass) {
-        DecryptorDto decryptorDto = new DecryptorDto();
-        decryptorDto.setTypeID(decryptor.getTypeID());
-        decryptorDto.setTypeName(decryptor.getName());
-        decryptorDto.setCategoryID(decryptor.getCategoryID());
-        decryptorDto.setProbabilityMultiplier(new BigDecimal(decryptor.getProbabilityMultiplier()));
-        decryptorDto.setMaxRunModifier(decryptor.getMaxRunModifier());
-        decryptorDto.setMeModifier(decryptor.getMeModifier());
-        decryptorDto.setPeModifier(decryptor.getPeModifier());
-        return decryptorDto;
     }
 }

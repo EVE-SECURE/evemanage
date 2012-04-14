@@ -12,7 +12,7 @@ public class OpaqueLoadableBlueprintImage extends Image {
     private String titleWithoutOpacity;
 
     public OpaqueLoadableBlueprintImage(EveManageResources resources, EveManageMessages messages, String titleWithOpacity, String titleWithoutOpacity) {
-        super(resources.blueprintNotUsedIcon());
+        super(resources.blueprintIcon16());
         this.resources = resources;
         this.messages = messages;
         this.titleWithOpacity = titleWithOpacity;
@@ -21,13 +21,13 @@ public class OpaqueLoadableBlueprintImage extends Image {
 
     public void setOpacity() {
         hasOpacity = true;
-        setResource(resources.blueprintNotUsedIcon());
+        addStyleName(resources.css().imageOpacity05());
         setTitle(titleWithOpacity);
     }
 
     public void removeOpacity() {
         hasOpacity = false;
-        setResource(resources.blueprintIcon());
+        removeStyleName(resources.css().imageOpacity05());
         setTitle(titleWithoutOpacity);
     }
 
@@ -42,7 +42,7 @@ public class OpaqueLoadableBlueprintImage extends Image {
     }
 
     public void stopLoading() {
-        setResource(resources.blueprintIcon());
+        setResource(resources.blueprintIcon16());
         setTitle(titleWithoutOpacity);
         addStyleName(resources.css().cursorHand());
     }

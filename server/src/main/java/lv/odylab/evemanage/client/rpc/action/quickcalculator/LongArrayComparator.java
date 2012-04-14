@@ -2,8 +2,6 @@ package lv.odylab.evemanage.client.rpc.action.quickcalculator;
 
 import java.util.Comparator;
 
-@Deprecated
-// TODO remove this class
 public class LongArrayComparator implements Comparator<Long[]> {
 
     @Override
@@ -24,4 +22,3 @@ public class LongArrayComparator implements Comparator<Long[]> {
         }
     }
 }
-

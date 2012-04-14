@@ -9,7 +9,6 @@ import lv.odylab.evemanage.domain.user.User;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
 import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
-import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.util.List;
 
@@ -35,16 +34,16 @@ public interface BlueprintManagementService {
 
     List<Blueprint> getAllianceBlueprints(Key<User> userKey);
 
-    Blueprint saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, SharingLevel sharingLevel, Key<User> userKey);
+    Blueprint saveBlueprint(Long blueprintID, Long itemID, Integer meLevel, Integer peLevel, Long attachedCharacterID, String sharingLevel, Key<User> userKey);
 
     void deleteBlueprint(Long blueprintID, Key<User> userKey);
 
-    void importBlueprintsFromXml(String importXml, Long attachedCharacterID, SharingLevel sharingLevel, Key<User> userKey) throws EveApiException;
+    void importBlueprintsFromXml(String importXml, Long attachedCharacterID, String sharingLevel, Key<User> userKey) throws EveApiException;
 
-    void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, SharingLevel sharingLevel, Key<User> userKey);
+    void importBlueprintsFromCsv(String importCsv, Long attachedCharacterID, String sharingLevel, Key<User> userKey);
 
-    void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel, Key<User> userKey) throws EveApiException;
+    void importBlueprintsUsingOneTimeFullApiKey(String fullApiKey, Long userID, Long characterID, String level, Long attachedCharacterID, String sharingLevel, Key<User> userKey) throws EveApiException;
 
-    void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, SharingLevel sharingLevel, Key<User> userKey) throws EveApiException;
+    void importBlueprintsUsingFullApiKey(Long characterID, String level, Long attachedCharacterID, String sharingLevel, Key<User> userKey) throws EveApiException;
 
 }

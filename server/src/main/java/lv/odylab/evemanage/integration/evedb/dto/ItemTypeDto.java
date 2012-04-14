@@ -7,7 +7,6 @@ public class ItemTypeDto implements Serializable {
     private Long itemCategoryID;
     private String name;
     private String graphicIcon;
-    private Integer metaLevel;
 
     public Long getItemTypeID() {
         return itemTypeID;
@@ -39,13 +38,5 @@ public class ItemTypeDto implements Serializable {
 
     public void setGraphicIcon(String graphicIcon) {
         this.graphicIcon = graphicIcon;
-    }
-
-    public Integer getMetaLevel() {
-        return metaLevel;
-    }
-
-    public void setMetaLevel(Integer metaLevel) {
-        this.metaLevel = metaLevel;
     }
 }

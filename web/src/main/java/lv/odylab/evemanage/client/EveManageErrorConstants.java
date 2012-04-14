@@ -2,7 +2,6 @@ package lv.odylab.evemanage.client;
 
 import com.google.gwt.i18n.client.ConstantsWithLookup;
 
-// TODO this approach needs revamp
 public interface EveManageErrorConstants extends ConstantsWithLookup {
 
     @DefaultStringValue("Error on server")
@@ -76,8 +75,5 @@ public interface EveManageErrorConstants extends ConstantsWithLookup {
 
     @DefaultStringValue("Character is already in use")
     String domainCharacterAlreadyExists();
-
-    @DefaultStringValue("Sorry, direct links are temporary disabled")
-    String directLinksTemporaryDisabled();
 
 }

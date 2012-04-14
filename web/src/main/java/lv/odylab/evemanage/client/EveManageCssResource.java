@@ -38,9 +38,7 @@ public interface EveManageCssResource extends CssResource {
 
     String hintLabel();
 
-    String damagePerJobLabel();
-
-    String rationalNumberQuantityLabel();
+    String damagePerJob();
 
     String tabHeaderPanel();
 
@@ -75,16 +73,6 @@ public interface EveManageCssResource extends CssResource {
     String inGameLinkLabel();
 
     String totalPriceLabel();
-
-    String blueprintOriginalLabel();
-
-    String blueprintCopyLabel();
-
-    String blueprintInventionLabel();
-
-    String decryptorImprove();
-
-    String decryptorWorsen();
 
     String apiKeyUserIdInput();
 

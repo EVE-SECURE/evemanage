@@ -85,13 +85,9 @@ img {
     font-style: italic;
 }
 
-.damagePerJobLabel {
+.damagePerJob {
     color: gray;
     font-size: x-small;
-}
-
-.rationalNumberQuantityLabel {
-    color: brown;
 }
 
 .inGameLinkLabel {
@@ -100,26 +96,6 @@ img {
 
 .totalPriceLabel {
     font-weight: bold;
-}
-
-.blueprintOriginalLabel {
-    color: green;
-}
-
-.blueprintCopyLabel {
-    color: darkslategray;
-}
-
-.blueprintInventionLabel {
-    color: crimson;
-}
-
-.decryptorImprove {
-    color: green;
-}
-
-.decryptorWorsen {
-    color: red;
 }
 
 .tabHeaderPanel {

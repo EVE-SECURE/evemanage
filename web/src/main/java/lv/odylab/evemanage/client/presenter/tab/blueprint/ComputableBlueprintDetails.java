@@ -1,15 +1,11 @@
 package lv.odylab.evemanage.client.presenter.tab.blueprint;
 
+import lv.odylab.evemanage.client.rpc.EveCalculator;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDetailsDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.BlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.MaterialDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.RequirementDto;
-import lv.odylab.evemanage.client.widget.AttachedCharacterLabel;
-import lv.odylab.evemanage.client.widget.QuantityLabel;
-import lv.odylab.evemanage.client.widget.SharingLevelLabel;
-import lv.odylab.evemanage.client.widget.TimeLabel;
-import lv.odylab.evemanage.client.widget.WasteLabel;
-import lv.odylab.evemanage.shared.EveCalculator;
+import lv.odylab.evemanage.client.widget.*;
 
 import java.util.Map;
 

@@ -8,6 +8,7 @@ import lv.odylab.evemanage.client.presenter.Presenter;
 public class DashboardTabPresenter implements Presenter {
 
     public interface Display extends AttachableDisplay {
+
     }
 
     private Display display;

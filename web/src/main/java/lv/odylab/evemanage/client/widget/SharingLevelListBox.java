@@ -2,7 +2,6 @@ package lv.odylab.evemanage.client.widget;
 
 import com.google.gwt.user.client.ui.ListBox;
 import lv.odylab.evemanage.client.EveManageMessages;
-import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 public class SharingLevelListBox extends ListBox {
     private final EveManageMessages messages;
@@ -11,29 +10,30 @@ public class SharingLevelListBox extends ListBox {
         this.messages = messages;
     }
 
-    public void addItem(SharingLevel sharingLevel) {
-        if (SharingLevel.PERSONAL.equals(sharingLevel)) {
-            super.addItem(messages.personal(), sharingLevel.toString());
-        } else if (SharingLevel.CORPORATION.equals(sharingLevel)) {
-            super.addItem(messages.corporation(), sharingLevel.toString());
-        } else if (SharingLevel.ALLIANCE.equals(sharingLevel)) {
-            super.addItem(messages.alliance(), sharingLevel.toString());
+    @Override
+    public void addItem(String item) {
+        if (item.equals("PERSONAL")) {
+            super.addItem(messages.personal(), item);
+        } else if (item.equals("CORPORATION")) {
+            super.addItem(messages.corporation(), item);
+        } else if (item.equals("ALLIANCE")) {
+            super.addItem(messages.alliance(), item);
         } else {
             super.addItem("UNKNOWN");
         }
     }
 
-    public void setSharingLevel(SharingLevel sharingLevel) {
+    public void setSharingLevel(String sharingLevel) {
         int itemCount = getItemCount();
         for (int i = 0; i < itemCount; i++) {
-            if (getValue(i).equals(sharingLevel.toString())) {
+            if (getValue(i).equals(sharingLevel)) {
                 setSelectedIndex(i);
                 return;
             }
         }
     }
 
-    public SharingLevel getSharingLevel() {
-        return SharingLevel.valueOf(getValue(getSelectedIndex()));
+    public String getSharingLevel() {
+        return getValue(getSelectedIndex());
     }
 }
