@@ -1,0 +1,1 @@
+appcfg update target/gwt-webapp/evemanage

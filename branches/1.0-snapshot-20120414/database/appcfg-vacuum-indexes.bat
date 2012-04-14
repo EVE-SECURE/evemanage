@@ -1,0 +1,1 @@
+appcfg.py vacuum_indexes python

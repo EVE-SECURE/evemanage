@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to="evemanage">
+    <inherits name='lv.odylab.evemanage.EveManage'/>
+
+    <set-property-fallback name="locale" value="en"/>
+</module>
