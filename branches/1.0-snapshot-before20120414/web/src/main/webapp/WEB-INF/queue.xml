@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<queue-entries>
+    <queue>
+        <name>default</name>
+        <rate>1/s</rate>
+    </queue>
+    <queue>
+        <name>apikey-updating</name>
+        <rate>1/s</rate>
+    </queue>
+    <queue>
+        <name>blueprint-adding</name>
+        <rate>5/s</rate>
+    </queue>
+    <queue>
+        <name>blueprint-updating</name>
+        <rate>5/s</rate>
+    </queue>
+    <queue>
+        <name>priceset-updating</name>
+        <rate>5/s</rate>
+    </queue>
+    <queue>
+        <name>consistency-checking</name>
+        <rate>5/s</rate>
+    </queue>
+</queue-entries>
