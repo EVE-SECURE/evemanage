@@ -13,7 +13,7 @@
 
     <properties>
         <odylab.evemanage.version>1.0-SNAPSHOT</odylab.evemanage.version>
-        <odylab.evedb.version>1.9</odylab.evedb.version>
+        <odylab.evedb.version>1.10</odylab.evedb.version>
         <odylab.eveapi.version>1.5-SNAPSHOT</odylab.eveapi.version>
         <odylab.evecentralapi.version>1.0-SNAPSHOT</odylab.evecentralapi.version>
         <odylab.evemetricsapi.version>1.0-SNAPSHOT</odylab.evemetricsapi.version>
