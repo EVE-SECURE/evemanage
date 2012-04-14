@@ -12,7 +12,8 @@ public class ComputableBlueprintItem {
     private QuantityLabel copyQuantityLabel;
     private MultiplierLabel copyCorrectiveMultiplierLabel;
     private PriceLabel copyTotalPriceLabel;
-    private QuantityLabel inventionRunsLabel;
+    private QuantityLabel inventionQuantityLabel;
+    private PriceLabel inventionTotalPriceLabel;
     private QuantityLabel inventionMeLevelLabel;
     private QuantityLabel inventionPeLevelLabel;
     private MultiplierLabel inventionChanceLabel;
@@ -65,12 +66,20 @@ public class ComputableBlueprintItem {
         this.copyTotalPriceLabel = copyTotalPriceLabel;
     }
 
-    public QuantityLabel getInventionRunsLabel() {
-        return inventionRunsLabel;
+    public QuantityLabel getInventionQuantityLabel() {
+        return inventionQuantityLabel;
     }
 
-    public void setInventionRunsLabel(QuantityLabel inventionRunsLabel) {
-        this.inventionRunsLabel = inventionRunsLabel;
+    public void setInventionQuantityLabel(QuantityLabel inventionQuantityLabel) {
+        this.inventionQuantityLabel = inventionQuantityLabel;
+    }
+
+    public PriceLabel getInventionTotalPriceLabel() {
+        return inventionTotalPriceLabel;
+    }
+
+    public void setInventionTotalPriceLabel(PriceLabel inventionTotalPriceLabel) {
+        this.inventionTotalPriceLabel = inventionTotalPriceLabel;
     }
 
     public QuantityLabel getInventionMeLevelLabel() {
@@ -108,6 +117,10 @@ public class ComputableBlueprintItem {
             copyQuantityLabel.setQuantity(quantity);
             copyCorrectiveMultiplierLabel.setMultiplier(blueprintItem.getCorrectiveMultiplier().evaluate());
             copyTotalPriceLabel.setPrice(blueprintItem.getTotalPrice());
+        }
+        if (inventionQuantityLabel != null) {
+            inventionQuantityLabel.setQuantity(quantity);
+            inventionTotalPriceLabel.setPrice(blueprintItem.getTotalPrice());
         }
     }
 }

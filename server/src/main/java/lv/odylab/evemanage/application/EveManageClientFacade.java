@@ -1,10 +1,6 @@
 package lv.odylab.evemanage.application;
 
-import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
-import lv.odylab.evemanage.application.exception.EveApiException;
-import lv.odylab.evemanage.application.exception.EveCentralApiException;
-import lv.odylab.evemanage.application.exception.EveDbException;
-import lv.odylab.evemanage.application.exception.EveMetricsApiException;
+import lv.odylab.evemanage.application.exception.*;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.application.exception.validation.InvalidPriceException;
@@ -24,6 +20,7 @@ import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
 import lv.odylab.evemanage.client.rpc.dto.user.LoginDto;
 import lv.odylab.evemanage.client.rpc.dto.user.SkillLevelDto;
 import lv.odylab.evemanage.client.rpc.dto.user.UserDto;
+import lv.odylab.evemanage.shared.CalculationExpression;
 import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 import lv.odylab.evemanage.shared.eve.Region;
 import lv.odylab.evemanage.shared.eve.SharingLevel;
@@ -135,6 +132,8 @@ public interface EveManageClientFacade {
     List<lv.odylab.evemanage.client.rpc.dto.ItemTypeDto> lookupBlueprintType(String query) throws EveDbException;
 
     CalculationDto getNewCalculation(String blueprintName) throws EveDbException, InvalidNameException;
+
+    CalculationDto getQuickCalculationForExpression(CalculationExpression calculationExpression) throws EveDbException, InvalidNameException;
 
     UsedBlueprintDto useBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException;
 

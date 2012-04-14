@@ -3,21 +3,9 @@ package lv.odylab.evemanage.client.view.tab.quickcalculator;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DecoratedPopupPanel;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import lv.odylab.evemanage.client.CcpJsMessages;
-import lv.odylab.evemanage.client.EveManageConstants;
-import lv.odylab.evemanage.client.EveManageMessages;
-import lv.odylab.evemanage.client.EveManageResources;
-import lv.odylab.evemanage.client.EveManageUrlMessages;
+import lv.odylab.evemanage.client.*;
 import lv.odylab.evemanage.client.presenter.tab.QuickCalculatorTabPresenter;
 import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTree;
 import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTreeNode;
@@ -28,15 +16,7 @@ import lv.odylab.evemanage.client.rpc.dto.calculation.BlueprintItemDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.DecryptorDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 import lv.odylab.evemanage.client.util.EveImageUrlProvider;
-import lv.odylab.evemanage.client.widget.BlueprintUseButton;
-import lv.odylab.evemanage.client.widget.EveCentralQuicklookLink;
-import lv.odylab.evemanage.client.widget.EveItemInfoLink;
-import lv.odylab.evemanage.client.widget.EveItemMarketDetailsLink;
-import lv.odylab.evemanage.client.widget.EveMetricsItemPriceLink;
-import lv.odylab.evemanage.client.widget.MultiplierLabel;
-import lv.odylab.evemanage.client.widget.PriceLabel;
-import lv.odylab.evemanage.client.widget.PriceTextBox;
-import lv.odylab.evemanage.client.widget.QuantityLabel;
+import lv.odylab.evemanage.client.widget.*;
 import lv.odylab.evemanage.shared.eve.BlueprintUse;
 
 import java.math.BigDecimal;
@@ -339,10 +319,10 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
             editableBlueprintItem.setDecryptorTable(decryptorTable);
             editableBlueprintItem.setUseBaseItemButton(useBaseItemButton);
             editableBlueprintItem.setBaseItemTable(baseItemTable);
-            computableBlueprintItem.setInventionRunsLabel(new QuantityLabel());
+            /*computableBlueprintItem.setInventionQuantityLabel(new QuantityLabel());
             computableBlueprintItem.setInventionMeLevelLabel(new QuantityLabel());
             computableBlueprintItem.setInventionPeLevelLabel(new QuantityLabel());
-            computableBlueprintItem.setInventionChanceLabel(new MultiplierLabel());
+            computableBlueprintItem.setInventionChanceLabel(new MultiplierLabel());*/
         }
         Anchor useOriginalAnchor = new Anchor("Use original");
         Anchor useCopyAnchor = new Anchor("Use copy");
@@ -425,24 +405,50 @@ public class BlueprintItemTreeSection implements QuickCalculatorTabPresenter.Blu
 
     private void drawChildBlueprintItem(FlexTable inventionBlueprintItemTable, BlueprintItemTreeNode childNode) {
         final int index = inventionBlueprintItemTable.getRowCount();
-
         BlueprintItemDto blueprintItem = childNode.getBlueprintItem();
+        String pathNodesString = blueprintItem.getPathExpression().getPathNodesString();
+        EditableBlueprintItem editableBlueprintItem = new EditableBlueprintItem();
+        ComputableBlueprintItem computableBlueprintItem = new ComputableBlueprintItem();
+
         Long itemCategoryID = blueprintItem.getItemCategoryID();
         Long itemTypeID = blueprintItem.getItemTypeID();
+        QuantityLabel inventionQuantityLabel = new QuantityLabel();
+        PriceTextBox inventionPriceTextBox = new PriceTextBox();
+        inventionPriceTextBox.setPrice(blueprintItem.getPrice());
+        inventionPriceTextBox.addStyleName(resources.css().priceInput());
+        PriceLabel inventionItemTotalPriceLabel = new PriceLabel(BigDecimal.ZERO);
         if (itemCategoryID == 9L) { // Blueprint
             String blueprintImageUrl = imageUrlProvider.getBlueprintImageUrl(itemTypeID);
             Image blueprintImage = new Image(blueprintImageUrl);
             blueprintImage.addStyleName(resources.css().image16());
             inventionBlueprintItemTable.setWidget(index, 0, new EveItemInfoLink(ccpJsMessages, blueprintImage, itemTypeID));
-            inventionBlueprintItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, blueprintItem.getItemTypeName(), itemTypeID));
-            inventionBlueprintItemTable.setWidget(index, 2, new Label(blueprintItem.getBlueprintUse().toString()));
+            inventionBlueprintItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, blueprintItem.getItemTypeName() + " (copy)", itemTypeID));
+            inventionBlueprintItemTable.setWidget(index, 2, new Label("x"));
+            inventionBlueprintItemTable.setWidget(index, 3, inventionQuantityLabel);
+            inventionBlueprintItemTable.setWidget(index, 4, new Label("x"));
+            inventionBlueprintItemTable.setWidget(index, 5, inventionPriceTextBox);
+            inventionBlueprintItemTable.setWidget(index, 6, new Label("="));
+            inventionBlueprintItemTable.setWidget(index, 7, inventionItemTotalPriceLabel);
         } else {
             String imageUrl = imageUrlProvider.getImage16Url(itemCategoryID, itemTypeID, blueprintItem.getItemTypeIcon());
             Image image = new Image(imageUrl);
             image.addStyleName(resources.css().image16());
             inventionBlueprintItemTable.setWidget(index, 0, new EveItemInfoLink(ccpJsMessages, image, itemTypeID));
             inventionBlueprintItemTable.setWidget(index, 1, new EveItemMarketDetailsLink(constants, urlMessages, ccpJsMessages, blueprintItem.getItemTypeName(), itemTypeID));
-            inventionBlueprintItemTable.setWidget(index, 2, new Label(blueprintItem.getBlueprintUse().toString()));
+            inventionBlueprintItemTable.setWidget(index, 2, new Label("x"));
+            inventionBlueprintItemTable.setWidget(index, 3, inventionQuantityLabel);
+            inventionBlueprintItemTable.setWidget(index, 4, new Label("x"));
+            inventionBlueprintItemTable.setWidget(index, 5, inventionPriceTextBox);
+            inventionBlueprintItemTable.setWidget(index, 6, new Label("="));
+            inventionBlueprintItemTable.setWidget(index, 7, inventionItemTotalPriceLabel);
         }
+
+        editableBlueprintItem.setIndex(index);
+        editableBlueprintItem.setInventionPriceTextBox(inventionPriceTextBox);
+        computableBlueprintItem.setInventionQuantityLabel(inventionQuantityLabel);
+        computableBlueprintItem.setInventionTotalPriceLabel(inventionItemTotalPriceLabel);
+        computableBlueprintItem.setBlueprintItem(blueprintItem);
+        pathNodesStringToEditableBlueprintItemMap.put(pathNodesString, editableBlueprintItem);
+        pathNodesStringToComputableBlueprintItemMap.put(pathNodesString, computableBlueprintItem);
     }
 }

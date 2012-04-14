@@ -3,23 +3,9 @@ package lv.odylab.evemanage.client.view.tab.quickcalculator;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DecoratedPopupPanel;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import lv.odylab.evemanage.client.CcpJsMessages;
-import lv.odylab.evemanage.client.EveManageConstants;
-import lv.odylab.evemanage.client.EveManageMessages;
-import lv.odylab.evemanage.client.EveManageResources;
-import lv.odylab.evemanage.client.EveManageUrlMessages;
+import lv.odylab.evemanage.client.*;
 import lv.odylab.evemanage.client.presenter.tab.QuickCalculatorTabPresenter;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTree;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNode;
@@ -30,13 +16,7 @@ import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
 import lv.odylab.evemanage.client.util.EveImageUrlProvider;
-import lv.odylab.evemanage.client.widget.DamagePerJobLabel;
-import lv.odylab.evemanage.client.widget.EveItemInfoLink;
-import lv.odylab.evemanage.client.widget.EveItemMarketDetailsLink;
-import lv.odylab.evemanage.client.widget.OpaqueLoadableBlueprintImage;
-import lv.odylab.evemanage.client.widget.OpaqueLoadableSchematicImage;
-import lv.odylab.evemanage.client.widget.PriceLabel;
-import lv.odylab.evemanage.client.widget.QuantityLabel;
+import lv.odylab.evemanage.client.widget.*;
 import lv.odylab.evemanage.shared.PathExpression;
 
 import java.math.BigDecimal;
@@ -602,6 +582,7 @@ public class CalculationItemTreeSection implements QuickCalculatorTabPresenter.C
                 || categoryID == 8L // Charge
                 || categoryID == 17L // Commodity
                 || categoryID == 18L // Drone
+                || categoryID == 22L // Deployable
                 || categoryID == 23L // Structure
                 || categoryID == 32L) // Subsystem
                 && (typeID != 3687L); // Electronic Parts

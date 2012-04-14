@@ -1,6 +1,8 @@
 package lv.odylab.evemanage.client.presenter.tab.calculator.processor;
 
 import com.google.inject.Inject;
+import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTree;
+import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTree;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNode;
 import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNodeSummary;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
@@ -8,10 +10,12 @@ import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceItemDto;
 import lv.odylab.evemanage.shared.EveCalculator;
 import lv.odylab.evemanage.shared.PathExpression;
 import lv.odylab.evemanage.shared.RationalNumber;
+import lv.odylab.evemanage.shared.eve.SkillForCalculation;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class CalculationItemTreeProcessor {
     private final EveCalculator calculator;
@@ -19,6 +23,19 @@ public class CalculationItemTreeProcessor {
     @Inject
     public CalculationItemTreeProcessor(EveCalculator calculator) {
         this.calculator = calculator;
+    }
+
+    public CalculationItemTreeProcessorResult process(Long quantity, CalculationItemTree calculationItemTree, BlueprintItemTree blueprintItemTree, Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap, Map<Long, Integer> typeIdToSkillLevelMap) {
+        Integer productionEfficiencySkillLevel = getProductionEfficiencySkillLevel(typeIdToSkillLevelMap);
+        Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap = new TreeMap<Long, CalculationPriceItemDto>();
+        BigDecimal pricePerUnit = BigDecimal.ZERO;
+        for (CalculationItemTreeNode node : calculationItemTree.getNodeMap().values()) {
+            pricePerUnit = pricePerUnit.add(recursivelyApplyPrices(typeIdToCalculationPriceSetItemMap, existingTypeIdToCalculationPriceSetItemMap, quantity, new RationalNumber(1L), productionEfficiencySkillLevel, node));
+        }
+        CalculationItemTreeProcessorResult calculationItemTreeProcessorResult = new CalculationItemTreeProcessorResult();
+        calculationItemTreeProcessorResult.setPricePerUnit(pricePerUnit);
+        calculationItemTreeProcessorResult.setTypeIdToCalculationPriceSetItemMap(typeIdToCalculationPriceSetItemMap);
+        return calculationItemTreeProcessorResult;
     }
 
     public BigDecimal recursivelyApplyPrices(Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap, Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap, Long parentQuantity, RationalNumber parentQuantityMultiplier, Integer productionEfficiencySkillLevel, CalculationItemTreeNode calculationItemTreeNode) {
@@ -138,5 +155,10 @@ public class CalculationItemTreeProcessor {
         } else {
             return calculationItem.getPerfectQuantity();
         }
+    }
+
+    private Integer getProductionEfficiencySkillLevel(Map<Long, Integer> typeIdToSkillLevelMap) {
+        Integer skillLevel = typeIdToSkillLevelMap.get(SkillForCalculation.PRODUCTION_EFFICIENCY.getTypeID());
+        return skillLevel == null ? 5 : skillLevel;
     }
 }

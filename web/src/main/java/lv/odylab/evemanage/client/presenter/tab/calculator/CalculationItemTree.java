@@ -27,7 +27,7 @@ public class CalculationItemTree {
         PathExpression pathExpression = calculationItem.getPathExpression();
         Long[] pathNodes = pathExpression.getPathNodes();
         Map<Long, CalculationItemTreeNode> currentNodes = nodeMap;
-        for (int i = 1; i < pathNodes.length - 1; i++) {
+        for (int i = 0; i < pathNodes.length - 1; i++) {
             Long pathNode = pathNodes[i];
             CalculationItemTreeNode node = currentNodes.get(pathNode);
             if (node == null) {
@@ -48,8 +48,11 @@ public class CalculationItemTree {
     public CalculationItemTreeNode getNodeByPathNodes(Long[] pathNodes) {
         CalculationItemTreeNode calculationItemTreeNode = null;
         Map<Long, CalculationItemTreeNode> currentNodeMap = nodeMap;
-        for (int i = 1; i < pathNodes.length; i++) {
-            calculationItemTreeNode = currentNodeMap.get(pathNodes[i]);
+        for (Long pathNode : pathNodes) {
+            calculationItemTreeNode = currentNodeMap.get(pathNode);
+            if (calculationItemTreeNode == null) {
+                return null;
+            }
             currentNodeMap = calculationItemTreeNode.getNodeMap();
         }
         return calculationItemTreeNode;

@@ -3,11 +3,7 @@ package lv.odylab.evemanage.application;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.googlecode.objectify.Key;
-import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
-import lv.odylab.evemanage.application.exception.EveApiException;
-import lv.odylab.evemanage.application.exception.EveCentralApiException;
-import lv.odylab.evemanage.application.exception.EveDbException;
-import lv.odylab.evemanage.application.exception.EveMetricsApiException;
+import lv.odylab.evemanage.application.exception.*;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
@@ -31,6 +27,7 @@ import lv.odylab.evemanage.service.calculation.UsedSchematic;
 import lv.odylab.evemanage.service.eve.EveManagementService;
 import lv.odylab.evemanage.service.priceset.PriceSetManagementService;
 import lv.odylab.evemanage.service.user.UserManagementService;
+import lv.odylab.evemanage.shared.CalculationExpression;
 import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 import lv.odylab.evemanage.shared.eve.Region;
 import lv.odylab.evemanage.shared.eve.SharingLevel;
@@ -323,6 +320,11 @@ public class EveManageApplicationFacadeImpl implements EveManageApplicationFacad
     @Override
     public Calculation getNewCalculation(String blueprintName) throws EveDbException, InvalidNameException {
         return calculationService.getNewCalculation(blueprintName);
+    }
+
+    @Override
+    public Calculation getCalculationForExpression(CalculationExpression calculationExpression) throws EveDbException, InvalidNameException {
+        return calculationService.getCalculationForExpression(calculationExpression);
     }
 
     @Override

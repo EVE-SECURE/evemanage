@@ -9,12 +9,14 @@ public class QuickCalculatorUsedBlueprintEvent extends QuickCalculatorTabEvent<Q
     public static final Type<QuickCalculatorUsedBlueprintEventHandler> TYPE = new Type<QuickCalculatorUsedBlueprintEventHandler>();
 
     private Long[] pathNodes;
+    private String pathNodesString;
     private UsedBlueprintDto usedBlueprint;
 
     public QuickCalculatorUsedBlueprintEvent(TrackingManager trackingManager, EveManageConstants constants, QuickCalculatorUseBlueprintActionResponse response, Long msDuration) {
         super(trackingManager, constants, msDuration);
 
         this.pathNodes = response.getPathNodes();
+        this.pathNodesString = response.getPathNodesString();
         this.usedBlueprint = response.getUsedBlueprint();
     }
 
@@ -25,6 +27,10 @@ public class QuickCalculatorUsedBlueprintEvent extends QuickCalculatorTabEvent<Q
 
     public Long[] getPathNodes() {
         return pathNodes;
+    }
+
+    public String getPathNodesString() {
+        return pathNodesString;
     }
 
     public UsedBlueprintDto getUsedBlueprint() {

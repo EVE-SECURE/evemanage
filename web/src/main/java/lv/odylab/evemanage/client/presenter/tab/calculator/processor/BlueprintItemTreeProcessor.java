@@ -1,9 +1,11 @@
 package lv.odylab.evemanage.client.presenter.tab.calculator.processor;
 
 import com.google.inject.Inject;
+import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTree;
 import lv.odylab.evemanage.client.presenter.tab.calculator.BlueprintItemTreeNode;
+import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTree;
+import lv.odylab.evemanage.client.presenter.tab.calculator.CalculationItemTreeNode;
 import lv.odylab.evemanage.client.rpc.dto.calculation.BlueprintItemDto;
-import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationPriceItemDto;
 import lv.odylab.evemanage.shared.EveCalculator;
 import lv.odylab.evemanage.shared.RationalNumber;
 import lv.odylab.evemanage.shared.eve.BlueprintUse;
@@ -19,9 +21,23 @@ public class BlueprintItemTreeProcessor {
         this.calculator = calculator;
     }
 
-    public BigDecimal recursivelyApplyPrices(Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap, Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap, Long parentQuantity, Map<Long, Integer> typeIdToSkillLevelMap, BlueprintItemTreeNode blueprintItemTreeNode) {
-        if (blueprintItemTreeNode.isExcludeNodeCalculation() || blueprintItemTreeNode.getNodeMap().size() == 0) {
-            return applyPricesForLastNode(typeIdToCalculationPriceSetItemMap, existingTypeIdToCalculationPriceSetItemMap, parentQuantity, typeIdToSkillLevelMap, blueprintItemTreeNode);
+    public BlueprintItemTreeProcessorResult process(Long quantity, CalculationItemTree calculationItemTree, Map<Long, Integer> typeIdToSkillLevelMap, BlueprintItemTree blueprintItemTree) {
+        BigDecimal pricePerUnit = BigDecimal.ZERO;
+        for (BlueprintItemTreeNode node : blueprintItemTree.getNodeMap().values()) {
+            pricePerUnit = pricePerUnit.add(recursivelyApplyPrices(quantity, calculationItemTree, typeIdToSkillLevelMap, node));
+        }
+
+        BlueprintItemTreeProcessorResult blueprintItemTreeProcessorResult = new BlueprintItemTreeProcessorResult();
+        blueprintItemTreeProcessorResult.setPricePerUnit(pricePerUnit);
+        return blueprintItemTreeProcessorResult;
+    }
+
+    public BigDecimal recursivelyApplyPrices(Long parentQuantity, CalculationItemTree calculationItemTree, Map<Long, Integer> typeIdToSkillLevelMap, BlueprintItemTreeNode blueprintItemTreeNode) {
+        if (blueprintItemTreeNode.isExcludeNodeCalculation()) {
+            return BigDecimal.ZERO;
+        }
+        if (blueprintItemTreeNode.getNodeMap().size() == 0) {
+            return applyPricesForLastNode(parentQuantity, calculationItemTree, typeIdToSkillLevelMap, blueprintItemTreeNode);
         }
 
         BigDecimal totalPrice = BigDecimal.ZERO;
@@ -35,7 +51,7 @@ public class BlueprintItemTreeProcessor {
         blueprintItem.setCorrectiveMultiplier(correctiveMultiplier);
         BigDecimal nodePrice = BigDecimal.ZERO;
         for (BlueprintItemTreeNode node : blueprintItemTreeNode.getNodeMap().values()) {
-            nodePrice = nodePrice.add(recursivelyApplyPrices(typeIdToCalculationPriceSetItemMap, existingTypeIdToCalculationPriceSetItemMap, quantity * parentQuantity, typeIdToSkillLevelMap, node));
+            nodePrice = nodePrice.add(recursivelyApplyPrices(quantity * parentQuantity, calculationItemTree, typeIdToSkillLevelMap, node));
         }
         blueprintItem.setPrice(nodePrice);
         totalPrice = totalPrice.add(nodePrice.multiply(BigDecimal.valueOf(blueprintItem.getQuantity())));
@@ -45,19 +61,26 @@ public class BlueprintItemTreeProcessor {
         return totalPrice;
     }
 
-    private BigDecimal applyPricesForLastNode(Map<Long, CalculationPriceItemDto> typeIdToCalculationPriceSetItemMap, Map<Long, CalculationPriceItemDto> existingTypeIdToCalculationPriceSetItemMap, Long parentQuantity, Map<Long, Integer> typeIdToSkillLevelMap, BlueprintItemTreeNode blueprintItemTreeNode) {
+    private BigDecimal applyPricesForLastNode(Long parentQuantity, CalculationItemTree calculationItemTree, Map<Long, Integer> typeIdToSkillLevelMap, BlueprintItemTreeNode blueprintItemTreeNode) {
+        Long[] pathNodes = blueprintItemTreeNode.getBlueprintItem().getPathExpression().getPathNodes();
+        CalculationItemTreeNode calculationItemTreeNode = calculationItemTree.getNodeByPathNodes(pathNodes);
+
+        Long runsMultiplier = 1L;
+        if (calculationItemTreeNode != null) {
+            runsMultiplier = calculationItemTreeNode.getSummary().getQuantity();
+        }
         BlueprintItemDto blueprintItem = blueprintItemTreeNode.getBlueprintItem();
         BlueprintUse blueprintUse = blueprintItem.getBlueprintUse();
-        Long quantity = calculateQuantity(blueprintItem, parentQuantity);
+        Long quantity = calculateQuantity(blueprintItem, parentQuantity * runsMultiplier);
         Integer maxProductionLimit = blueprintItem.getMaxProductionLimit();
-        Long runs = calculateRuns(blueprintUse, parentQuantity, maxProductionLimit);
+        Long runs = calculateRuns(blueprintUse, parentQuantity * runsMultiplier, maxProductionLimit);
         blueprintItem.setQuantity(quantity);
         blueprintItem.setParentQuantity(parentQuantity);
         blueprintItem.setRuns(runs);
         BigDecimal price = calculateBlueprintPrice(blueprintItem.getBlueprintUse(), blueprintItem.getPrice());
         RationalNumber correctiveMultiplier = new RationalNumber(1L);
         if (maxProductionLimit != null) {
-            correctiveMultiplier = calculator.calculateBlueprintQuantityCorrectiveMultiplier(parentQuantity, quantity, maxProductionLimit);
+            correctiveMultiplier = calculator.calculateBlueprintQuantityCorrectiveMultiplier(parentQuantity * runsMultiplier, quantity, maxProductionLimit);
         }
         blueprintItem.setCorrectiveMultiplier(correctiveMultiplier);
         BigDecimal totalPrice = price.multiply(BigDecimal.valueOf(quantity)).multiply(correctiveMultiplier.evaluate());
