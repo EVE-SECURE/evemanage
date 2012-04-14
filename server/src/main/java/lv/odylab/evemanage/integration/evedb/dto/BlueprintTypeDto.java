@@ -9,6 +9,10 @@ public class BlueprintTypeDto implements Serializable {
     private String productTypeName;
     private Long productCategoryID;
     private String productGraphicIcon;
+    private Long parentBlueprintTypeID;
+    private String parentBlueprintTypeName;
+    private Long parentProductTypeID;
+    private String parentProductTypeName;
     private Integer techLevel;
     private Integer productionTime;
     private Integer researchProductivityTime;
@@ -18,6 +22,8 @@ public class BlueprintTypeDto implements Serializable {
     private Integer productivityModifier;
     private Integer wasteFactor;
     private Integer maxProductionLimit;
+    private String productVolume;
+    private Integer productPortionSize;
 
     public Long getBlueprintTypeID() {
         return blueprintTypeID;
@@ -65,6 +71,38 @@ public class BlueprintTypeDto implements Serializable {
 
     public void setProductGraphicIcon(String productGraphicIcon) {
         this.productGraphicIcon = productGraphicIcon;
+    }
+
+    public Long getParentBlueprintTypeID() {
+        return parentBlueprintTypeID;
+    }
+
+    public void setParentBlueprintTypeID(Long parentBlueprintTypeID) {
+        this.parentBlueprintTypeID = parentBlueprintTypeID;
+    }
+
+    public String getParentBlueprintTypeName() {
+        return parentBlueprintTypeName;
+    }
+
+    public void setParentBlueprintTypeName(String parentBlueprintTypeName) {
+        this.parentBlueprintTypeName = parentBlueprintTypeName;
+    }
+
+    public Long getParentProductTypeID() {
+        return parentProductTypeID;
+    }
+
+    public void setParentProductTypeID(Long parentProductTypeID) {
+        this.parentProductTypeID = parentProductTypeID;
+    }
+
+    public String getParentProductTypeName() {
+        return parentProductTypeName;
+    }
+
+    public void setParentProductTypeName(String parentProductTypeName) {
+        this.parentProductTypeName = parentProductTypeName;
     }
 
     public Integer getTechLevel() {
@@ -137,5 +175,21 @@ public class BlueprintTypeDto implements Serializable {
 
     public void setMaxProductionLimit(Integer maxProductionLimit) {
         this.maxProductionLimit = maxProductionLimit;
+    }
+
+    public String getProductVolume() {
+        return productVolume;
+    }
+
+    public void setProductVolume(String productVolume) {
+        this.productVolume = productVolume;
+    }
+
+    public Integer getProductPortionSize() {
+        return productPortionSize;
+    }
+
+    public void setProductPortionSize(Integer productPortionSize) {
+        this.productPortionSize = productPortionSize;
     }
 }

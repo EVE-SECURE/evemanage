@@ -19,7 +19,11 @@ import lv.odylab.evemanage.client.rpc.dto.blueprint.MaterialDto;
 import lv.odylab.evemanage.client.rpc.dto.blueprint.RequirementDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationItemDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.*;
+import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyCharacterInfoDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.CharacterInfoDto;
+import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
@@ -34,7 +38,11 @@ import lv.odylab.evemanage.domain.priceset.PriceSet;
 import lv.odylab.evemanage.domain.priceset.PriceSetItem;
 import lv.odylab.evemanage.domain.user.CharacterInfo;
 import lv.odylab.evemanage.domain.user.User;
-import lv.odylab.evemanage.integration.eveapi.dto.*;
+import lv.odylab.evemanage.integration.eveapi.dto.AccountBalanceDto;
+import lv.odylab.evemanage.integration.eveapi.dto.AccountCharacterDto;
+import lv.odylab.evemanage.integration.eveapi.dto.CharacterSheetDto;
+import lv.odylab.evemanage.integration.eveapi.dto.CorporationSheetDto;
+import lv.odylab.evemanage.integration.eveapi.dto.IndustryJobDto;
 import lv.odylab.evemanage.integration.evecentralapi.dto.MarketStatDto;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
 import lv.odylab.evemanage.integration.evedb.dto.BlueprintTypeDto;
@@ -427,6 +435,10 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         blueprintTypeDto.setProductTypeName(invBlueprintTypeDto.getProductTypeName());
         blueprintTypeDto.setProductCategoryID(invBlueprintTypeDto.getProductCategoryID());
         blueprintTypeDto.setProductGraphicIcon(invBlueprintTypeDto.getProductIcon());
+        blueprintTypeDto.setParentBlueprintTypeID(invBlueprintTypeDto.getParentBlueprintTypeID());
+        blueprintTypeDto.setParentBlueprintTypeName(invBlueprintTypeDto.getParentBlueprintTypeName());
+        blueprintTypeDto.setParentProductTypeID(invBlueprintTypeDto.getParentProductTypeID());
+        blueprintTypeDto.setParentProductTypeName(invBlueprintTypeDto.getParentProductTypeName());
         blueprintTypeDto.setTechLevel(invBlueprintTypeDto.getTechLevel());
         blueprintTypeDto.setProductionTime(invBlueprintTypeDto.getProductionTime());
         blueprintTypeDto.setResearchProductivityTime(invBlueprintTypeDto.getResearchProductivityTime());
@@ -436,6 +448,8 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         blueprintTypeDto.setProductivityModifier(invBlueprintTypeDto.getProductivityModifier());
         blueprintTypeDto.setWasteFactor(invBlueprintTypeDto.getWasteFactor());
         blueprintTypeDto.setMaxProductionLimit(invBlueprintTypeDto.getMaxProductionLimit());
+        blueprintTypeDto.setProductVolume(invBlueprintTypeDto.getProductVolume());
+        blueprintTypeDto.setProductPortionSize(invBlueprintTypeDto.getProductPortionSize());
         return blueprintTypeDto;
     }
 
@@ -446,6 +460,7 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
         itemTypeDto.setItemCategoryID(invTypeBasicInfoDto.getItemCategoryID());
         itemTypeDto.setName(invTypeBasicInfoDto.getName());
         itemTypeDto.setGraphicIcon(invTypeBasicInfoDto.getIcon());
+        itemTypeDto.setMetaLevel(invTypeBasicInfoDto.getMetaLevel());
         return itemTypeDto;
     }
 
@@ -523,10 +538,10 @@ public class EveManageDtoMapperImpl implements EveManageDtoMapper {
     public ItemPriceDto map(ItemPriceType itemPriceType, Class<ItemPriceDto> itemPriceDtoClass) {
         ItemPriceDto itemPriceDto = new ItemPriceDto();
         itemPriceDto.setTypeID(itemPriceType.getId());
-        BigDecimal medianBuyPrice = itemPriceType.getRegionsTypeData().get(0).getBuyPrices().getMedian();
-        BigDecimal medianSellPrice = itemPriceType.getRegionsTypeData().get(0).getSellPrices().getMedian();
-        BigDecimal medianPrice = medianBuyPrice.add(medianSellPrice).divide(new BigDecimal(2)).setScale(2, RoundingMode.HALF_UP);
-        itemPriceDto.setMedian(medianPrice);
+        BigDecimal medianBuy = itemPriceType.getRegionsTypeData().get(0).getBuyPrices().getMedian();
+        BigDecimal medianSell = itemPriceType.getRegionsTypeData().get(0).getSellPrices().getMedian();
+        BigDecimal medianBuySell = medianBuy.add(medianSell).divide(new BigDecimal(2)).setScale(2, RoundingMode.HALF_UP);
+        itemPriceDto.setMedian(medianBuySell);
         return itemPriceDto;
     }
 
