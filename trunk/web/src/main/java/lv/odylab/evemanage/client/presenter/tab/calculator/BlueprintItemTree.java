@@ -26,7 +26,7 @@ public class BlueprintItemTree {
         PathExpression pathExpression = blueprintItem.getPathExpression();
         Long[] pathNodes = pathExpression.getPathNodes();
         Map<Long, BlueprintItemTreeNode> currentNodes = nodeMap;
-        for (int i = 1; i < pathNodes.length - 1; i++) {
+        for (int i = 0; i < pathNodes.length - 1; i++) {
             Long pathNode = pathNodes[i];
             BlueprintItemTreeNode node = currentNodes.get(pathNode);
             if (node == null) {
@@ -47,8 +47,8 @@ public class BlueprintItemTree {
     public BlueprintItemTreeNode getNodeByPathNodes(Long[] pathNodes) {
         BlueprintItemTreeNode blueprintItemTreeNode = null;
         Map<Long, BlueprintItemTreeNode> currentNodeMap = nodeMap;
-        for (int i = 1; i < pathNodes.length; i++) {
-            blueprintItemTreeNode = currentNodeMap.get(pathNodes[i]);
+        for (Long pathNode : pathNodes) {
+            blueprintItemTreeNode = currentNodeMap.get(pathNode);
             currentNodeMap = blueprintItemTreeNode.getNodeMap();
         }
         return blueprintItemTreeNode;

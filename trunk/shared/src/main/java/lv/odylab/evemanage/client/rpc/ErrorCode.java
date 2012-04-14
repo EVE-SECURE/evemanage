@@ -1,5 +1,6 @@
 package lv.odylab.evemanage.client.rpc;
 
+// TODO this approach needs revamp
 public interface ErrorCode {
 
     String NAME_CANNOT_BE_EMPTY = "nameCannotBeEmpty";

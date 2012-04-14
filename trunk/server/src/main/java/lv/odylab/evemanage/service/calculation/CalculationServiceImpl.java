@@ -9,12 +9,9 @@ import lv.odylab.evemanage.domain.calculation.Calculation;
 import lv.odylab.evemanage.domain.calculation.CalculationItem;
 import lv.odylab.evemanage.domain.user.SkillLevel;
 import lv.odylab.evemanage.integration.evedb.EveDbGateway;
-import lv.odylab.evemanage.integration.evedb.dto.BlueprintDetailsDto;
-import lv.odylab.evemanage.integration.evedb.dto.BlueprintTypeDto;
-import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
-import lv.odylab.evemanage.integration.evedb.dto.SchematicItemDto;
-import lv.odylab.evemanage.integration.evedb.dto.TypeMaterialDto;
-import lv.odylab.evemanage.integration.evedb.dto.TypeRequirementDto;
+import lv.odylab.evemanage.integration.evedb.dto.*;
+import lv.odylab.evemanage.security.EveManageSecurityManagerImpl;
+import lv.odylab.evemanage.shared.CalculationExpression;
 import lv.odylab.evemanage.shared.PathExpression;
 import lv.odylab.evemanage.shared.RationalNumber;
 import lv.odylab.evemanage.shared.eve.BlueprintUse;
@@ -22,37 +19,49 @@ import lv.odylab.evemanage.shared.eve.DataInterface;
 import lv.odylab.evemanage.shared.eve.Datacore;
 import lv.odylab.evemanage.shared.eve.SkillForCalculation;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class CalculationServiceImpl implements CalculationService {
     private final EveDbGateway eveDbGateway;
+    private final EveManageSecurityManagerImpl securityManager;
 
     @Inject
-    public CalculationServiceImpl(EveDbGateway eveDbGateway) {
+    public CalculationServiceImpl(EveDbGateway eveDbGateway, EveManageSecurityManagerImpl securityManager) {
         this.eveDbGateway = eveDbGateway;
+        this.securityManager = securityManager;
     }
 
     @Override
     public Calculation getNewCalculation(String blueprintName) throws EveDbException, InvalidNameException {
         BlueprintDetailsDto blueprintDetailsDto = eveDbGateway.getBlueprintDetailsForTypeName(blueprintName);
+        return getNewCalculation(blueprintDetailsDto, Collections.<Long, String>emptyMap());
+    }
+
+    @Override
+    public Calculation getCalculationForExpression(CalculationExpression calculationExpression) throws EveDbException, InvalidNameException {
+        String blueprintTypeNameFromUrl = calculationExpression.getBlueprintTypeName();
+        String blueprintTypeName = securityManager.decodeUrlString(blueprintTypeNameFromUrl);
+        calculationExpression.setBlueprintTypeName(blueprintTypeName);
+        BlueprintDetailsDto blueprintDetailsDto = eveDbGateway.getBlueprintDetailsForTypeName(blueprintTypeName);
         BlueprintTypeDto blueprintTypeDto = blueprintDetailsDto.getBlueprintTypeDto();
         Long[] pathNodes = new Long[]{blueprintTypeDto.getProductTypeID()};
-        return getNewCalculation(pathNodes, blueprintDetailsDto);
+        Calculation calculation = getNewCalculation(blueprintDetailsDto, calculationExpression.getPriceSetItemTypeIdToPriceMap());
+        calculation.setMaterialLevel(calculationExpression.getMeLevel());
+        calculation.setProductivityLevel(calculationExpression.getPeLevel());
+        return calculation;
     }
 
     @Override
     public UsedBlueprint useBlueprint(Long[] pathNodes, String blueprintName) throws EveDbException, InvalidNameException {
         BlueprintDetailsDto blueprintDetailsDto = eveDbGateway.getBlueprintDetailsForTypeName(blueprintName);
-        return createUsedBlueprint(pathNodes, blueprintDetailsDto);
+        return createUsedBlueprint(pathNodes, blueprintDetailsDto, Collections.<Long, String>emptyMap());
     }
 
     @Override
     public UsedBlueprint useBlueprint(Long[] pathNodes, Long blueprintProductTypeID) throws InvalidItemTypeException, EveDbException, InvalidNameException {
         String typeName = eveDbGateway.getTypeName(blueprintProductTypeID);
         BlueprintDetailsDto blueprintDetailsDto = eveDbGateway.getBlueprintDetailsForTypeName(typeName + " Blueprint");
-        return createUsedBlueprint(pathNodes, blueprintDetailsDto);
+        return createUsedBlueprint(pathNodes, blueprintDetailsDto, Collections.<Long, String>emptyMap());
     }
 
     @Override
@@ -67,7 +76,7 @@ public class CalculationServiceImpl implements CalculationService {
         return createUsedSchematic(pathNodes, schematicItemDtos);
     }
 
-    private Calculation getNewCalculation(Long[] pathNodes, BlueprintDetailsDto blueprintDetailsDto) {
+    private Calculation getNewCalculation(BlueprintDetailsDto blueprintDetailsDto, Map<Long, String> priceSetItemTypeIdToPriceMap) {
         Calculation calculation = new Calculation();
         BlueprintTypeDto blueprintTypeDto = blueprintDetailsDto.getBlueprintTypeDto();
         calculation.setBlueprintTypeID(blueprintTypeDto.getBlueprintTypeID());
@@ -85,10 +94,10 @@ public class CalculationServiceImpl implements CalculationService {
         calculation.setPrice("0.00");
         calculation.setPricePerUnit("0.00");
         calculation.setQuantity(1L);
-        List<CalculationItem> calculationItems = createCalculationItems(pathNodes, blueprintDetailsDto);
+        List<CalculationItem> calculationItems = createCalculationItems(new Long[]{}, blueprintDetailsDto, priceSetItemTypeIdToPriceMap);
         calculation.setCalculationItems(calculationItems);
         List<BlueprintItem> blueprintItems = new ArrayList<BlueprintItem>();
-        PathExpression pathExpression = new PathExpression(pathNodes, blueprintTypeDto.getProductTypeID());
+        PathExpression pathExpression = new PathExpression(new Long[]{blueprintTypeDto.getProductTypeID()});
         blueprintItems.add(createBlueprintItem(pathExpression, blueprintDetailsDto.getBlueprintTypeDto()));
         calculation.setBlueprintItems(blueprintItems);
         List<SkillLevel> skillLevels = new ArrayList<SkillLevel>();
@@ -97,14 +106,14 @@ public class CalculationServiceImpl implements CalculationService {
         return calculation;
     }
 
-    private UsedBlueprint createUsedBlueprint(Long[] pathNodes, BlueprintDetailsDto blueprintDetailsDto) {
+    private UsedBlueprint createUsedBlueprint(Long[] pathNodes, BlueprintDetailsDto blueprintDetailsDto, Map<Long, String> priceSetItemTypeIdToPriceMap) {
         UsedBlueprint usedBlueprint = new UsedBlueprint();
         usedBlueprint.setMaterialLevel(0);
         usedBlueprint.setProductivityLevel(0);
-        List<CalculationItem> calculationItems = createCalculationItems(pathNodes, blueprintDetailsDto);
+        List<CalculationItem> calculationItems = createCalculationItems(pathNodes, blueprintDetailsDto, priceSetItemTypeIdToPriceMap);
         usedBlueprint.setCalculationItems(calculationItems);
         BlueprintTypeDto blueprintTypeDto = blueprintDetailsDto.getBlueprintTypeDto();
-        PathExpression pathExpression = new PathExpression(new Long[]{pathNodes[0], blueprintTypeDto.getProductTypeID()});
+        PathExpression pathExpression = new PathExpression(pathNodes);
         usedBlueprint.setBlueprintItem(createBlueprintItem(pathExpression, blueprintTypeDto));
         return usedBlueprint;
     }
@@ -119,7 +128,8 @@ public class CalculationServiceImpl implements CalculationService {
             if (requiredTypeGroupID == 333) { // Datacores
                 Datacore datacore = Datacore.getByTypeID(requiredTypeID);
                 skillLevels.add(new SkillLevel(datacore.getSkillForCalculation().getTypeID(), 5));
-                blueprintItems.add(createBlueprintItem(pathNodes, typeRequirement));
+                PathExpression pathExpression = new PathExpression(pathNodes, requiredTypeID);
+                blueprintItems.add(createBlueprintItem(pathExpression, typeRequirement));
             } else if (requiredTypeGroupID == 716) { // Data Interfaces
                 DataInterface dataInterface = DataInterface.getByTypeID(requiredTypeID);
                 inventedBlueprint.setDecryptors(dataInterface.getDecryptors());
@@ -128,7 +138,7 @@ public class CalculationServiceImpl implements CalculationService {
         }
         skillLevels.add(new SkillLevel(SkillForCalculation.HACKING.getTypeID(), 5));
         BlueprintTypeDto blueprintTypeDto = blueprintDetailsDto.getBlueprintTypeDto();
-        PathExpression pathExpression = new PathExpression(pathNodes, blueprintTypeDto.getBlueprintTypeID());
+        PathExpression pathExpression = new PathExpression(pathNodes, blueprintTypeDto.getProductTypeID());
         BlueprintItem blueprintItem = createBlueprintItem(pathExpression, blueprintTypeDto);
         blueprintItem.setBlueprintUse(BlueprintUse.COPY.toString());
         blueprintItems.add(blueprintItem);
@@ -151,26 +161,26 @@ public class CalculationServiceImpl implements CalculationService {
         return usedSchematic;
     }
 
-    private List<CalculationItem> createCalculationItems(Long[] pathNodes, BlueprintDetailsDto blueprintDetailsDto) {
+    private List<CalculationItem> createCalculationItems(Long[] pathNodes, BlueprintDetailsDto blueprintDetailsDto, Map<Long, String> priceSetItemTypeIdToPriceMap) {
         BlueprintTypeDto blueprintTypeDto = blueprintDetailsDto.getBlueprintTypeDto();
         List<TypeMaterialDto> materialDtos = blueprintDetailsDto.getMaterialDtos();
         List<TypeRequirementDto> requirementDtos = blueprintDetailsDto.getManufacturingRequirementDtos();
         List<CalculationItem> calculationItems = new ArrayList<CalculationItem>();
         for (TypeMaterialDto materialDto : materialDtos) {
             PathExpression pathExpression = new PathExpression(pathNodes, 0, 0, materialDto.getMaterialTypeID());
-            calculationItems.add(createCalculationItem(pathExpression, blueprintTypeDto, materialDto));
+            calculationItems.add(createCalculationItem(pathExpression, blueprintTypeDto, materialDto, priceSetItemTypeIdToPriceMap));
         }
         for (TypeRequirementDto requirementDto : requirementDtos) {
             if (requirementDto.getRequiredTypeCategoryID() == 16L) { // Skill
                 continue;
             }
             PathExpression pathExpression = new PathExpression(pathNodes, requirementDto.getRequiredTypeID());
-            calculationItems.add(createCalculationItem(pathExpression, blueprintTypeDto, requirementDto));
+            calculationItems.add(createCalculationItem(pathExpression, blueprintTypeDto, requirementDto, priceSetItemTypeIdToPriceMap));
         }
         return calculationItems;
     }
 
-    private CalculationItem createCalculationItem(PathExpression pathExpression, BlueprintTypeDto blueprintTypeDto, TypeMaterialDto materialDto) {
+    private CalculationItem createCalculationItem(PathExpression pathExpression, BlueprintTypeDto blueprintTypeDto, TypeMaterialDto materialDto, Map<Long, String> priceSetItemTypeIdToPriceMap) {
         CalculationItem calculationItem = new CalculationItem();
         calculationItem.setPath(pathExpression.getExpression());
         calculationItem.setItemTypeID(materialDto.getMaterialTypeID());
@@ -184,13 +194,14 @@ public class CalculationServiceImpl implements CalculationService {
         calculationItem.setPerfectQuantity(materialDto.getQuantity());
         calculationItem.setWasteFactor(blueprintTypeDto.getWasteFactor());
         calculationItem.setDamagePerJob("1.00");
-        calculationItem.setPrice("0.00");
+        String price = priceSetItemTypeIdToPriceMap.get(materialDto.getMaterialTypeID());
+        calculationItem.setPrice(price == null ? "0.00" : price);
         calculationItem.setTotalPrice("0.00");
         calculationItem.setTotalPriceForParent("0.00");
         return calculationItem;
     }
 
-    private CalculationItem createCalculationItem(PathExpression pathExpression, BlueprintTypeDto blueprintTypeDto, TypeRequirementDto requirementDto) {
+    private CalculationItem createCalculationItem(PathExpression pathExpression, BlueprintTypeDto blueprintTypeDto, TypeRequirementDto requirementDto, Map<Long, String> priceSetItemTypeIdToPriceMap) {
         CalculationItem calculationItem = new CalculationItem();
         calculationItem.setPath(pathExpression.getExpression());
         calculationItem.setItemTypeID(requirementDto.getRequiredTypeID());
@@ -204,7 +215,8 @@ public class CalculationServiceImpl implements CalculationService {
         calculationItem.setPerfectQuantity(requirementDto.getQuantity());
         calculationItem.setWasteFactor(blueprintTypeDto.getWasteFactor());
         calculationItem.setDamagePerJob(requirementDto.getDamagePerJob());
-        calculationItem.setPrice("0.00");
+        String price = priceSetItemTypeIdToPriceMap.get(requirementDto.getRequiredTypeID());
+        calculationItem.setPrice(price == null ? "0.00" : price);
         calculationItem.setTotalPrice("0.00");
         calculationItem.setTotalPriceForParent("0.00");
         return calculationItem;
@@ -252,9 +264,8 @@ public class CalculationServiceImpl implements CalculationService {
         return blueprintItem;
     }
 
-    private BlueprintItem createBlueprintItem(Long[] pathNodes, TypeRequirementDto typeRequirement) {
+    private BlueprintItem createBlueprintItem(PathExpression pathExpression, TypeRequirementDto typeRequirement) {
         BlueprintItem blueprintItem = new BlueprintItem();
-        PathExpression pathExpression = new PathExpression(pathNodes, typeRequirement.getRequiredTypeID());
         blueprintItem.setPath(pathExpression.getExpression());
         blueprintItem.setItemTypeID(typeRequirement.getRequiredTypeID());
         blueprintItem.setItemCategoryID(typeRequirement.getRequiredTypeCategoryID());

@@ -2,11 +2,7 @@ package lv.odylab.evemanage.application;
 
 import com.google.inject.Inject;
 import lv.odylab.appengine.aspect.Logging;
-import lv.odylab.evemanage.application.exception.ApiKeyShouldBeRemovedException;
-import lv.odylab.evemanage.application.exception.EveApiException;
-import lv.odylab.evemanage.application.exception.EveCentralApiException;
-import lv.odylab.evemanage.application.exception.EveDbException;
-import lv.odylab.evemanage.application.exception.EveMetricsApiException;
+import lv.odylab.evemanage.application.exception.*;
 import lv.odylab.evemanage.application.exception.validation.InvalidItemTypeException;
 import lv.odylab.evemanage.application.exception.validation.InvalidNameException;
 import lv.odylab.evemanage.application.exception.validation.InvalidPriceException;
@@ -16,11 +12,7 @@ import lv.odylab.evemanage.client.rpc.dto.calculation.CalculationDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.InventedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedBlueprintDto;
 import lv.odylab.evemanage.client.rpc.dto.calculation.UsedSchematicDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.ApiKeyDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.CharacterDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.CharacterNameDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.RegionDto;
-import lv.odylab.evemanage.client.rpc.dto.eve.RegionDtoComparator;
+import lv.odylab.evemanage.client.rpc.dto.eve.*;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetItemDto;
 import lv.odylab.evemanage.client.rpc.dto.priceset.PriceSetNameDto;
@@ -41,17 +33,13 @@ import lv.odylab.evemanage.integration.evedb.dto.ItemTypeDto;
 import lv.odylab.evemanage.service.calculation.InventedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedBlueprint;
 import lv.odylab.evemanage.service.calculation.UsedSchematic;
+import lv.odylab.evemanage.shared.CalculationExpression;
 import lv.odylab.evemanage.shared.eve.PriceFetchOption;
 import lv.odylab.evemanage.shared.eve.Region;
 import lv.odylab.evemanage.shared.eve.SharingLevel;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Logging
 public class EveManageClientFacadeImpl implements EveManageClientFacade {
@@ -439,6 +427,12 @@ public class EveManageClientFacadeImpl implements EveManageClientFacade {
     @Override
     public CalculationDto getNewCalculation(String blueprintName) throws EveDbException, InvalidNameException {
         Calculation calculation = applicationFacade.getNewCalculation(blueprintName);
+        return mapper.map(calculation, CalculationDto.class);
+    }
+
+    @Override
+    public CalculationDto getQuickCalculationForExpression(CalculationExpression calculationExpression) throws EveDbException, InvalidNameException {
+        Calculation calculation = applicationFacade.getCalculationForExpression(calculationExpression);
         return mapper.map(calculation, CalculationDto.class);
     }
 

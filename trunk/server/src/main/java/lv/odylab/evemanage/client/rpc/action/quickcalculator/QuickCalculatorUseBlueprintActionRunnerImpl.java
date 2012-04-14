@@ -18,6 +18,7 @@ public class QuickCalculatorUseBlueprintActionRunnerImpl implements QuickCalcula
 
         QuickCalculatorUseBlueprintActionResponse response = new QuickCalculatorUseBlueprintActionResponse();
         response.setPathNodes(action.getPathNodes());
+        response.setPathNodesString(action.getPathNodesString());
         response.setUsedBlueprint(usedBlueprintDto);
         return response;
     }
