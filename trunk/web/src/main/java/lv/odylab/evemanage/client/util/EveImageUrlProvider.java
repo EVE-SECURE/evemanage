@@ -26,7 +26,7 @@ public class EveImageUrlProvider {
         } else if (itemCategoryID == 40) {
             return urlMessages.imgSovereigntyStructures32Url(constants.eveImagesUrl(), itemTypeID);
         } else {
-            return urlMessages.imgIcon16Url(constants.eveImagesUrl(), graphicName);
+            return urlMessages.imgIcon32Url(constants.eveImagesUrl(), itemTypeID);
         }
     }
 
@@ -42,7 +42,7 @@ public class EveImageUrlProvider {
         } else if (itemCategoryID == 40) {
             return urlMessages.imgSovereigntyStructures32Url(constants.eveImagesUrl(), itemTypeID);
         } else {
-            return urlMessages.imgIcon32Url(constants.eveImagesUrl(), graphicName);
+            return urlMessages.imgIcon32Url(constants.eveImagesUrl(), itemTypeID);
         }
     }
 
@@ -58,7 +58,7 @@ public class EveImageUrlProvider {
         } else if (itemCategoryID == 40) {
             return urlMessages.imgSovereigntyStructures64Url(constants.eveImagesUrl(), itemTypeID);
         } else {
-            return urlMessages.imgIcon64Url(constants.eveImagesUrl(), graphicName);
+            return urlMessages.imgIcon64Url(constants.eveImagesUrl(), itemTypeID);
         }
     }
 

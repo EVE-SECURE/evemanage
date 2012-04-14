@@ -16,7 +16,7 @@ public interface EveManageConstants extends Constants {
     @DefaultStringValue("UA-16456306-2")
     String googleAnalyticsAccount();
 
-    @DefaultStringValue("https://odylab-eveimages.appspot.com/")
+    @DefaultStringValue("https://s3-eu-west-1.amazonaws.com/eveimages/")
     String eveImagesUrl();
 
     @DefaultStringValue("http://code.google.com/p/evemanage/wiki/Help")
